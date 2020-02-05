@@ -1,0 +1,90 @@
+sudo: required
+
+language: go
+
+dist: xenial
+
+services:
+- docker
+
+addons:
+  apt:
+    packages:
+    - docker-ce
+    - apt-cacher-ng
+
+cache:
+  directories:
+    - $HOME/.cache/go-build
+    - $HOME/gopath/pkg/mod
+    - $TRAVIS_BUILD_DIR/.gitian-builder-cache
+    - /var/cache/apt-cacher-ng
+
+os:
+- linux
+
+go:
+# When changing, remember to update MAIN_GO_VERSION below.
+- "1.13.5"
+- master
+
+env:
+  global:
+    - GO111MODULE=on
+    - TM_VERSION=v0.31.11
+    - BUILD_VERSION=$(echo ${TRAVIS_COMMIT} | cut -c 1-10)
+    - MAIN_GO_VERSION=1.13.5
+    - GORACE="halt_on_error=1"
+    - FORCE_TM_TEST=1
+    - VERSION=$(git describe --tags --abbrev=9 | sed 's/^v//')
+    - COMMIT=$(git log -1 --format='%H')
+    - IMAGE_NAME="iov1/bnsapi:${BUILD_VERSION}"
+
+install:
+- wget --quiet https://github.com/tendermint/tendermint/releases/download/${TM_VERSION}/tendermint_${TM_VERSION}_linux_amd64.zip -O tendermint_linux_amd64.zip &&
+  unzip tendermint_linux_amd64.zip &&
+  sudo install -D -m 777 -o root tendermint /usr/local/bin
+
+script:
+- set -eo pipefail
+# TODO uncomment when bnsd is imported
+# - make protolint
+# - make protodocs
+- make install
+- make all
+# - if [[ "$TRAVIS_GO_VERSION" == "$MAIN_GO_VERSION" ]]; then
+#     make cover;
+#     ./coverage/upload.sh;
+#   fi;
+- printenv TRAVIS_COMMIT_MESSAGE > commit.msg
+- unset TRAVIS_COMMIT_MESSAGE && printenv | grep -Ev "PATH|path|GEM" > env.list
+- export TRAVIS_COMMIT_MESSAGE=`cat commit.msg` && rm -rf commit.msg
+# - docker run -it --rm --env-file env.list -v "$(pwd):/usr/src/app" iov1ops/danger:latest > danger.out; cat danger.out
+#- if [[ "$TRAVIS_GO_VERSION" == "$MAIN_GO_VERSION" && "$TRAVIS_OS_NAME" == "linux" ]]; then
+#    release_latest=$( [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_TAG" == "" && "$TRAVIS_PULL_REQUEST_BRANCH" == "" ]] && echo "yes" || echo "no" );
+#    release_tag=$( [[ "$TRAVIS_TAG" != "" ]] && echo "yes" || echo "no" );
+
+#    if [[ $release_latest == "yes" ]]; then
+#      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
+#      docker tag  "iov1/bnsapi:${BUILD_VERSION}" "iov1/bnsapi:latest" ;
+#      docker push "iov1/bnsapi:latest";
+#      docker logout;
+#    fi;
+
+#    if [[ $release_tag == "yes" ]]; then
+#      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
+#      docker tag  "iov1/bnsapi:${BUILD_VERSION}" "iov1/bnsapi:$TRAVIS_TAG" ;
+#      docker push "iov1/bnsapi:$TRAVIS_TAG";
+#      docker logout;
+#    fi;
+#  fi;
+
+notifications:
+  email: false
+
+# whitelist long living branches to avoid testing feature branches twice (as branch and as pull request)
+branches:
+  only:
+  - master
+  - /^v[0-9]+\.[0-9]+\.x$/
+  - /^v[0-9]+\.[0-9]+\.[0-9]+$/
