@@ -60,24 +60,24 @@ script:
 - unset TRAVIS_COMMIT_MESSAGE && printenv | grep -Ev "PATH|path|GEM" > env.list
 - export TRAVIS_COMMIT_MESSAGE=`cat commit.msg` && rm -rf commit.msg
 # - docker run -it --rm --env-file env.list -v "$(pwd):/usr/src/app" iov1ops/danger:latest > danger.out; cat danger.out
-#- if [[ "$TRAVIS_GO_VERSION" == "$MAIN_GO_VERSION" && "$TRAVIS_OS_NAME" == "linux" ]]; then
-#    release_latest=$( [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_TAG" == "" && "$TRAVIS_PULL_REQUEST_BRANCH" == "" ]] && echo "yes" || echo "no" );
-#    release_tag=$( [[ "$TRAVIS_TAG" != "" ]] && echo "yes" || echo "no" );
+- if [[ "$TRAVIS_GO_VERSION" == "$MAIN_GO_VERSION" && "$TRAVIS_OS_NAME" == "linux" ]]; then
+    release_latest=$( [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_TAG" == "" && "$TRAVIS_PULL_REQUEST_BRANCH" == "" ]] && echo "yes" || echo "no" );
+    release_tag=$( [[ "$TRAVIS_TAG" != "" ]] && echo "yes" || echo "no" );
 
-#    if [[ $release_latest == "yes" ]]; then
-#      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
-#      docker tag  "iov1/bnsapi:${BUILD_VERSION}" "iov1/bnsapi:latest" ;
-#      docker push "iov1/bnsapi:latest";
-#      docker logout;
-#    fi;
+    if [[ $release_latest == "yes" ]]; then
+      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
+      docker tag  "iov1/bnsapi:${BUILD_VERSION}" "iov1/bnsapi:latest" ;
+      docker push "iov1/bnsapi:latest";
+      docker logout;
+    fi;
 
-#    if [[ $release_tag == "yes" ]]; then
-#      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
-#      docker tag  "iov1/bnsapi:${BUILD_VERSION}" "iov1/bnsapi:$TRAVIS_TAG" ;
-#      docker push "iov1/bnsapi:$TRAVIS_TAG";
-#      docker logout;
-#    fi;
-#  fi;
+    if [[ $release_tag == "yes" ]]; then
+      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
+      docker tag  "iov1/bnsapi:${BUILD_VERSION}" "iov1/bnsapi:$TRAVIS_TAG" ;
+      docker push "iov1/bnsapi:$TRAVIS_TAG";
+      docker logout;
+    fi;
+  fi;
 
 notifications:
   email: false
