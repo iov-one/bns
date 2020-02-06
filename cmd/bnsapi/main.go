@@ -27,6 +27,8 @@ import (
 type configuration struct {
 	HTTP       string
 	Tendermint string
+	// Domain is used for swagger docs configuration
+	Domain string
 }
 
 // @title BNSAPI documentation
@@ -38,6 +40,7 @@ func main() {
 	conf := configuration{
 		HTTP:       env("HTTP", ":8000"),
 		Tendermint: env("TENDERMINT", "http://localhost:26657"),
+		Domain:     env("DOMAIN", "localhost"),
 	}
 
 	if err := run(conf); err != nil {
@@ -90,8 +93,7 @@ func run(conf configuration) error {
 	rt.Handle("/", &handlers.DefaultHandler{})
 
 	docs.SwaggerInfo.Version = util.BuildVersion
-	docs.SwaggerInfo.Host = "bnsapi"
-	docsUrl := fmt.Sprintf("http://localhost%s/docs/doc.json", conf.HTTP)
+	docsUrl := fmt.Sprintf("http://%s%s/docs/doc.json", conf.Domain, conf.HTTP)
 	rt.Handle("/docs/", httpSwagger.Handler(httpSwagger.URL(docsUrl)))
 
 	if err := http.ListenAndServe(conf.HTTP, rt); err != nil {
