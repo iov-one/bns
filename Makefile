@@ -3,7 +3,7 @@
 # make sure we turn on go modules
 export GO111MODULE := on
 
-TOOLS := cmd/bnsapi
+TOOLS := cmd/bnsapi cmd/bnscli
 
 # MODE=count records heat map in test coverage
 # MODE=set just records which lines were hit by one test
@@ -28,7 +28,7 @@ install:
 
 test:
 	@# bnscli binary is required by some tests. In order to not skip them, ensure bnscli binary is provided and in the latest version.
-	# go install -mod=readonly ./cmd/bnscli # TODO uncomment when bnsd/bnscli is imported
+	go install -mod=readonly ./cmd/bnscli
 
 	go vet -mod=readonly  ./...
 	go test -mod=readonly -race ./...
