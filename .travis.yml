@@ -64,6 +64,10 @@ script:
     release_latest=$( [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_TAG" == "" && "$TRAVIS_PULL_REQUEST_BRANCH" == "" ]] && echo "yes" || echo "no" );
     release_tag=$( [[ "$TRAVIS_TAG" != "" ]] && echo "yes" || echo "no" );
 
+    if [[ $release_latest == "yes" || $release_tag == "yes" ]]; then
+      docker build --pull  --file ${TRAVIS_BUILD_DIR}/cmd/bnsapi/Dockerfile --tag ${IMAGE_NAME} . ;
+    fi;
+
     if [[ $release_latest == "yes" ]]; then
       echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
       docker tag  "iov1/bnsapi:${BUILD_VERSION}" "iov1/bnsapi:latest" ;
