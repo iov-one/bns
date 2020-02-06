@@ -65,7 +65,7 @@ script:
     release_tag=$( [[ "$TRAVIS_TAG" != "" ]] && echo "yes" || echo "no" );
 
     if [[ $release_latest == "yes" || $release_tag == "yes" ]]; then
-      make dist
+      make dist;
       docker build --pull  --file ${TRAVIS_BUILD_DIR}/cmd/bnsapi/Dockerfile --tag ${IMAGE_NAME} . ;
     fi;
 
