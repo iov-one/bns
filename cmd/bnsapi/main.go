@@ -91,7 +91,7 @@ func run(conf configuration) error {
 
 	docs.SwaggerInfo.Version = util.BuildVersion
 	docs.SwaggerInfo.Host = "http://bnsapi"
-	docsUrl := fmt.Sprintf("http://bnsapi%s/docs/doc.json", conf.HTTP)
+	docsUrl := fmt.Sprintf("http://localhost%s/docs/doc.json", conf.HTTP)
 	rt.Handle("/docs/", httpSwagger.Handler(httpSwagger.URL(docsUrl)))
 
 	if err := http.ListenAndServe(conf.HTTP, rt); err != nil {
