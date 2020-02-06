@@ -17,3 +17,5 @@ require (
 	google.golang.org/grpc v1.21.4 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )
+
+replace github.com/swaggo/http-swagger => github.com/orkunkl/http-swagger v1.0.0
