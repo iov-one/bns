@@ -93,6 +93,7 @@ func run(conf configuration) error {
 	rt.Handle("/", &handlers.DefaultHandler{})
 
 	docs.SwaggerInfo.Version = util.BuildVersion
+	docs.SwaggerInfo.Host = conf.Domain
 	docsUrl := fmt.Sprintf("http://%s%s/docs/doc.json", conf.Domain, conf.HTTP)
 	rt.Handle("/docs/", httpSwagger.Handler(httpSwagger.URL(docsUrl)))
 
