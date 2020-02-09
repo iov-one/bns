@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/client"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
+	"html/template"
 	"log"
 	"math"
 	"net/http"
@@ -563,7 +564,29 @@ func lastChunk(path string) string {
 }
 
 // DefaultHandler is used to handle the request that no other handler wants.
-type DefaultHandler struct{}
+type DefaultHandler struct {
+	Domain string
+}
+
+var availableEndpointsTempl = template.Must(template.New("").Parse(`
+Available endpoints with query parameter:
+
+{{ .}}/account/accounts/?domainKey=_&ownerKey=_ 
+{{ .}}/account/accounts/{accountKey}
+{{ .}}/account/domains/?admin=_&offset=_
+{{ .}}/blocks/{blockHeight}
+{{ .}}/escrow/escrows/?source=_&destination=_&offset=_
+{{ .}}/gconf/{extensionName}
+{{ .}}/multisig/contracts/?offset=_
+{{ .}}/termdeposit/contracts/?offset=_
+{{ .}}/termdeposit/deposits/?depositor=_&contract=_&contract_id=?_offset=_
+
+Available endpoints w/o parameter:
+
+{{ .}}/info/
+
+Swagger documentation: {{ .}}/docs
+`))
 
 func (h *DefaultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// No trailing slash.
@@ -572,7 +595,10 @@ func (h *DefaultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		JSONRedirect(w, http.StatusPermanentRedirect, path)
 		return
 	}
-	JSONErr(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
+	if err := availableEndpointsTempl.Execute(w, h.Domain); err != nil {
+		log.Print(err)
+		JSONErr(w, http.StatusInternalServerError, "template error")
+	}
 }
 
 type AccountDomainsHandler struct {

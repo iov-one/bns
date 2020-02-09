@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/client"
-	docs "github.com/iov-one/bns/cmd/bnsapi/docs"
+	"github.com/iov-one/bns/cmd/bnsapi/docs"
 	"github.com/iov-one/bns/cmd/bnsapi/handlers"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -24,7 +24,7 @@ import (
 	"github.com/iov-one/weave/x/txfee"
 )
 
-type configuration struct {
+type Configuration struct {
 	HTTP       string
 	Tendermint string
 	// Domain is used for swagger docs configuration
@@ -37,7 +37,7 @@ func main() {
 	log.SetFlags(log.LUTC | log.Lshortfile)
 	log.SetPrefix(cutstr(util.BuildHash, 6) + " ")
 
-	conf := configuration{
+	conf := Configuration{
 		HTTP:       env("HTTP", ":8000"),
 		Tendermint: env("TENDERMINT", "http://localhost:26657"),
 		Domain:     env("DOMAIN", "localhost"),
@@ -62,7 +62,7 @@ func env(name, fallback string) string {
 	return fallback
 }
 
-func run(conf configuration) error {
+func run(conf Configuration) error {
 	bnscli := client.NewHTTPBnsClient(conf.Tendermint)
 
 	gconfConfigurations := map[string]func() gconf.Configuration{
@@ -90,7 +90,7 @@ func run(conf configuration) error {
 	rt.Handle("/gov/proposals", &handlers.GovProposalsHandler{Bns: bnscli})
 	rt.Handle("/gov/votes", &handlers.GovVotesHandler{Bns: bnscli})
 	rt.Handle("/gconf/", &handlers.GconfHandler{Bns: bnscli, Confs: gconfConfigurations})
-	rt.Handle("/", &handlers.DefaultHandler{})
+	rt.Handle("/", &handlers.DefaultHandler{Domain: conf.Domain})
 
 	docs.SwaggerInfo.Version = util.BuildVersion
 	docs.SwaggerInfo.Host = conf.Domain
