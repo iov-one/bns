@@ -568,24 +568,51 @@ type DefaultHandler struct {
 	Domain string
 }
 
+var wEndpoint = []string{
+	"/account/accounts/?domainKey=_&ownerKey=_",
+	"/account/domains/?admin=_&offset=_",
+	"/escrow/escrows/?source=_&destination=_&offset=_",
+	"/multisig/contracts/?offset=_",
+	"/termdeposit/contracts/?offset=_",
+	"/termdeposit/deposits/?depositor=_&contract=_&contract_id=?_offset=_",
+}
+
+func endpointsWithDomain(domain string, endpoints []string) []string {
+	var eps []string
+	for _, e := range endpoints {
+		eps = append(eps, "http://"+domain+e)
+	}
+	return eps
+}
+
+var withoutParamEndpoint = []string{
+	"/info/",
+	"/account/accounts/{accountKey}",
+	"/blocks/{blockHeight}",
+	"/gconf/{extensionName}",
+}
+
+type endpoints struct {
+	Domain       string
+	WithParam    []string
+	WithoutParam []string
+}
+
 var availableEndpointsTempl = template.Must(template.New("").Parse(`
-Available endpoints with query parameter:
+<h1>Available endpoints with query parameters:</h1>
 
-{{ .}}/account/accounts/?domainKey=_&ownerKey=_ 
-{{ .}}/account/accounts/{accountKey}
-{{ .}}/account/domains/?admin=_&offset=_
-{{ .}}/blocks/{blockHeight}
-{{ .}}/escrow/escrows/?source=_&destination=_&offset=_
-{{ .}}/gconf/{extensionName}
-{{ .}}/multisig/contracts/?offset=_
-{{ .}}/termdeposit/contracts/?offset=_
-{{ .}}/termdeposit/deposits/?depositor=_&contract=_&contract_id=?_offset=_
+{{range .WithParam}}
+<a href="{{ .}}">{{ .}}</a></br>
+{{end}}
 
-Available endpoints w/o parameter:
+<h1>Available endpoints without parameters:</h1>
 
-{{ .}}/info/
+{{range .WithoutParam}}
+<a href="{{ .}}">{{ .}}</a></br>
+{{end}}
 
-Swagger documentation: {{ .}}/docs
+<h1>Swagger documentation: </h1>
+<a href="http://{{ .Domain}}/docs">http://{{ .Domain}}/docs</a></br>
 `))
 
 func (h *DefaultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -595,7 +622,14 @@ func (h *DefaultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		JSONRedirect(w, http.StatusPermanentRedirect, path)
 		return
 	}
-	if err := availableEndpointsTempl.Execute(w, h.Domain); err != nil {
+
+	eps := endpoints{
+		Domain:       h.Domain,
+		WithParam:    endpointsWithDomain(h.Domain, wEndpoint),
+		WithoutParam: endpointsWithDomain(h.Domain, withoutParamEndpoint),
+	}
+
+	if err := availableEndpointsTempl.Execute(w, eps); err != nil {
 		log.Print(err)
 		JSONErr(w, http.StatusInternalServerError, "template error")
 	}
