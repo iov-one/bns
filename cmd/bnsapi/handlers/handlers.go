@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/client"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
+	"github.com/iov-one/weave/cmd/bnsd/x/username"
 	"github.com/iov-one/weave/x/cash"
 	"html/template"
 	"log"
@@ -792,7 +793,7 @@ type CashBalanceHandler struct {
 // CashBalanceHandler godoc
 // @Summary Returns a `bnsd/x/cash.Set` entitiy.
 // @Param address path string false "Bech32 or hex representation of an address"
-// @Param offset path string false "Bech32 or hex representation of an address to be used as offset"
+// @Param offset query string false "Bech32 or hex representation of an address to be used as offset"
 // @Success 200 {object} json.RawMessage
 // @Failure 404 {object} json.RawMessage
 // @Failure 500 {object} json.RawMessage
@@ -833,7 +834,7 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		it := client.ABCIRangeQuery(r.Context(), h.Bns, "/wallets", fmt.Sprintf("%x:", offset))
 
 		objects := make([]KeyValue, 0, paginationMaxItems)
-		fetchBalances:
+	fetchBalances:
 		for {
 			var set cash.Set
 			switch key, err := it.Next(&set); {
@@ -861,6 +862,39 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 }
+
+type UsernameOwnerHandler struct {
+	Bns client.BnsClient
+}
+
+// UsernameOwnerHandler godoc
+// @Summary Returns a `bnsd/username.Token` entitiy.
+// @Param ownerAddress path string false "Bech32 or hex representation of an address"
+// @Success 200 {object} json.RawMessage
+// @Failure 404 {object} json.RawMessage
+// @Failure 500 {object} json.RawMessage
+// @Router /cash/balances [get]
+func (h *UsernameOwnerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	rawKey := lastChunk(r.URL.Path)
+	key, err := weave.ParseAddress(rawKey)
+	if err != nil {
+		log.Print(err)
+		JSONErr(w, http.StatusBadRequest, "wrong input, must be address")
+		return
+	}
+
+	var token username.Token
+	switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/usernames/owner", key, &token); {
+	case err == nil:
+		JSONResp(w, http.StatusOK, token)
+	case errors.ErrNotFound.Is(err):
+		JSONErr(w, http.StatusNotFound, "Username not found by owner")
+	default:
+		log.Printf("account ABCI query: %s", err)
+		JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+	}
+}
+
 // atMostOne returns true if at most one non empty value from given list of
 // names exists in the query.
 func atMostOne(query url.Values, names ...string) bool {
