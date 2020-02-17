@@ -141,6 +141,45 @@
                 }
             }
         },
+        "/cash/balances": {
+            "get": {
+                "summary": "Returns a `bnsd/x/cash.Set` entitiy.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bech32 or hex representation of an address",
+                        "name": "address",
+                        "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bech32 or hex representation of an address to be used as offset",
+                        "name": "offset",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/json.RawMessage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/json.RawMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/json.RawMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/escrow/escrows": {
             "get": {
                 "description": "At most one of the query parameters must exist(excluding offset)",

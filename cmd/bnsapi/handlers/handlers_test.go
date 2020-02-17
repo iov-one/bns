@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/client"
@@ -11,6 +12,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/iov-one/weave"
@@ -19,22 +21,27 @@ import (
 
 func TestAccountAccountDetailHandler(t *testing.T) {
 	bns := &bnsClientMock{
-		Results: map[string]client.AbciQueryResponse{
-			"/abci_query?data=%22foo%2Abar%22&path=%22%2Faccounts%22": newAbciQueryResponse(t,
-				[][]byte{
-					[]byte("foo*bar"),
-				},
-				[]weave.Persistent{
-					&account.Account{
-						Name:   "foo",
-						Domain: "bar",
+		PostResults: map[string]map[string]client.AbciQueryResponse{
+			"/accounts": {
+				"666F6F2A626172": newAbciQueryResponse(t,
+					[][]byte{
+						[]byte("foo*bar"),
 					},
-				}),
+					[]weave.Persistent{
+						&account.Account{
+							Name:   "foo",
+							Domain: "bar",
+						},
+					}),
+			},
 		},
 	}
+
 	h := AccountAccountsDetailHandler{Bns: bns}
 
-	r, _ := http.NewRequest("GET", "/something/xyz/foo*bar", nil)
+	reqBody := `{ "json-rpc": 2.0, "method": "abci_query", "params": { "path": "/accounts", "data": "2F666F6F2F626172"}}`
+
+	r, _ := http.NewRequest("POST", "/something/xyz/foo*bar", strings.NewReader(reqBody))
 	w := httptest.NewRecorder()
 	h.ServeHTTP(w, r)
 
@@ -75,7 +82,7 @@ func TestBnsClientMock(t *testing.T) {
 			Value: []byte("bar"),
 		},
 	}
-	bns := bnsClientMock{Results: map[string]client.AbciQueryResponse{
+	bns := bnsClientMock{GetResults: map[string]client.AbciQueryResponse{
 		"/foo": result,
 	}}
 	var response client.AbciQueryResponse
@@ -88,8 +95,9 @@ func TestBnsClientMock(t *testing.T) {
 }
 
 type bnsClientMock struct {
-	Results map[string]client.AbciQueryResponse
-	Err     error
+	GetResults  map[string]client.AbciQueryResponse
+	PostResults map[string]map[string]client.AbciQueryResponse
+	Err         error
 }
 
 func (mock *bnsClientMock) Get(ctx context.Context, path string, dest interface{}) error {
@@ -99,7 +107,7 @@ func (mock *bnsClientMock) Get(ctx context.Context, path string, dest interface{
 	default:
 	}
 
-	resp, ok := mock.Results[path]
+	resp, ok := mock.GetResults[path]
 	if !ok {
 		raw, _ := url.PathUnescape(path)
 		return fmt.Errorf("no result declared in mock for %q (%q)", path, raw)
@@ -114,9 +122,32 @@ func (mock *bnsClientMock) Get(ctx context.Context, path string, dest interface{
 	return mock.Err
 }
 
+func (mock *bnsClientMock) Post(ctx context.Context, path string, data []byte, dest interface{}) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
+
+	hexData := strings.ToUpper(hex.EncodeToString(data))
+	resp, ok := mock.PostResults[path][hexData]
+	if !ok {
+		raw, _ := url.PathUnescape(path)
+		return fmt.Errorf("no result declared in mock for %q %q (%q)", path, hexData, raw)
+	}
+
+	v := reflect.ValueOf(dest)
+	// Below panics if cannot be fullfilled. User did something wrong and
+	// this is test so panic is acceptable.
+	src := reflect.ValueOf(resp)
+	v.Elem().Set(src)
+
+	return mock.Err
+}
+
 func TestAccountAccountssHandler(t *testing.T) {
 	bns := &bnsClientMock{
-		Results: map[string]client.AbciQueryResponse{
+		GetResults: map[string]client.AbciQueryResponse{
 			"/abci_query?data=%22%3A%22&path=%22%2Faccounts%3Frange%22": newAbciQueryResponse(t,
 				[][]byte{
 					[]byte("first"),
@@ -148,7 +179,7 @@ func TestAccountAccountssHandler(t *testing.T) {
 
 func TestAccountAccountssHandlerOffsetAndFilter(t *testing.T) {
 	bns := &bnsClientMock{
-		Results: map[string]client.AbciQueryResponse{
+		GetResults: map[string]client.AbciQueryResponse{
 			"/abci_query?data=%2261646f6d61696e%3A36363639373237333734%3A61646f6d61696f%22&path=%22%2Faccounts%2Fdomain%3Frange%22": newAbciQueryResponse(t, nil, nil),
 		},
 	}
@@ -163,7 +194,7 @@ func TestAccountAccountssHandlerOffsetAndFilter(t *testing.T) {
 
 func TestAccountDomainsHandler(t *testing.T) {
 	bns := &bnsClientMock{
-		Results: map[string]client.AbciQueryResponse{
+		GetResults: map[string]client.AbciQueryResponse{
 			"/abci_query?data=%22%3A%22&path=%22%2Fdomains%3Frange%22": newAbciQueryResponse(t,
 				[][]byte{
 					[]byte("first"),

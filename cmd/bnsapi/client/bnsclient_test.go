@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
 	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -22,21 +24,40 @@ func TestABCIKeyQuery(t *testing.T) {
 	// Run a fake Tendermint API server that will answer to only expected
 	// query requests.
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/abci_query" {
-			t.Fatalf("unexpected path: %q", r.URL)
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("Error reading body: %v", err)
+			http.Error(w, "can't read body", http.StatusBadRequest)
+			return
 		}
-		q := r.URL.Query()
+
+		type fullBody struct {
+			Rpc       float32        `json:"json-rpc"`
+			Method    string         `json:"method"`
+			BodyParam postBodyParams `json:"params"`
+		}
+
+		var fullBodyParam fullBody
+		err = json.Unmarshal(body, &fullBodyParam)
+		if err != nil {
+			log.Printf("Error reading body: %v", err)
+			http.Error(w, "can't read body", http.StatusBadRequest)
+			return
+		}
+
+		bodyParam := fullBodyParam.BodyParam
+		log.Print(bodyParam)
 		switch {
-		case q.Get("path") == `"/myentity"` && q.Get("data") == `"entitykey"`:
+		case bodyParam.Path == "/myentity" && bodyParam.Data == "656E746974796B6579":
 			writeServerResponse(t, w, [][]byte{
 				[]byte("0001"),
 			}, []weave.Persistent{
 				&persistentMock{Raw: []byte("content")},
 			})
-		case q.Get("path") == `"/myentity"`:
+		case bodyParam.Path == "/myentity":
 			writeServerResponse(t, w, nil, nil)
 		default:
-			t.Fatalf("unknown condition: %q", r.URL)
+			t.Fatalf("unknown condition: %q", bodyParam)
 		}
 
 	}))

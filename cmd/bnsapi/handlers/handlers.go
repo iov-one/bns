@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/client"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
+	"github.com/iov-one/weave/x/cash"
 	"html/template"
 	"log"
 	"math"
@@ -571,6 +572,7 @@ type DefaultHandler struct {
 var wEndpoint = []string{
 	"/account/accounts/?domainKey=_&ownerKey=_",
 	"/account/domains/?admin=_&offset=_",
+	"/cash/balances?address=_[OR]offset=_",
 	"/escrow/escrows/?source=_&destination=_&offset=_",
 	"/multisig/contracts/?offset=_",
 	"/termdeposit/contracts/?offset=_",
@@ -783,6 +785,82 @@ fetchAccounts:
 	})
 }
 
+type CashBalanceHandler struct {
+	Bns client.BnsClient
+}
+
+// CashBalanceHandler godoc
+// @Summary Returns a `bnsd/x/cash.Set` entitiy.
+// @Param address path string false "Bech32 or hex representation of an address"
+// @Param offset path string false "Bech32 or hex representation of an address to be used as offset"
+// @Success 200 {object} json.RawMessage
+// @Failure 404 {object} json.RawMessage
+// @Failure 500 {object} json.RawMessage
+// @Router /cash/balances [get]
+func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+
+	if !atMostOne(q, "address", "offset") {
+		JSONErr(w, http.StatusBadRequest, "At most one filter can be used at a time.")
+		return
+	}
+
+	key := q.Get("address")
+	if key != "" {
+		if strings.HasPrefix(key, "iov") || strings.HasPrefix(key, "tiov") {
+			key = "bech32:" + key
+		}
+		addr, err := weave.ParseAddress(key)
+
+		if err != nil {
+			log.Print(err)
+			JSONErr(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+			return
+		}
+		var set cash.Set
+		switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/wallets", addr, &set); {
+		case err == nil:
+			JSONResp(w, http.StatusOK, set)
+		case errors.ErrNotFound.Is(err):
+			JSONErr(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
+		default:
+			log.Printf("account ABCI query: %s", err)
+			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		}
+	} else {
+		// query all wallets
+		offset := extractIDFromKey(q.Get("offset"))
+		it := client.ABCIRangeQuery(r.Context(), h.Bns, "/wallets", fmt.Sprintf("%x:", offset))
+
+		objects := make([]KeyValue, 0, paginationMaxItems)
+		fetchBalances:
+		for {
+			var set cash.Set
+			switch key, err := it.Next(&set); {
+			case err == nil:
+				objects = append(objects, KeyValue{
+					Key:   key,
+					Value: &set,
+				})
+				if len(objects) == paginationMaxItems {
+					break fetchBalances
+				}
+			case errors.ErrIteratorDone.Is(err):
+				break fetchBalances
+			default:
+				log.Printf("cash balance ABCI query: %s", err)
+				JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+				return
+			}
+		}
+
+		JSONResp(w, http.StatusOK, struct {
+			Objects []KeyValue `json:"objects"`
+		}{
+			Objects: objects,
+		})
+	}
+}
 // atMostOne returns true if at most one non empty value from given list of
 // names exists in the query.
 func atMostOne(query url.Values, names ...string) bool {

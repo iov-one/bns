@@ -3,22 +3,26 @@ package client
 import (
 	"bytes"
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-
 	"github.com/iov-one/weave"
 	weaveapp "github.com/iov-one/weave/app"
 	"github.com/iov-one/weave/errors"
 	"github.com/iov-one/weave/orm"
+	"io"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
+	"strings"
+	"text/template"
 )
 
 // BnsClient is implemented by any service that provides access to BNS API.
 type BnsClient interface {
 	Get(ctx context.Context, path string, dest interface{}) error
+	Post(ctx context.Context, path string, data []byte, dest interface{}) error
 }
 
 // HTTPBnsClient implements BnsClient interface and it is using HTTP transport
@@ -64,6 +68,55 @@ func (c *HTTPBnsClient) Get(ctx context.Context, path string, dest interface{}) 
 	return nil
 }
 
+type postBodyParams struct {
+	Path string `json:"path"`
+	Data string `json:"data"`
+}
+
+var postBodyTemplate = template.Must(template.New("").Parse(`
+{ "json-rpc": 2.0, "method": "abci_query", "params": { "path": "{{ .Path}}", "data": "{{ .Data}}"}}
+`))
+
+func (c *HTTPBnsClient) Post(ctx context.Context, path string, data []byte, dest interface{}) error {
+	params := postBodyParams{
+		Path: path,
+		Data: strings.ToUpper(hex.EncodeToString(data)),
+	}
+
+	log.Print(params)
+	var buf bytes.Buffer
+	if err := postBodyTemplate.Execute(&buf, params); err != nil {
+		log.Print(err)
+		return errors.Wrap(err, "wrong Path or Data")
+	}
+
+	req, err := http.NewRequest("POST", c.apiURL, bytes.NewReader(buf.Bytes()))
+	if err != nil {
+		return errors.Wrap(err, "create http request")
+	}
+	req = req.WithContext(ctx)
+
+	resp, err := c.cli.Do(req)
+	if err != nil {
+		return errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 300 {
+		b, _ := ioutil.ReadAll(io.LimitReader(resp.Body, 1e5))
+		return errors.Wrapf(errors.ErrDatabase, "bad response: %d %s", resp.StatusCode, string(b))
+	}
+
+	payload := jsonrpcResponse{Result: dest}
+	if err := json.NewDecoder(io.LimitReader(resp.Body, 1e6)).Decode(&payload); err != nil {
+		return errors.Wrap(err, "decode response")
+	}
+	if payload.Error != nil {
+		return payload.Error
+	}
+	return nil
+}
+
 type jsonrpcResponse struct {
 	Error  *jsonResponseError
 	Result interface{}
@@ -82,14 +135,10 @@ func (e *jsonResponseError) Error() string {
 	return fmt.Sprintf("code %d, %s", e.Code, e.Message)
 }
 
-func ABCIKeyQuery(ctx context.Context, c BnsClient, path string, entityKey []byte, destination weave.Persistent) error {
-	v := make(url.Values)
-	v.Add("path", `"`+path+`"`)
-	v.Add("data", `"`+string(entityKey)+`"`)
-	apiPath := "/abci_query?" + v.Encode()
-
+func ABCIKeyQuery(ctx context.Context, c BnsClient, path string, data []byte, destination weave.Persistent) error {
 	var abciResponse AbciQueryResponse
-	if err := c.Get(ctx, apiPath, &abciResponse); err != nil {
+
+	if err := c.Post(ctx, path, data, &abciResponse); err != nil {
 		return errors.Wrap(err, "response")
 	}
 

@@ -95,6 +95,31 @@ paths:
           schema:
             $ref: '#/definitions/json.RawMessage'
       summary: Get block details by height
+  /cash/balances:
+    get:
+      parameters:
+      - description: Bech32 or hex representation of an address
+        in: path
+        name: address
+        type: string
+      - description: Bech32 or hex representation of an address to be used as offset
+        in: path
+        name: offset
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/json.RawMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/json.RawMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/json.RawMessage'
+      summary: Returns a `bnsd/x/cash.Set` entitiy.
   /escrow/escrows:
     get:
       description: At most one of the query parameters must exist(excluding offset)
