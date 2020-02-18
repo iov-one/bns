@@ -16,7 +16,6 @@ import (
 	"github.com/iov-one/weave/gconf"
 	"github.com/iov-one/weave/migration"
 	"github.com/iov-one/weave/x/cash"
-	"github.com/iov-one/weave/x/msgfee"
 )
 
 type Configuration struct {
@@ -63,7 +62,6 @@ func run(conf Configuration) error {
 	gconfConfigurations := map[string]func() gconf.Configuration{
 		"cash":            func() gconf.Configuration { return &cash.Configuration{} },
 		"migration":       func() gconf.Configuration { return &migration.Configuration{} },
-		"msgfee":          func() gconf.Configuration { return &msgfee.Configuration{} },
 		"username":        func() gconf.Configuration { return &username.Configuration{} },
 	}
 
