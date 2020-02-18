@@ -6,112 +6,6 @@
         "license": {}
     },
     "paths": {
-        "/account/accounts": {
-            "get": {
-                "description": "At most one of the query parameters must exist(excluding offset)",
-                "summary": "Returns a list of `bnsd/x/account` Account entitiy.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Domain name",
-                        "name": "domainKey",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Admin address",
-                        "name": "ownerKey",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/account/accounts/{accountKey}": {
-            "get": {
-                "summary": "Returns a list of `bnsd/x/account` Account entitiy.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Address of the admin",
-                        "name": "accountKey",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/account/domains/": {
-            "get": {
-                "summary": "Returns a list of `bnsd/x/account` Domain entities.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Address of the admin",
-                        "name": "admin",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Iteration offset",
-                        "name": "offset",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    }
-                }
-            }
-        },
         "/blocks/{blockHeight}": {
             "get": {
                 "description": "get block detail by blockHeight",
@@ -155,7 +49,7 @@
                         "type": "string",
                         "description": "Bech32 or hex representation of an address to be used as offset",
                         "name": "offset",
-                        "in": "path"
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -293,16 +187,15 @@
                 }
             }
         },
-        "/termdeposit/contracts": {
+        "/username/owner/{ownerAddress}": {
             "get": {
-                "description": "At most one of the query parameters must exist(excluding offset)",
-                "summary": "Returns a list of bnsd/x/termdeposit Contract entities.",
+                "summary": "Returns a `bnsd/username.Token` entitiy.",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Iteration offset",
-                        "name": "offset",
-                        "in": "query"
+                        "description": "Bech32 or hex representation of an address",
+                        "name": "ownerAddress",
+                        "in": "path"
                     }
                 ],
                 "responses": {
@@ -318,32 +211,24 @@
                             "$ref": "#/definitions/json.RawMessage"
                         }
                     },
-                    "500": {}
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/json.RawMessage"
+                        }
+                    }
                 }
             }
         },
-        "/termdeposit/deposits": {
+        "/username/resolve/{username}": {
             "get": {
-                "description": "At most one of the query parameters must exist(excluding offset)",
-                "summary": "Returns a list of bnsd/x/termdeposit Deposit entities.",
+                "summary": "Returns a `bnsd/username.Token` entity.",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Depositor address",
-                        "name": "depositor",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Base64 encoded ID",
-                        "name": "contract",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Contract ID as integer",
-                        "name": "contract_id",
-                        "in": "query"
+                        "description": "username. example: bob*iov",
+                        "name": "username",
+                        "in": "path"
                     }
                 ],
                 "responses": {
@@ -359,7 +244,12 @@
                             "$ref": "#/definitions/json.RawMessage"
                         }
                     },
-                    "500": {}
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/json.RawMessage"
+                        }
+                    }
                 }
             }
         }

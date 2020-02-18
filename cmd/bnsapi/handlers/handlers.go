@@ -596,7 +596,7 @@ type UsernameOwnerHandler struct {
 // @Success 200 {object} json.RawMessage
 // @Failure 404 {object} json.RawMessage
 // @Failure 500 {object} json.RawMessage
-// @Router /cash/balances [get]
+// @Router /username/owner/{ownerAddress} [get]
 func (h *UsernameOwnerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	rawKey := lastChunk(r.URL.Path)
 	key, err := weave.ParseAddress(rawKey)

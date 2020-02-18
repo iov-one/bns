@@ -8,74 +8,6 @@ info:
   license: {}
   title: BNSAPI documentation
 paths:
-  /account/accounts:
-    get:
-      description: At most one of the query parameters must exist(excluding offset)
-      parameters:
-      - description: Domain name
-        in: query
-        name: domainKey
-        type: string
-      - description: Admin address
-        in: query
-        name: ownerKey
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-      summary: Returns a list of `bnsd/x/account` Account entitiy.
-  /account/accounts/{accountKey}:
-    get:
-      parameters:
-      - description: Address of the admin
-        in: path
-        name: accountKey
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-      summary: Returns a list of `bnsd/x/account` Account entitiy.
-  /account/domains/:
-    get:
-      parameters:
-      - description: Address of the admin
-        in: query
-        name: admin
-        type: string
-      - description: Iteration offset
-        in: query
-        name: offset
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-      summary: Returns a list of `bnsd/x/account` Domain entities.
   /blocks/{blockHeight}:
     get:
       description: get block detail by blockHeight
@@ -103,7 +35,7 @@ paths:
         name: address
         type: string
       - description: Bech32 or hex representation of an address to be used as offset
-        in: path
+        in: query
         name: offset
         type: string
       responses:
@@ -194,13 +126,12 @@ paths:
             $ref: '#/definitions/json.RawMessage'
         "500": {}
       summary: Returns a list of multisig Contract entities.
-  /termdeposit/contracts:
+  /username/owner/{ownerAddress}:
     get:
-      description: At most one of the query parameters must exist(excluding offset)
       parameters:
-      - description: Iteration offset
-        in: query
-        name: offset
+      - description: Bech32 or hex representation of an address
+        in: path
+        name: ownerAddress
         type: string
       responses:
         "200":
@@ -211,24 +142,18 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/json.RawMessage'
-        "500": {}
-      summary: Returns a list of bnsd/x/termdeposit Contract entities.
-  /termdeposit/deposits:
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/json.RawMessage'
+      summary: Returns a `bnsd/username.Token` entitiy.
+  /username/resolve/{username}:
     get:
-      description: At most one of the query parameters must exist(excluding offset)
       parameters:
-      - description: Depositor address
-        in: query
-        name: depositor
+      - description: 'username. example: bob*iov'
+        in: path
+        name: username
         type: string
-      - description: Base64 encoded ID
-        in: query
-        name: contract
-        type: string
-      - description: Contract ID as integer
-        in: query
-        name: contract_id
-        type: integer
       responses:
         "200":
           description: OK
@@ -238,6 +163,9 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/json.RawMessage'
-        "500": {}
-      summary: Returns a list of bnsd/x/termdeposit Deposit entities.
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/json.RawMessage'
+      summary: Returns a `bnsd/username.Token` entity.
 swagger: "2.0"
