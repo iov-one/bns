@@ -6,10 +6,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/iov-one/bns/cmd/bnsapi/client"
-	"github.com/iov-one/bns/cmd/bnsapi/util"
-	"github.com/iov-one/weave/cmd/bnsd/x/username"
-	"github.com/iov-one/weave/x/cash"
 	"html/template"
 	"log"
 	"math"
@@ -18,6 +14,11 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/iov-one/bns/cmd/bnsapi/client"
+	"github.com/iov-one/bns/cmd/bnsapi/util"
+	"github.com/iov-one/weave/cmd/bnsd/x/username"
+	"github.com/iov-one/weave/x/cash"
 
 	"github.com/iov-one/weave"
 	"github.com/iov-one/weave/cmd/bnsd/x/account"
@@ -566,9 +567,7 @@ func lastChunk(path string) string {
 }
 
 // DefaultHandler is used to handle the request that no other handler wants.
-type DefaultHandler struct {
-	HostPort string
-}
+type DefaultHandler struct{}
 
 var wEndpoint = []string{
 	"/account/accounts/?domainKey=_&ownerKey=_",
@@ -580,14 +579,6 @@ var wEndpoint = []string{
 	"/termdeposit/deposits/?depositor=_&contract=_&contract_id=?_offset=_",
 }
 
-func endpointsWithDomain(domain string, endpoints []string) []string {
-	var eps []string
-	for _, e := range endpoints {
-		eps = append(eps, "http://"+domain+e)
-	}
-	return eps
-}
-
 var withoutParamEndpoint = []string{
 	"/info/",
 	"/account/accounts/{accountKey}",
@@ -596,7 +587,6 @@ var withoutParamEndpoint = []string{
 }
 
 type endpoints struct {
-	HostPort     string
 	WithParam    []string
 	WithoutParam []string
 }
@@ -615,7 +605,7 @@ var availableEndpointsTempl = template.Must(template.New("").Parse(`
 {{end}}
 
 <h1>Swagger documentation: </h1>
-<a href="http://{{ .HostPort}}/docs">http://{{ .HostPort}}/docs</a></br>
+<a href="/docs">/docs</a></br>
 `))
 
 func (h *DefaultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -627,9 +617,8 @@ func (h *DefaultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	eps := endpoints{
-		HostPort:     h.HostPort,
-		WithParam:    endpointsWithDomain(h.HostPort, wEndpoint),
-		WithoutParam: endpointsWithDomain(h.HostPort, withoutParamEndpoint),
+		WithParam:    wEndpoint,
+		WithoutParam: withoutParamEndpoint,
 	}
 
 	if err := availableEndpointsTempl.Execute(w, eps); err != nil {
