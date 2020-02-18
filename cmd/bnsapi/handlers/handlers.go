@@ -35,9 +35,9 @@ import (
 // @Param electorate query string false "Base64 encoded electorate ID"
 // @Param elector query string false "Base64 encoded Elector ID"
 // @Param electorID query int false "Elector ID"
-// @Success 200 {object} json.RawMessage
-// @Failure 404 {object} json.RawMessage
-// @Failure 400 {object} json.RawMessage
+// @Success 200
+// @Failure 404
+// @Failure 400
 // @Failure 500
 // @Router /gov/proposals [get]
 type GovProposalsHandler struct {
@@ -119,9 +119,9 @@ fetchProposals:
 // @Param proposalID query int false "Proposal ID"
 // @Param elector query string false "Base64 encoded Elector ID"
 // @Param electorID query int false "Elector ID"
-// @Success 200 {object} json.RawMessage
-// @Failure 404 {object} json.RawMessage
-// @Failure 400 {object} json.RawMessage
+// @Success 200
+// @Failure 404
+// @Failure 400
 // @Failure 500
 // @Router /gov/votes [get]
 type GovVotesHandler struct {
@@ -216,9 +216,9 @@ type EscrowEscrowsHandler struct {
 // @Param offset query string false "Iteration offset"
 // @Param source query string false "Source address"
 // @Param destination query string false "Destination address"
-// @Success 200 {object} json.RawMessage
-// @Failure 404 {object} json.RawMessage
-// @Failure 400 {object} json.RawMessage
+// @Success 200
+// @Failure 404
+// @Failure 400
 // @Failure 500
 // @Router /escrow/escrows [get]
 func (h *EscrowEscrowsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -288,8 +288,8 @@ type MultisigContractsHandler struct {
 // @Summary Returns a list of multisig Contract entities.
 // @Description At most one of the query parameters must exist(excluding offset)
 // @Param offset query string false "Iteration offset"
-// @Success 200 {object} json.RawMessage
-// @Failure 404 {object} json.RawMessage
+// @Success 200
+// @Failure 404
 // @Failure 500
 // @Router /multisig/contracts [get]
 func (h *MultisigContractsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -333,8 +333,8 @@ type GconfHandler struct {
 // GConfHandler godoc
 // @Summary Get configuration with extension name
 // @Param extensionName path string true "Extension name"
-// @Success 200 {object} json.RawMessage
-// @Failure 404 {object} json.RawMessage
+// @Success 200
+// @Failure 404
 // @Failure 500
 // @Router /gconf/{extensionName} [get]
 func (h *GconfHandler) knownConfigurations() []string {
@@ -399,8 +399,8 @@ type BlocksHandler struct {
 // @Summary Get block details by height
 // @Description get block detail by blockHeight
 // @Param blockHeight path int true "Block Height"
-// @Success 200 {object} json.RawMessage
-// @Failure 404 {object} json.RawMessage
+// @Success 200
+// @Failure 404
 // @Redirect 303
 // @Router /blocks/{blockHeight} [get]
 func (h *BlocksHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -512,12 +512,12 @@ type CashBalanceHandler struct {
 }
 
 // CashBalanceHandler godoc
-// @Summary Returns a `bnsd/x/cash.Set` entitiy.
+// @Summary returns balances based on iov address
 // @Param address path string false "Bech32 or hex representation of an address"
 // @Param offset query string false "Bech32 or hex representation of an address to be used as offset"
-// @Success 200 {object} json.RawMessage
-// @Failure 404 {object} json.RawMessage
-// @Failure 500 {object} json.RawMessage
+// @Success 200
+// @Failure 404
+// @Failure 500
 // @Router /cash/balances [get]
 func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
@@ -589,11 +589,11 @@ type UsernameOwnerHandler struct {
 }
 
 // UsernameOwnerHandler godoc
-// @Summary Returns a `bnsd/username.Token` entitiy.
+// @Summary Returns the list of iov starname owned by this iov address
 // @Param ownerAddress path string false "Bech32 or hex representation of an address"
-// @Success 200 {object} json.RawMessage
-// @Failure 404 {object} json.RawMessage
-// @Failure 500 {object} json.RawMessage
+// @Success 200 {object} username.Token
+// @Failure 404
+// @Failure 500
 // @Router /username/owner/{ownerAddress} [get]
 func (h *UsernameOwnerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	rawKey := lastChunk(r.URL.Path)
@@ -621,11 +621,11 @@ type UsernameResolveHandler struct {
 }
 
 // UsernameResolveHandler godoc
-// @Summary Returns a `bnsd/username.Token` entity.
+// @Summary Returns balances based on iov address.
 // @Param username path string false "username. example: bob*iov"
-// @Success 200 {object} json.RawMessage
-// @Failure 404 {object} json.RawMessage
-// @Failure 500 {object} json.RawMessage
+// @Success 200 {object} username.Token
+// @Failure 404
+// @Failure 500
 // @Router /username/resolve/{username} [get]
 func (h *UsernameResolveHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	uname := lastChunk(r.URL.Path)

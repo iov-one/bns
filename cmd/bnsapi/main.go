@@ -78,6 +78,7 @@ func run(conf Configuration) error {
 	rt.Handle("/gconf/", &handlers.GconfHandler{Bns: bnscli, Confs: gconfConfigurations})
 	rt.Handle("/", &handlers.DefaultHandler{HostPort: conf.HostPort})
 
+	docs.SwaggerInfo.Title = "IOV Name Service Rest API"
 	docs.SwaggerInfo.Version = util.BuildVersion
 	docs.SwaggerInfo.Host = conf.HostPort
 	docsUrl := fmt.Sprintf("http://%s/docs/doc.json", conf.HostPort)
