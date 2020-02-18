@@ -618,6 +618,35 @@ func (h *UsernameOwnerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 }
 
+type UsernameResolveHandler struct {
+	Bns client.BnsClient
+}
+
+// UsernameResolveHandler godoc
+// @Summary Returns a `bnsd/username.Token` entity.
+// @Param username path string false "username. example: bob*iov"
+// @Success 200 {object} json.RawMessage
+// @Failure 404 {object} json.RawMessage
+// @Failure 500 {object} json.RawMessage
+// @Router /username/resolve/{username} [get]
+func (h *UsernameResolveHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	uname := lastChunk(r.URL.Path)
+	if uname != "" {
+		var token username.Token
+		switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/usernames", []byte(uname), &token); {
+		case err == nil:
+			JSONResp(w, http.StatusOK, token)
+		case errors.ErrNotFound.Is(err):
+			JSONErr(w, http.StatusNotFound, "Username not found")
+		default:
+			log.Printf("account ABCI query: %s", err)
+			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		}
+	} else {
+		JSONErr(w, http.StatusBadRequest, "Bad username input")
+	}
+}
+
 // atMostOne returns true if at most one non empty value from given list of
 // names exists in the query.
 func atMostOne(query url.Values, names ...string) bool {

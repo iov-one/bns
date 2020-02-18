@@ -60,14 +60,15 @@ func run(conf Configuration) error {
 	bnscli := client.NewHTTPBnsClient(conf.Tendermint)
 
 	gconfConfigurations := map[string]func() gconf.Configuration{
-		"cash":            func() gconf.Configuration { return &cash.Configuration{} },
-		"migration":       func() gconf.Configuration { return &migration.Configuration{} },
-		"username":        func() gconf.Configuration { return &username.Configuration{} },
+		"cash":      func() gconf.Configuration { return &cash.Configuration{} },
+		"migration": func() gconf.Configuration { return &migration.Configuration{} },
+		"username":  func() gconf.Configuration { return &username.Configuration{} },
 	}
 
 	rt := http.NewServeMux()
 	rt.Handle("/info", &handlers.InfoHandler{})
 	rt.Handle("/blocks/", &handlers.BlocksHandler{Bns: bnscli})
+	rt.Handle("/username/resolve/", &handlers.UsernameResolveHandler{Bns: bnscli})
 	rt.Handle("/username/owner/", &handlers.UsernameOwnerHandler{Bns: bnscli})
 	rt.Handle("/cash/balances", &handlers.CashBalanceHandler{Bns: bnscli})
 	rt.Handle("/multisig/contracts", &handlers.MultisigContractsHandler{Bns: bnscli})
