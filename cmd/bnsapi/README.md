@@ -22,7 +22,7 @@ To configure `bnsapi` instance use environment variables.
 - `TENDERMINT` - the address of the Tendermint API that should be used for data
   queries. For example `https://rpc-private-a-vip-mainnet.iov.one` for the main
   net and http://0.0.0.0:26657 for local instance.
-
+- `HOST_PORT` - HostPort is used for swagger docs configuration
 
 ## API
 
