@@ -438,19 +438,15 @@ func lastChunk(path string) string {
 
 // DefaultHandler is used to handle the request that no other handler wants.
 type DefaultHandler struct {
-	Domain string
+	HostPort string
 }
 
 var wEndpoint = []string{
-	"/account/accounts/?domainKey=_&ownerKey=_",
-	"/account/domains/?admin=_&offset=_",
 	"/cash/balances?address=_[OR]offset=_",
 	"/username/{username}",
 	"/username/owner/{ownerAddress}",
 	"/escrow/escrows/?source=_&destination=_&offset=_",
 	"/multisig/contracts/?offset=_",
-	"/termdeposit/contracts/?offset=_",
-	"/termdeposit/deposits/?depositor=_&contract=_&contract_id=?_offset=_",
 }
 
 func endpointsWithDomain(domain string, endpoints []string) []string {
@@ -469,7 +465,7 @@ var withoutParamEndpoint = []string{
 }
 
 type endpoints struct {
-	Domain       string
+	HostPort     string
 	WithParam    []string
 	WithoutParam []string
 }
@@ -488,7 +484,7 @@ var availableEndpointsTempl = template.Must(template.New("").Parse(`
 {{end}}
 
 <h1>Swagger documentation: </h1>
-<a href="http://{{ .Domain}}/docs">http://{{ .Domain}}/docs</a></br>
+<a href="http://{{ .HostPort}}/docs">http://{{ .HostPort}}/docs</a></br>
 `))
 
 func (h *DefaultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -500,9 +496,9 @@ func (h *DefaultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	eps := endpoints{
-		Domain:       h.Domain,
-		WithParam:    endpointsWithDomain(h.Domain, wEndpoint),
-		WithoutParam: endpointsWithDomain(h.Domain, withoutParamEndpoint),
+		HostPort:     h.HostPort,
+		WithParam:    endpointsWithDomain(h.HostPort, wEndpoint),
+		WithoutParam: endpointsWithDomain(h.HostPort, withoutParamEndpoint),
 	}
 
 	if err := availableEndpointsTempl.Execute(w, eps); err != nil {
