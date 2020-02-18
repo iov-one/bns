@@ -3,6 +3,51 @@ definitions:
     items:
       type: integer
     type: array
+  username.BlockchainAddress:
+    properties:
+      address:
+        description: |-
+          An address on the specified blockchain network. Address is not a
+          weave.Address as we cannot know what is the format of an address on the
+          chain that this token instance links to. Because we do not know the rules
+          to validate an address for any blockchain ID, this is an arbitrary bulk of
+          data.
+          It is more convinient to always use encoded representation of each address
+          and store it as a string. Using bytes while compact is not as comfortable
+          to use.
+        type: string
+      blockchain_id:
+        description: An arbitrary blockchain ID.
+        type: string
+    type: object
+  username.Token:
+    properties:
+      metadata:
+        $ref: '#/definitions/weave.Metadata'
+        type: object
+      owner:
+        $ref: '#/definitions/weave.Address'
+        description: |-
+          Owner is a weave.Address that controls this token. Only the owner can
+          modify a username token.
+        type: object
+      targets:
+        description: |-
+          Targets specifies where this username token points to. This must be at
+          least one blockchain address elemenet.
+        items:
+          $ref: '#/definitions/username.BlockchainAddress'
+        type: array
+    type: object
+  weave.Address:
+    items:
+      type: integer
+    type: array
+  weave.Metadata:
+    properties:
+      schema:
+        type: integer
+    type: object
 info:
   contact: {}
   license: {}
@@ -12,7 +57,7 @@ paths:
     get:
       description: At most one of the query parameters must exist(excluding offset)
       parameters:
-      - description: Domain name
+      - description: HostPort name
         in: query
         name: domainKey
         type: string
@@ -75,7 +120,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/json.RawMessage'
-      summary: Returns a list of `bnsd/x/account` Domain entities.
+      summary: Returns a list of `bnsd/x/account` HostPort entities.
   /blocks/{blockHeight}:
     get:
       description: get block detail by blockHeight
@@ -86,14 +131,8 @@ paths:
         required: true
         type: integer
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/json.RawMessage'
+        "200": {}
+        "404": {}
       summary: Get block details by height
   /cash/balances:
     get:
@@ -103,23 +142,14 @@ paths:
         name: address
         type: string
       - description: Bech32 or hex representation of an address to be used as offset
-        in: path
+        in: query
         name: offset
         type: string
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-      summary: Returns a `bnsd/x/cash.Set` entitiy.
+        "200": {}
+        "404": {}
+        "500": {}
+      summary: returns balances based on iov address
   /escrow/escrows:
     get:
       description: At most one of the query parameters must exist(excluding offset)
@@ -137,18 +167,9 @@ paths:
         name: destination
         type: string
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/json.RawMessage'
+        "200": {}
+        "400": {}
+        "404": {}
         "500": {}
       summary: Returns a list of x/escrow Escrow entities.
   /gconf/{extensionName}:
@@ -160,14 +181,8 @@ paths:
         required: true
         type: string
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/json.RawMessage'
+        "200": {}
+        "404": {}
         "500": {}
       summary: Get configuration with extension name
   /info/:
@@ -184,14 +199,8 @@ paths:
         name: offset
         type: string
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/json.RawMessage'
+        "200": {}
+        "404": {}
         "500": {}
       summary: Returns a list of multisig Contract entities.
   /termdeposit/contracts:
@@ -240,4 +249,34 @@ paths:
             $ref: '#/definitions/json.RawMessage'
         "500": {}
       summary: Returns a list of bnsd/x/termdeposit Deposit entities.
+  /username/owner/{ownerAddress}:
+    get:
+      parameters:
+      - description: Bech32 or hex representation of an address
+        in: path
+        name: ownerAddress
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/username.Token'
+        "404": {}
+        "500": {}
+      summary: Returns the list of iov starname owned by this iov address
+  /username/resolve/{username}:
+    get:
+      parameters:
+      - description: 'username. example: bob*iov'
+        in: path
+        name: username
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/username.Token'
+        "404": {}
+        "500": {}
+      summary: Returns balances based on iov address.
 swagger: "2.0"

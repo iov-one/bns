@@ -13,7 +13,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Domain name",
+                        "description": "HostPort name",
                         "name": "domainKey",
                         "in": "query"
                     },
@@ -81,7 +81,7 @@
         },
         "/account/domains/": {
             "get": {
-                "summary": "Returns a list of `bnsd/x/account` Domain entities.",
+                "summary": "Returns a list of `bnsd/x/account` HostPort entities.",
                 "parameters": [
                     {
                         "type": "string",
@@ -126,24 +126,14 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    }
+                    "200": {},
+                    "404": {}
                 }
             }
         },
         "/cash/balances": {
             "get": {
-                "summary": "Returns a `bnsd/x/cash.Set` entitiy.",
+                "summary": "returns balances based on iov address",
                 "parameters": [
                     {
                         "type": "string",
@@ -155,28 +145,13 @@
                         "type": "string",
                         "description": "Bech32 or hex representation of an address to be used as offset",
                         "name": "offset",
-                        "in": "path"
+                        "in": "query"
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    }
+                    "200": {},
+                    "404": {},
+                    "500": {}
                 }
             }
         },
@@ -205,24 +180,9 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
+                    "200": {},
+                    "400": {},
+                    "404": {},
                     "500": {}
                 }
             }
@@ -240,18 +200,8 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
+                    "200": {},
+                    "404": {},
                     "500": {}
                 }
             }
@@ -277,18 +227,8 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
+                    "200": {},
+                    "404": {},
                     "500": {}
                 }
             }
@@ -362,6 +302,52 @@
                     "500": {}
                 }
             }
+        },
+        "/username/owner/{ownerAddress}": {
+            "get": {
+                "summary": "Returns the list of iov starname owned by this iov address",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bech32 or hex representation of an address",
+                        "name": "ownerAddress",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/username.Token"
+                        }
+                    },
+                    "404": {},
+                    "500": {}
+                }
+            }
+        },
+        "/username/resolve/{username}": {
+            "get": {
+                "summary": "Returns balances based on iov address.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "username. example: bob*iov",
+                        "name": "username",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/username.Token"
+                        }
+                    },
+                    "404": {},
+                    "500": {}
+                }
+            }
         }
     },
     "definitions": {
@@ -369,6 +355,54 @@
             "type": "array",
             "items": {
                 "type": "integer"
+            }
+        },
+        "username.BlockchainAddress": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "An address on the specified blockchain network. Address is not a\nweave.Address as we cannot know what is the format of an address on the\nchain that this token instance links to. Because we do not know the rules\nto validate an address for any blockchain ID, this is an arbitrary bulk of\ndata.\nIt is more convinient to always use encoded representation of each address\nand store it as a string. Using bytes while compact is not as comfortable\nto use.",
+                    "type": "string"
+                },
+                "blockchain_id": {
+                    "description": "An arbitrary blockchain ID.",
+                    "type": "string"
+                }
+            }
+        },
+        "username.Token": {
+            "type": "object",
+            "properties": {
+                "metadata": {
+                    "type": "object",
+                    "$ref": "#/definitions/weave.Metadata"
+                },
+                "owner": {
+                    "description": "Owner is a weave.Address that controls this token. Only the owner can\nmodify a username token.",
+                    "type": "object",
+                    "$ref": "#/definitions/weave.Address"
+                },
+                "targets": {
+                    "description": "Targets specifies where this username token points to. This must be at\nleast one blockchain address elemenet.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/username.BlockchainAddress"
+                    }
+                }
+            }
+        },
+        "weave.Address": {
+            "type": "array",
+            "items": {
+                "type": "integer"
+            }
+        },
+        "weave.Metadata": {
+            "type": "object",
+            "properties": {
+                "schema": {
+                    "type": "integer"
+                }
             }
         }
     }
