@@ -3,50 +3,16 @@ definitions:
     items:
       type: integer
     type: array
-  username.BlockchainAddress:
-    properties:
-      address:
-        description: |-
-          An address on the specified blockchain network. Address is not a
-          weave.Address as we cannot know what is the format of an address on the
-          chain that this token instance links to. Because we do not know the rules
-          to validate an address for any blockchain ID, this is an arbitrary bulk of
-          data.
-          It is more convinient to always use encoded representation of each address
-          and store it as a string. Using bytes while compact is not as comfortable
-          to use.
-        type: string
-      blockchain_id:
-        description: An arbitrary blockchain ID.
-        type: string
-    type: object
   username.Token:
     properties:
       metadata:
-        $ref: '#/definitions/weave.Metadata'
-        type: object
+        type: string
       owner:
-        $ref: '#/definitions/weave.Address'
-        description: |-
-          Owner is a weave.Address that controls this token. Only the owner can
-          modify a username token.
-        type: object
+        type: string
       targets:
-        description: |-
-          Targets specifies where this username token points to. This must be at
-          least one blockchain address elemenet.
         items:
-          $ref: '#/definitions/username.BlockchainAddress'
+          type: BlockchainAddress
         type: array
-    type: object
-  weave.Address:
-    items:
-      type: integer
-    type: array
-  weave.Metadata:
-    properties:
-      schema:
-        type: integer
     type: object
 info:
   contact: {}
@@ -79,8 +45,13 @@ paths:
           schema:
             $ref: '#/definitions/json.RawMessage'
       summary: Returns a list of `bnsd/x/account` Account entitiy.
+      tags:
+      - Starname
   /account/accounts/{accountKey}:
     get:
+      description: |-
+        The list is either the list of all usernames for a given *starname, or the list of all *starnames for a given owner.
+        The owner address may be in the bech32 (iov....) or hex (ON3LK...) format.
       parameters:
       - description: Address of the admin
         in: path
@@ -99,9 +70,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/json.RawMessage'
-      summary: Returns a list of `bnsd/x/account` Account entitiy.
+      summary: Returns a list of `bnsd/x/account` which are the username*starnames.
+      tags:
+      - Starname
   /account/domains/:
     get:
+      description: |-
+        Returns the list of all starnames for a given iov address.
+        The owner address may be in the bech32 (iov....) or hex (ON3LK...) format.
       parameters:
       - description: Address of the admin
         in: query
@@ -120,7 +96,9 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/json.RawMessage'
-      summary: Returns a list of `bnsd/x/account` HostPort entities.
+      summary: Returns a list of `bnsd/x/account` starnames entities.
+      tags:
+      - Starname
   /blocks/{blockHeight}:
     get:
       description: get block detail by blockHeight
@@ -134,8 +112,12 @@ paths:
         "200": {}
         "404": {}
       summary: Get block details by height
+      tags:
+      - Status
   /cash/balances:
     get:
+      description: The iov address may be in the bech32 (iov....) or hex (ON3LK...)
+        format.
       parameters:
       - description: Bech32 or hex representation of an address
         in: path
@@ -149,7 +131,9 @@ paths:
         "200": {}
         "404": {}
         "500": {}
-      summary: returns balances based on iov address
+      summary: returns balance in IOV Token of the given iov address
+      tags:
+      - IOV token
   /escrow/escrows:
     get:
       description: At most one of the query parameters must exist(excluding offset)
@@ -171,7 +155,9 @@ paths:
         "400": {}
         "404": {}
         "500": {}
-      summary: Returns a list of x/escrow Escrow entities.
+      summary: Returns a list of all the smart contract Escrows.
+      tags:
+      - IOV token
   /gconf/{extensionName}:
     get:
       parameters:
@@ -185,11 +171,15 @@ paths:
         "404": {}
         "500": {}
       summary: Get configuration with extension name
+      tags:
+      - Status
   /info/:
     get:
       responses:
         "200": {}
       summary: Returns information about this instance of `bnsapi`.
+      tags:
+      - Status
   /multisig/contracts:
     get:
       description: At most one of the query parameters must exist(excluding offset)
@@ -202,10 +192,13 @@ paths:
         "200": {}
         "404": {}
         "500": {}
-      summary: Returns a list of multisig Contract entities.
+      summary: Returns a list of all the multisig Contracts.
+      tags:
+      - IOV token
   /termdeposit/contracts:
     get:
-      description: At most one of the query parameters must exist(excluding offset)
+      description: The term deposit Contract are the contract defining the dates until
+        which one can deposit.
       parameters:
       - description: Iteration offset
         in: query
@@ -222,9 +215,15 @@ paths:
             $ref: '#/definitions/json.RawMessage'
         "500": {}
       summary: Returns a list of bnsd/x/termdeposit Contract entities.
+      tags:
+      - IOV token
   /termdeposit/deposits:
     get:
-      description: At most one of the query parameters must exist(excluding offset)
+      description: |-
+        At most one of the query parameters must exist (excluding offset).
+        The query can be made by Depositor, in which case it returns all the deposits from the Depositor.
+        The query can be made by Deposit Contract, in which case it returns all the deposits from this Contract.
+        The query can be made by Contract ID, in which case it returns the deposits from the Deposit Contract with this ID.
       parameters:
       - description: Depositor address
         in: query
@@ -249,8 +248,12 @@ paths:
             $ref: '#/definitions/json.RawMessage'
         "500": {}
       summary: Returns a list of bnsd/x/termdeposit Deposit entities.
+      tags:
+      - IOV token
   /username/owner/{ownerAddress}:
     get:
+      description: The iov address may be in the bech32 (iov....) or hex (ON3LK...)
+        format.
       parameters:
       - description: Bech32 or hex representation of an address
         in: path
@@ -263,7 +266,9 @@ paths:
             $ref: '#/definitions/username.Token'
         "404": {}
         "500": {}
-      summary: Returns the list of iov starname owned by this iov address
+      summary: Returns the list of iov username (like bob*iov) owned by this iov address.
+      tags:
+      - Starname
   /username/resolve/{username}:
     get:
       parameters:
@@ -278,5 +283,8 @@ paths:
             $ref: '#/definitions/username.Token'
         "404": {}
         "500": {}
-      summary: Returns balances based on iov address.
+      summary: Returns the username object with associated info for an iov username,
+        like bob*iov
+      tags:
+      - Starname
 swagger: "2.0"

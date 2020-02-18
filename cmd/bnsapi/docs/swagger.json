@@ -9,6 +9,9 @@
         "/account/accounts": {
             "get": {
                 "description": "At most one of the query parameters must exist(excluding offset)",
+                "tags": [
+                    "Starname"
+                ],
                 "summary": "Returns a list of `bnsd/x/account` Account entitiy.",
                 "parameters": [
                     {
@@ -48,7 +51,11 @@
         },
         "/account/accounts/{accountKey}": {
             "get": {
-                "summary": "Returns a list of `bnsd/x/account` Account entitiy.",
+                "description": "The list is either the list of all usernames for a given *starname, or the list of all *starnames for a given owner.\nThe owner address may be in the bech32 (iov....) or hex (ON3LK...) format.",
+                "tags": [
+                    "Starname"
+                ],
+                "summary": "Returns a list of `bnsd/x/account` which are the username*starnames.",
                 "parameters": [
                     {
                         "type": "string",
@@ -81,7 +88,11 @@
         },
         "/account/domains/": {
             "get": {
-                "summary": "Returns a list of `bnsd/x/account` HostPort entities.",
+                "description": "Returns the list of all starnames for a given iov address.\nThe owner address may be in the bech32 (iov....) or hex (ON3LK...) format.",
+                "tags": [
+                    "Starname"
+                ],
+                "summary": "Returns a list of `bnsd/x/account` starnames entities.",
                 "parameters": [
                     {
                         "type": "string",
@@ -115,6 +126,9 @@
         "/blocks/{blockHeight}": {
             "get": {
                 "description": "get block detail by blockHeight",
+                "tags": [
+                    "Status"
+                ],
                 "summary": "Get block details by height",
                 "parameters": [
                     {
@@ -133,7 +147,11 @@
         },
         "/cash/balances": {
             "get": {
-                "summary": "returns balances based on iov address",
+                "description": "The iov address may be in the bech32 (iov....) or hex (ON3LK...) format.",
+                "tags": [
+                    "IOV token"
+                ],
+                "summary": "returns balance in IOV Token of the given iov address",
                 "parameters": [
                     {
                         "type": "string",
@@ -158,7 +176,10 @@
         "/escrow/escrows": {
             "get": {
                 "description": "At most one of the query parameters must exist(excluding offset)",
-                "summary": "Returns a list of x/escrow Escrow entities.",
+                "tags": [
+                    "IOV token"
+                ],
+                "summary": "Returns a list of all the smart contract Escrows.",
                 "parameters": [
                     {
                         "type": "string",
@@ -189,6 +210,9 @@
         },
         "/gconf/{extensionName}": {
             "get": {
+                "tags": [
+                    "Status"
+                ],
                 "summary": "Get configuration with extension name",
                 "parameters": [
                     {
@@ -208,6 +232,9 @@
         },
         "/info/": {
             "get": {
+                "tags": [
+                    "Status"
+                ],
                 "summary": "Returns information about this instance of `bnsapi`.",
                 "responses": {
                     "200": {}
@@ -217,7 +244,10 @@
         "/multisig/contracts": {
             "get": {
                 "description": "At most one of the query parameters must exist(excluding offset)",
-                "summary": "Returns a list of multisig Contract entities.",
+                "tags": [
+                    "IOV token"
+                ],
+                "summary": "Returns a list of all the multisig Contracts.",
                 "parameters": [
                     {
                         "type": "string",
@@ -235,7 +265,10 @@
         },
         "/termdeposit/contracts": {
             "get": {
-                "description": "At most one of the query parameters must exist(excluding offset)",
+                "description": "The term deposit Contract are the contract defining the dates until which one can deposit.",
+                "tags": [
+                    "IOV token"
+                ],
                 "summary": "Returns a list of bnsd/x/termdeposit Contract entities.",
                 "parameters": [
                     {
@@ -264,7 +297,10 @@
         },
         "/termdeposit/deposits": {
             "get": {
-                "description": "At most one of the query parameters must exist(excluding offset)",
+                "description": "At most one of the query parameters must exist (excluding offset).\nThe query can be made by Depositor, in which case it returns all the deposits from the Depositor.\nThe query can be made by Deposit Contract, in which case it returns all the deposits from this Contract.\nThe query can be made by Contract ID, in which case it returns the deposits from the Deposit Contract with this ID.",
+                "tags": [
+                    "IOV token"
+                ],
                 "summary": "Returns a list of bnsd/x/termdeposit Deposit entities.",
                 "parameters": [
                     {
@@ -305,7 +341,11 @@
         },
         "/username/owner/{ownerAddress}": {
             "get": {
-                "summary": "Returns the list of iov starname owned by this iov address",
+                "description": "The iov address may be in the bech32 (iov....) or hex (ON3LK...) format.",
+                "tags": [
+                    "Starname"
+                ],
+                "summary": "Returns the list of iov username (like bob*iov) owned by this iov address.",
                 "parameters": [
                     {
                         "type": "string",
@@ -328,7 +368,10 @@
         },
         "/username/resolve/{username}": {
             "get": {
-                "summary": "Returns balances based on iov address.",
+                "tags": [
+                    "Starname"
+                ],
+                "summary": "Returns the username object with associated info for an iov username, like bob*iov",
                 "parameters": [
                     {
                         "type": "string",
@@ -357,51 +400,20 @@
                 "type": "integer"
             }
         },
-        "username.BlockchainAddress": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "description": "An address on the specified blockchain network. Address is not a\nweave.Address as we cannot know what is the format of an address on the\nchain that this token instance links to. Because we do not know the rules\nto validate an address for any blockchain ID, this is an arbitrary bulk of\ndata.\nIt is more convinient to always use encoded representation of each address\nand store it as a string. Using bytes while compact is not as comfortable\nto use.",
-                    "type": "string"
-                },
-                "blockchain_id": {
-                    "description": "An arbitrary blockchain ID.",
-                    "type": "string"
-                }
-            }
-        },
         "username.Token": {
             "type": "object",
             "properties": {
                 "metadata": {
-                    "type": "object",
-                    "$ref": "#/definitions/weave.Metadata"
+                    "type": "string"
                 },
                 "owner": {
-                    "description": "Owner is a weave.Address that controls this token. Only the owner can\nmodify a username token.",
-                    "type": "object",
-                    "$ref": "#/definitions/weave.Address"
+                    "type": "string"
                 },
                 "targets": {
-                    "description": "Targets specifies where this username token points to. This must be at\nleast one blockchain address elemenet.",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/username.BlockchainAddress"
+                        "type": "BlockchainAddress"
                     }
-                }
-            }
-        },
-        "weave.Address": {
-            "type": "array",
-            "items": {
-                "type": "integer"
-            }
-        },
-        "weave.Metadata": {
-            "type": "object",
-            "properties": {
-                "schema": {
-                    "type": "integer"
                 }
             }
         }
