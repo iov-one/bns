@@ -567,7 +567,7 @@ func lastChunk(path string) string {
 
 // DefaultHandler is used to handle the request that no other handler wants.
 type DefaultHandler struct {
-	Domain string
+	HostPort string
 }
 
 var wEndpoint = []string{
@@ -596,7 +596,7 @@ var withoutParamEndpoint = []string{
 }
 
 type endpoints struct {
-	Domain       string
+	HostPort     string
 	WithParam    []string
 	WithoutParam []string
 }
@@ -615,7 +615,7 @@ var availableEndpointsTempl = template.Must(template.New("").Parse(`
 {{end}}
 
 <h1>Swagger documentation: </h1>
-<a href="http://{{ .Domain}}/docs">http://{{ .Domain}}/docs</a></br>
+<a href="http://{{ .HostPort}}/docs">http://{{ .HostPort}}/docs</a></br>
 `))
 
 func (h *DefaultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -627,9 +627,9 @@ func (h *DefaultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	eps := endpoints{
-		Domain:       h.Domain,
-		WithParam:    endpointsWithDomain(h.Domain, wEndpoint),
-		WithoutParam: endpointsWithDomain(h.Domain, withoutParamEndpoint),
+		HostPort:     h.HostPort,
+		WithParam:    endpointsWithDomain(h.HostPort, wEndpoint),
+		WithoutParam: endpointsWithDomain(h.HostPort, withoutParamEndpoint),
 	}
 
 	if err := availableEndpointsTempl.Execute(w, eps); err != nil {
@@ -643,7 +643,7 @@ type AccountDomainsHandler struct {
 }
 
 // AccountDomainsHandler godoc
-// @Summary Returns a list of `bnsd/x/account` Domain entities.
+// @Summary Returns a list of `bnsd/x/account` HostPort entities.
 // @Param admin query string false "Address of the admin"
 // @Param offset query string false "Iteration offset"
 // @Success 200 {object} json.RawMessage
@@ -725,7 +725,7 @@ type AccountAccountsHandler struct {
 
 // AccountAccountsDetailHandler godoc
 // @Summary Returns a list of `bnsd/x/account` Account entitiy.
-// @Param domainKey query string false "Domain name"
+// @Param domainKey query string false "HostPort name"
 // @Param ownerKey query string false "Admin address"
 // @Description At most one of the query parameters must exist(excluding offset)
 // @Success 200 {object} json.RawMessage

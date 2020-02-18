@@ -33,7 +33,7 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Domain name",
+                        "description": "HostPort name",
                         "name": "domainKey",
                         "in": "query"
                     },
@@ -101,7 +101,7 @@ var doc = `{
         },
         "/account/domains/": {
             "get": {
-                "summary": "Returns a list of ` + "`" + `bnsd/x/account` + "`" + ` Domain entities.",
+                "summary": "Returns a list of ` + "`" + `bnsd/x/account` + "`" + ` HostPort entities.",
                 "parameters": [
                     {
                         "type": "string",
