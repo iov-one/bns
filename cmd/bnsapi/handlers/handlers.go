@@ -445,6 +445,8 @@ var wEndpoint = []string{
 	"/account/accounts/?domainKey=_&ownerKey=_",
 	"/account/domains/?admin=_&offset=_",
 	"/cash/balances?address=_[OR]offset=_",
+	"/username/{username}",
+	"/username/owner/{ownerAddress}",
 	"/escrow/escrows/?source=_&destination=_&offset=_",
 	"/multisig/contracts/?offset=_",
 	"/termdeposit/contracts/?offset=_",
