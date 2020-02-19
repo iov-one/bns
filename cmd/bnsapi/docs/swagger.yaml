@@ -173,6 +173,62 @@ paths:
       summary: Get configuration with extension name
       tags:
       - Status
+  /gov/proposals:
+    get:
+      description: At most one of the query parameters must exist(excluding offset)
+      parameters:
+      - description: Author address
+        in: query
+        name: author
+        type: string
+      - description: Base64 encoded electorate ID
+        in: query
+        name: electorate
+        type: string
+      - description: Base64 encoded Elector ID
+        in: query
+        name: elector
+        type: string
+      - description: Elector ID
+        in: query
+        name: electorID
+        type: integer
+      responses:
+        "200": {}
+        "400": {}
+        "404": {}
+        "500": {}
+      summary: Returns a list of x/gov Votes entities.
+      tags:
+      - Governance
+  /gov/votes:
+    get:
+      description: At most one of the query parameters must exist(excluding offset)
+      parameters:
+      - description: Base64 encoded Proposal ID
+        in: query
+        name: proposal
+        type: string
+      - description: Proposal ID
+        in: query
+        name: proposalID
+        type: integer
+      - description: Base64 encoded Elector ID
+        in: query
+        name: elector
+        type: string
+      - description: Elector ID
+        in: query
+        name: electorID
+        type: integer
+      responses:
+        "200": {}
+        "400": {}
+        "404": {}
+        "500": {}
+      summary: Returns a list of Votes made on the governance.
+      tags:
+      - Governance
   /info/:
     get:
       responses:

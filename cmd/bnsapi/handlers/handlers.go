@@ -31,6 +31,10 @@ import (
 	"github.com/iov-one/weave/x/multisig"
 )
 
+type GovProposalsHandler struct {
+	Bns client.BnsClient
+}
+
 // GovProposalsHandler godoc
 // @Summary Returns a list of x/gov Votes entities.
 // @Description At most one of the query parameters must exist(excluding offset)
@@ -44,10 +48,6 @@ import (
 // @Failure 400
 // @Failure 500
 // @Router /gov/proposals [get]
-type GovProposalsHandler struct {
-	Bns client.BnsClient
-}
-
 func (h *GovProposalsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
@@ -116,6 +116,10 @@ fetchProposals:
 	})
 }
 
+type GovVotesHandler struct {
+	Bns client.BnsClient
+}
+
 // GovVotesHandler godoc
 // @Summary Returns a list of Votes made on the governance.
 // @Description At most one of the query parameters must exist(excluding offset)
@@ -129,10 +133,6 @@ fetchProposals:
 // @Failure 400
 // @Failure 500
 // @Router /gov/votes [get]
-type GovVotesHandler struct {
-	Bns client.BnsClient
-}
-
 func (h *GovVotesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
@@ -593,6 +593,8 @@ var wEndpoint = []string{
 
 var withoutParamEndpoint = []string{
 	"/info/",
+	"/gov/proposals",
+	"/gov/votes",
 	"/account/accounts/{accountKey}",
 	"/blocks/{blockHeight}",
 	"/gconf/{extensionName}",

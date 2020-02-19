@@ -230,6 +230,88 @@
                 }
             }
         },
+        "/gov/proposals": {
+            "get": {
+                "description": "At most one of the query parameters must exist(excluding offset)",
+                "tags": [
+                    "Governance"
+                ],
+                "summary": "Returns a list of x/gov Votes entities.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Author address",
+                        "name": "author",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Base64 encoded electorate ID",
+                        "name": "electorate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Base64 encoded Elector ID",
+                        "name": "elector",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Elector ID",
+                        "name": "electorID",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {},
+                    "400": {},
+                    "404": {},
+                    "500": {}
+                }
+            }
+        },
+        "/gov/votes": {
+            "get": {
+                "description": "At most one of the query parameters must exist(excluding offset)",
+                "tags": [
+                    "Governance"
+                ],
+                "summary": "Returns a list of Votes made on the governance.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Base64 encoded Proposal ID",
+                        "name": "proposal",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Proposal ID",
+                        "name": "proposalID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Base64 encoded Elector ID",
+                        "name": "elector",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Elector ID",
+                        "name": "electorID",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {},
+                    "400": {},
+                    "404": {},
+                    "500": {}
+                }
+            }
+        },
         "/info/": {
             "get": {
                 "tags": [
