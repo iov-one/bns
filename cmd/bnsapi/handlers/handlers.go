@@ -217,11 +217,13 @@ type EscrowEscrowsHandler struct {
 
 // EscrowEscrowsHandler godoc
 // @Summary Returns a list of all the smart contract Escrows.
-// @Description At most one of the query parameters must exist(excluding offset)
+// @Description If no parameters are provided, it returns the list of all escrows.
+// @Description If either a source address or a destination address is provided, it returns the filtered on this parameter.
+// @Description (The filter is not working on source AND destination).
 // @Tags IOV token
+// @Param sourcAddress query string false "Source address in bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2)"
+// @Param destinationAddress query string false "Destination address in bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2)"
 // @Param offset query string false "Pagination offset"
-// @Param source query string false "Source address"
-// @Param destination query string false "Destination address"
 // @Success 200
 // @Failure 404
 // @Failure 400
@@ -292,7 +294,7 @@ type MultisigContractsHandler struct {
 
 // MultisigContractsHandler godoc
 // @Summary Returns a list of all the multisig Contracts.
-// @Description At most one of the query parameters must exist(excluding offset)
+// @Description Returns a list of all the multisig Contracts.
 // @Tags IOV token
 // @Param offset query string false "Pagination offset"
 // @Success 200
@@ -383,13 +385,13 @@ type TermdepositDepositsHandler struct {
 }
 
 // TermdepositDepositsHandler  godoc
-// @Summary Returns a list of bnsd/x/termdeposit Deposit entities.
+// @Summary Returns a list of bnsd/x/termdeposit Deposit entities (individual deposits).
 // @Description At most one of the query parameters must exist (excluding offset).
-// @Description The query can be made by Depositor, in which case it returns all the deposits from the Depositor.
-// @Description The query can be made by Deposit Contract, in which case it returns all the deposits from this Contract.
-// @Description The query can be made by Contract ID, in which case it returns the deposits from the Deposit Contract with this ID.
+// @Description The query may be filtered by Depositor, in which case it returns all the deposits from the Depositor.
+// @Description The query may be filtered by Deposit Contract, in which case it returns all the deposits from this Contract.
+// @Description The query may be filtered by Contract ID, in which case it returns the deposits from the Deposit Contract with this ID.
 // @Tags IOV token
-// @Param depositor query string false "Depositor address"
+// @Param depositor query string false "Depositor address in bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex(C1721181E83376EF978AA4A9A38A5E27C08C7BB2)"
 // @Param contract query string false "Base64 encoded ID"
 // @Param contract_id query int false "Contract ID as integer"
 // @Success 200 {object} json.RawMessage
@@ -646,10 +648,10 @@ type AccountDomainsHandler struct {
 }
 
 // AccountDomainsHandler godoc
-// @Summary Returns a list of `bnsd/x/domain` entities.
-// @Description The list of all premium starname for a given owner.
-// @Description The owner address may be in the bech32 (iov....) or hex (ON3LK...) format.
-// @Param admin query string false "Address of the admin"
+// @Summary Returns a list of `bnsd/x/domain` entities (like *neuma).
+// @Description The list of all premium starnames for a given admin.
+// @Description If no admin address is provided, you get the list of all premium starnames.
+// @Param adminAddress query string false "The admin address may be in the bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2) format."
 // @Param offset query string false "Pagination offset"
 // @Tags Starname
 // @Success 200 {object} json.RawMessage
@@ -705,10 +707,10 @@ type AccountAccountsDetailHandler struct {
 }
 
 // AccountAccountsDetailHandler godoc
-// @Summary Resolve a starname and returns a `bnsd/x/account` entity.
-// @Description Resolve a given *starname and return all metadata related to this starname,
-// @Description list of crypto-addresses (targets), expiration date and owner of the starname.
-// @Param starname path string false "starname ex: bobby*cocacola"
+// @Summary Resolve a starname (orkun*neuma) and returns a `bnsd/x/account` entity (the associated info).
+// @Description Resolve a given starname (like orkun*neuma) and return all metadata related to this starname,
+// @Description list of crypto-addresses (targets), expiration date and owner address of the starname.
+// @Param starname path string true "starname ex: orkun*neuma"
 // @Tags Starname
 // @Success 200 {object} json.RawMessage
 // @Failure 404 {object} json.RawMessage
@@ -733,11 +735,14 @@ type AccountAccountsHandler struct {
 }
 
 // AccountAccountsDetailHandler godoc
-// @Summary Returns a list of `bnsd/x/account` entities.
-// @Description The list is either the list of all the starname for a given premium starname ex: *cocacola, or the list of all starnames for a given owner.
+// @Summary Returns a list of `bnsd/x/account` entities (like orkun*neuma).
+// @Description The list is either the list of all the starname (orkun*neuma) for a given premium starname (*neuma), or the list of all starnames for a given owner address.
+// @Description You need to provide exactly one argument, either the premium starname (*neuma) or the owner address.
+// @Description
 // @Tags Starname
-// @Param domainKey query string false "Premium Starname ex: *cocacola"
-// @Param ownerKey query string false "Owner address"
+// @Param starname query string false "Premium Starname ex: *neuma"
+// @Param ownerAddress query string false "The owner address format is either in iov address (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2)"
+// @Param offset query string false "Pagination offset"
 // @Success 200 {object} json.RawMessage
 // @Failure 404 {object} json.RawMessage
 // @Failure 500 {object} json.RawMessage
@@ -801,10 +806,10 @@ type CashBalanceHandler struct {
 }
 
 // CashBalanceHandler godoc
-// @Summary returns balance in IOV Token of the given iov address
-// @Description The iov address may be in the bech32 (iov....) or hex (ON3LK...) format.
+// @Summary returns the list of all balances in IOV Token or the balance for the given iov address.
+// @Description returns the list of all balances in IOV Token or the balance for the given iov address.
 // @Tags IOV token
-// @Param address path string false "Bech32 or hex representation of an address"
+// @Param address path string false "The iov address may be in the bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2) format."
 // @Param offset query string false "Bech32 or hex representation of an address to be used as offset"
 // @Success 200
 // @Failure 404
