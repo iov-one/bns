@@ -3,17 +3,6 @@ definitions:
     items:
       type: integer
     type: array
-  username.Token:
-    properties:
-      metadata:
-        type: string
-      owner:
-        type: string
-      targets:
-        items:
-          type: BlockchainAddress
-        type: array
-    type: object
 info:
   contact: {}
   license: {}
@@ -47,36 +36,10 @@ paths:
       summary: Returns a list of `bnsd/x/account` Account entitiy.
       tags:
       - Starname
-  /account/accounts/{accountKey}:
-    get:
-      description: |-
-        The list is either the list of all usernames for a given *starname, or the list of all *starnames for a given owner.
-        The owner address may be in the bech32 (iov....) or hex (ON3LK...) format.
-      parameters:
-      - description: Address of the admin
-        in: path
-        name: accountKey
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-      summary: Returns a list of `bnsd/x/account` which are the username*starnames.
-      tags:
-      - Starname
   /account/domains/:
     get:
       description: |-
-        Returns the list of all starnames for a given iov address.
+        The list is either the list of all usernames for a given *starname, or the list of all *starnames for a given owner.
         The owner address may be in the bech32 (iov....) or hex (ON3LK...) format.
       parameters:
       - description: Address of the admin
@@ -97,6 +60,32 @@ paths:
           schema:
             $ref: '#/definitions/json.RawMessage'
       summary: Returns a list of `bnsd/x/account` starnames entities.
+      tags:
+      - Starname
+  /account/resolve/{accountKey}:
+    get:
+      description: |-
+        Resolve a given *starname and return all metadata related to this starname,
+        list of crypto-addresses (targets), experitation date and owner of the starname.
+      parameters:
+      - description: Address of the admin
+        in: path
+        name: accountKey
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/json.RawMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/json.RawMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/json.RawMessage'
+      summary: Resolve a starname and returns a `bnsd/x/account` entity.
       tags:
       - Starname
   /blocks/{blockHeight}:
@@ -306,41 +295,4 @@ paths:
       summary: Returns a list of bnsd/x/termdeposit Deposit entities.
       tags:
       - IOV token
-  /username/owner/{ownerAddress}:
-    get:
-      description: The iov address may be in the bech32 (iov....) or hex (ON3LK...)
-        format.
-      parameters:
-      - description: Bech32 or hex representation of an address
-        in: path
-        name: ownerAddress
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/username.Token'
-        "404": {}
-        "500": {}
-      summary: Returns the list of iov username (like bob*iov) owned by this iov address.
-      tags:
-      - Starname
-  /username/resolve/{username}:
-    get:
-      parameters:
-      - description: 'username. example: bob*iov'
-        in: path
-        name: username
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/username.Token'
-        "404": {}
-        "500": {}
-      summary: Returns the username object with associated info for an iov username,
-        like bob*iov
-      tags:
-      - Starname
 swagger: "2.0"

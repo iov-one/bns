@@ -38,7 +38,7 @@ func main() {
 
 	conf := Configuration{
 		HTTP:       env("HTTP", ":8000"),
-		Tendermint: env("TENDERMINT", "http://localhost:26657")}
+		Tendermint: env("TENDERMINT", "http://167.172.104.185:31140")}
 
 	if err := run(conf); err != nil {
 		log.Fatal(err)
@@ -79,7 +79,7 @@ func run(conf Configuration) error {
 	rt.Handle("/blocks/", &handlers.BlocksHandler{Bns: bnscli})
 	rt.Handle("/account/domains", &handlers.AccountDomainsHandler{Bns: bnscli})
 	rt.Handle("/account/accounts", &handlers.AccountAccountsHandler{Bns: bnscli})
-	rt.Handle("/account/accounts/", &handlers.AccountAccountsDetailHandler{Bns: bnscli})
+	rt.Handle("/account/resolve/", &handlers.AccountAccountsDetailHandler{Bns: bnscli})
 	rt.Handle("/username/owner/", &handlers.UsernameOwnerHandler{Bns: bnscli})
 	rt.Handle("/cash/balances", &handlers.CashBalanceHandler{Bns: bnscli})
 	rt.Handle("/termdeposit/contracts", &handlers.TermdepositContractsHandler{Bns: bnscli})

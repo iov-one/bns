@@ -49,46 +49,9 @@
                 }
             }
         },
-        "/account/accounts/{accountKey}": {
-            "get": {
-                "description": "The list is either the list of all usernames for a given *starname, or the list of all *starnames for a given owner.\nThe owner address may be in the bech32 (iov....) or hex (ON3LK...) format.",
-                "tags": [
-                    "Starname"
-                ],
-                "summary": "Returns a list of `bnsd/x/account` which are the username*starnames.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Address of the admin",
-                        "name": "accountKey",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/json.RawMessage"
-                        }
-                    }
-                }
-            }
-        },
         "/account/domains/": {
             "get": {
-                "description": "Returns the list of all starnames for a given iov address.\nThe owner address may be in the bech32 (iov....) or hex (ON3LK...) format.",
+                "description": "The list is either the list of all usernames for a given *starname, or the list of all *starnames for a given owner.\nThe owner address may be in the bech32 (iov....) or hex (ON3LK...) format.",
                 "tags": [
                     "Starname"
                 ],
@@ -116,6 +79,43 @@
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/json.RawMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/resolve/{accountKey}": {
+            "get": {
+                "description": "Resolve a given *starname and return all metadata related to this starname,\nlist of crypto-addresses (targets), experitation date and owner of the starname.",
+                "tags": [
+                    "Starname"
+                ],
+                "summary": "Resolve a starname and returns a `bnsd/x/account` entity.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Address of the admin",
+                        "name": "accountKey",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/json.RawMessage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/json.RawMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/json.RawMessage"
                         }
@@ -420,59 +420,6 @@
                     "500": {}
                 }
             }
-        },
-        "/username/owner/{ownerAddress}": {
-            "get": {
-                "description": "The iov address may be in the bech32 (iov....) or hex (ON3LK...) format.",
-                "tags": [
-                    "Starname"
-                ],
-                "summary": "Returns the list of iov username (like bob*iov) owned by this iov address.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bech32 or hex representation of an address",
-                        "name": "ownerAddress",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/username.Token"
-                        }
-                    },
-                    "404": {},
-                    "500": {}
-                }
-            }
-        },
-        "/username/resolve/{username}": {
-            "get": {
-                "tags": [
-                    "Starname"
-                ],
-                "summary": "Returns the username object with associated info for an iov username, like bob*iov",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "username. example: bob*iov",
-                        "name": "username",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/username.Token"
-                        }
-                    },
-                    "404": {},
-                    "500": {}
-                }
-            }
         }
     },
     "definitions": {
@@ -480,23 +427,6 @@
             "type": "array",
             "items": {
                 "type": "integer"
-            }
-        },
-        "username.Token": {
-            "type": "object",
-            "properties": {
-                "metadata": {
-                    "type": "string"
-                },
-                "owner": {
-                    "type": "string"
-                },
-                "targets": {
-                    "type": "array",
-                    "items": {
-                        "type": "BlockchainAddress"
-                    }
-                }
             }
         }
     }

@@ -595,7 +595,7 @@ var withoutParamEndpoint = []string{
 	"/info/",
 	"/gov/proposals",
 	"/gov/votes",
-	"/account/accounts/{accountKey}",
+	"/account/resolve/{accountKey}",
 	"/blocks/{blockHeight}",
 	"/gconf/{extensionName}",
 }
@@ -647,7 +647,7 @@ type AccountDomainsHandler struct {
 
 // AccountDomainsHandler godoc
 // @Summary Returns a list of `bnsd/x/account` starnames entities.
-// @Description Returns the list of all starnames for a given iov address.
+// @Description The list is either the list of all usernames for a given *starname, or the list of all *starnames for a given owner.
 // @Description The owner address may be in the bech32 (iov....) or hex (ON3LK...) format.
 // @Param admin query string false "Address of the admin"
 // @Param offset query string false "Iteration offset"
@@ -705,15 +705,15 @@ type AccountAccountsDetailHandler struct {
 }
 
 // AccountAccountsDetailHandler godoc
-// @Summary Returns a list of `bnsd/x/account` which are the username*starnames.
-// @Description The list is either the list of all usernames for a given *starname, or the list of all *starnames for a given owner.
-// @Description The owner address may be in the bech32 (iov....) or hex (ON3LK...) format.
+// @Summary Resolve a starname and returns a `bnsd/x/account` entity.
+// @Description Resolve a given *starname and return all metadata related to this starname,
+// @Description list of crypto-addresses (targets), experitation date and owner of the starname.
 // @Param accountKey path string false "Address of the admin"
 // @Tags Starname
 // @Success 200 {object} json.RawMessage
 // @Failure 404 {object} json.RawMessage
 // @Failure 500 {object} json.RawMessage
-// @Router /account/accounts/{accountKey} [get]
+// @Router /account/resolve/{accountKey} [get]
 func (h *AccountAccountsDetailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	accountKey := lastChunk(r.URL.Path)
 	var acc account.Account
