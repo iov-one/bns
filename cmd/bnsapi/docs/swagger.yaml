@@ -10,13 +10,14 @@ info:
 paths:
   /account/accounts:
     get:
-      description: At most one of the query parameters must exist(excluding offset)
+      description: 'The list is either the list of all the starname for a given premium
+        starname ex: *cocacola, or the list of all starnames for a given owner.'
       parameters:
-      - description: HostPort name
+      - description: 'Premium Starname ex: *cocacola'
         in: query
         name: domainKey
         type: string
-      - description: Admin address
+      - description: Owner address
         in: query
         name: ownerKey
         type: string
@@ -33,20 +34,20 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/json.RawMessage'
-      summary: Returns a list of `bnsd/x/account` Account entitiy.
+      summary: Returns a list of `bnsd/x/account` entities.
       tags:
       - Starname
   /account/domains/:
     get:
       description: |-
-        The list is either the list of all usernames for a given *starname, or the list of all *starnames for a given owner.
+        The list of all premium starname for a given owner.
         The owner address may be in the bech32 (iov....) or hex (ON3LK...) format.
       parameters:
       - description: Address of the admin
         in: query
         name: admin
         type: string
-      - description: Iteration offset
+      - description: Pagination offset
         in: query
         name: offset
         type: string
@@ -59,18 +60,18 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/json.RawMessage'
-      summary: Returns a list of `bnsd/x/account` starnames entities.
+      summary: Returns a list of `bnsd/x/domain` entities.
       tags:
       - Starname
-  /account/resolve/{accountKey}:
+  /account/resolve/{starname}:
     get:
       description: |-
         Resolve a given *starname and return all metadata related to this starname,
-        list of crypto-addresses (targets), experitation date and owner of the starname.
+        list of crypto-addresses (targets), expiration date and owner of the starname.
       parameters:
-      - description: Address of the admin
+      - description: 'starname ex: bobby*cocacola'
         in: path
-        name: accountKey
+        name: starname
         type: string
       responses:
         "200":
@@ -127,7 +128,7 @@ paths:
     get:
       description: At most one of the query parameters must exist(excluding offset)
       parameters:
-      - description: Iteration offset
+      - description: Pagination offset
         in: query
         name: offset
         type: string
@@ -229,7 +230,7 @@ paths:
     get:
       description: At most one of the query parameters must exist(excluding offset)
       parameters:
-      - description: Iteration offset
+      - description: Pagination offset
         in: query
         name: offset
         type: string
@@ -245,7 +246,7 @@ paths:
       description: The term deposit Contract are the contract defining the dates until
         which one can deposit.
       parameters:
-      - description: Iteration offset
+      - description: Pagination offset
         in: query
         name: offset
         type: string
@@ -259,7 +260,7 @@ paths:
           schema:
             $ref: '#/definitions/json.RawMessage'
         "500": {}
-      summary: Returns a list of bnsd/x/termdeposit Contract entities.
+      summary: Returns a list of bnsd/x/termdeposit entities.
       tags:
       - IOV token
   /termdeposit/deposits:

@@ -219,7 +219,7 @@ type EscrowEscrowsHandler struct {
 // @Summary Returns a list of all the smart contract Escrows.
 // @Description At most one of the query parameters must exist(excluding offset)
 // @Tags IOV token
-// @Param offset query string false "Iteration offset"
+// @Param offset query string false "Pagination offset"
 // @Param source query string false "Source address"
 // @Param destination query string false "Destination address"
 // @Success 200
@@ -294,7 +294,7 @@ type MultisigContractsHandler struct {
 // @Summary Returns a list of all the multisig Contracts.
 // @Description At most one of the query parameters must exist(excluding offset)
 // @Tags IOV token
-// @Param offset query string false "Iteration offset"
+// @Param offset query string false "Pagination offset"
 // @Success 200
 // @Failure 404
 // @Failure 500
@@ -337,10 +337,10 @@ type TermdepositContractsHandler struct {
 }
 
 // TermdepositContractsHandler  godoc
-// @Summary Returns a list of bnsd/x/termdeposit Contract entities.
+// @Summary Returns a list of bnsd/x/termdeposit entities.
 // @Description The term deposit Contract are the contract defining the dates until which one can deposit.
 // @Tags IOV token
-// @Param offset query string false "Iteration offset"
+// @Param offset query string false "Pagination offset"
 // @Success 200 {object} json.RawMessage
 // @Failure 404 {object} json.RawMessage
 // @Failure 500
@@ -595,7 +595,7 @@ var withoutParamEndpoint = []string{
 	"/info/",
 	"/gov/proposals",
 	"/gov/votes",
-	"/account/resolve/{accountKey}",
+	"/account/resolve/{starname}",
 	"/blocks/{blockHeight}",
 	"/gconf/{extensionName}",
 }
@@ -646,11 +646,11 @@ type AccountDomainsHandler struct {
 }
 
 // AccountDomainsHandler godoc
-// @Summary Returns a list of `bnsd/x/account` starnames entities.
-// @Description The list is either the list of all usernames for a given *starname, or the list of all *starnames for a given owner.
+// @Summary Returns a list of `bnsd/x/domain` entities.
+// @Description The list of all premium starname for a given owner.
 // @Description The owner address may be in the bech32 (iov....) or hex (ON3LK...) format.
 // @Param admin query string false "Address of the admin"
-// @Param offset query string false "Iteration offset"
+// @Param offset query string false "Pagination offset"
 // @Tags Starname
 // @Success 200 {object} json.RawMessage
 // @Failure 404 {object} json.RawMessage
@@ -707,13 +707,13 @@ type AccountAccountsDetailHandler struct {
 // AccountAccountsDetailHandler godoc
 // @Summary Resolve a starname and returns a `bnsd/x/account` entity.
 // @Description Resolve a given *starname and return all metadata related to this starname,
-// @Description list of crypto-addresses (targets), experitation date and owner of the starname.
-// @Param accountKey path string false "Address of the admin"
+// @Description list of crypto-addresses (targets), expiration date and owner of the starname.
+// @Param starname path string false "starname ex: bobby*cocacola"
 // @Tags Starname
 // @Success 200 {object} json.RawMessage
 // @Failure 404 {object} json.RawMessage
 // @Failure 500 {object} json.RawMessage
-// @Router /account/resolve/{accountKey} [get]
+// @Router /account/resolve/{starname} [get]
 func (h *AccountAccountsDetailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	accountKey := lastChunk(r.URL.Path)
 	var acc account.Account
@@ -733,11 +733,11 @@ type AccountAccountsHandler struct {
 }
 
 // AccountAccountsDetailHandler godoc
-// @Summary Returns a list of `bnsd/x/account` Account entitiy.
+// @Summary Returns a list of `bnsd/x/account` entities.
+// @Description The list is either the list of all the starname for a given premium starname ex: *cocacola, or the list of all starnames for a given owner.
 // @Tags Starname
-// @Param domainKey query string false "HostPort name"
-// @Param ownerKey query string false "Admin address"
-// @Description At most one of the query parameters must exist(excluding offset)
+// @Param domainKey query string false "Premium Starname ex: *cocacola"
+// @Param ownerKey query string false "Owner address"
 // @Success 200 {object} json.RawMessage
 // @Failure 404 {object} json.RawMessage
 // @Failure 500 {object} json.RawMessage

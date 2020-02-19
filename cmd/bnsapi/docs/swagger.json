@@ -8,21 +8,21 @@
     "paths": {
         "/account/accounts": {
             "get": {
-                "description": "At most one of the query parameters must exist(excluding offset)",
+                "description": "The list is either the list of all the starname for a given premium starname ex: *cocacola, or the list of all starnames for a given owner.",
                 "tags": [
                     "Starname"
                 ],
-                "summary": "Returns a list of `bnsd/x/account` Account entitiy.",
+                "summary": "Returns a list of `bnsd/x/account` entities.",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "HostPort name",
+                        "description": "Premium Starname ex: *cocacola",
                         "name": "domainKey",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Admin address",
+                        "description": "Owner address",
                         "name": "ownerKey",
                         "in": "query"
                     }
@@ -51,11 +51,11 @@
         },
         "/account/domains/": {
             "get": {
-                "description": "The list is either the list of all usernames for a given *starname, or the list of all *starnames for a given owner.\nThe owner address may be in the bech32 (iov....) or hex (ON3LK...) format.",
+                "description": "The list of all premium starname for a given owner.\nThe owner address may be in the bech32 (iov....) or hex (ON3LK...) format.",
                 "tags": [
                     "Starname"
                 ],
-                "summary": "Returns a list of `bnsd/x/account` starnames entities.",
+                "summary": "Returns a list of `bnsd/x/domain` entities.",
                 "parameters": [
                     {
                         "type": "string",
@@ -65,7 +65,7 @@
                     },
                     {
                         "type": "string",
-                        "description": "Iteration offset",
+                        "description": "Pagination offset",
                         "name": "offset",
                         "in": "query"
                     }
@@ -86,9 +86,9 @@
                 }
             }
         },
-        "/account/resolve/{accountKey}": {
+        "/account/resolve/{starname}": {
             "get": {
-                "description": "Resolve a given *starname and return all metadata related to this starname,\nlist of crypto-addresses (targets), experitation date and owner of the starname.",
+                "description": "Resolve a given *starname and return all metadata related to this starname,\nlist of crypto-addresses (targets), expiration date and owner of the starname.",
                 "tags": [
                     "Starname"
                 ],
@@ -96,8 +96,8 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Address of the admin",
-                        "name": "accountKey",
+                        "description": "starname ex: bobby*cocacola",
+                        "name": "starname",
                         "in": "path"
                     }
                 ],
@@ -183,7 +183,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Iteration offset",
+                        "description": "Pagination offset",
                         "name": "offset",
                         "in": "query"
                     },
@@ -333,7 +333,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Iteration offset",
+                        "description": "Pagination offset",
                         "name": "offset",
                         "in": "query"
                     }
@@ -351,11 +351,11 @@
                 "tags": [
                     "IOV token"
                 ],
-                "summary": "Returns a list of bnsd/x/termdeposit Contract entities.",
+                "summary": "Returns a list of bnsd/x/termdeposit entities.",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Iteration offset",
+                        "description": "Pagination offset",
                         "name": "offset",
                         "in": "query"
                     }
