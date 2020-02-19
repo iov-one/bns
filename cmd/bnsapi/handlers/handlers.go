@@ -449,7 +449,7 @@ type DefaultHandler struct{}
 
 var wEndpoint = []string{
 	"/cash/balances?address=_[OR]offset=_",
-	"/username/{username}",
+	"/username/resolve/{username}",
 	"/username/owner/{ownerAddress}",
 	"/escrow/escrows/?source=_&destination=_&offset=_",
 	"/multisig/contracts/?offset=_",
