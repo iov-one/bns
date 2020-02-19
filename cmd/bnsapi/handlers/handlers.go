@@ -879,15 +879,6 @@ type UsernameOwnerHandler struct {
 	Bns client.BnsClient
 }
 
-// UsernameOwnerHandler godoc
-// @Summary Returns the list of iov username (like bob*iov) owned by this iov address.
-// @Description The iov address may be in the bech32 (iov....) or hex (ON3LK...) format.
-// @Tags Starname
-// @Param ownerAddress path string false "Bech32 or hex representation of an address"
-// @Success 200 {object} username.Token
-// @Failure 404
-// @Failure 500
-// @Router /username/owner/{ownerAddress} [get]
 func (h *UsernameOwnerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	rawKey := lastChunk(r.URL.Path)
 	key, err := weave.ParseAddress(rawKey)
@@ -913,14 +904,6 @@ type UsernameResolveHandler struct {
 	Bns client.BnsClient
 }
 
-// UsernameResolveHandler godoc
-// @Summary Returns the username object with associated info for an iov username, like bob*iov
-// @Tags Starname
-// @Param username path string false "username. example: bob*iov"
-// @Success 200 {object} username.Token
-// @Failure 404
-// @Failure 500
-// @Router /username/resolve/{username} [get]
 func (h *UsernameResolveHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	uname := lastChunk(r.URL.Path)
 	if uname != "" {
