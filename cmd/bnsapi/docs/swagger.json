@@ -9,6 +9,9 @@
         "/blocks/{blockHeight}": {
             "get": {
                 "description": "get block detail by blockHeight",
+                "tags": [
+                    "Status"
+                ],
                 "summary": "Get block details by height",
                 "parameters": [
                     {
@@ -27,7 +30,11 @@
         },
         "/cash/balances": {
             "get": {
-                "summary": "returns balances based on iov address",
+                "description": "The iov address may be in the bech32 (iov....) or hex (ON3LK...) format.",
+                "tags": [
+                    "IOV token"
+                ],
+                "summary": "returns balance in IOV Token of the given iov address",
                 "parameters": [
                     {
                         "type": "string",
@@ -52,7 +59,10 @@
         "/escrow/escrows": {
             "get": {
                 "description": "At most one of the query parameters must exist(excluding offset)",
-                "summary": "Returns a list of x/escrow Escrow entities.",
+                "tags": [
+                    "IOV token"
+                ],
+                "summary": "Returns a list of all the smart contract Escrows.",
                 "parameters": [
                     {
                         "type": "string",
@@ -83,6 +93,9 @@
         },
         "/gconf/{extensionName}": {
             "get": {
+                "tags": [
+                    "Status"
+                ],
                 "summary": "Get configuration with extension name",
                 "parameters": [
                     {
@@ -100,8 +113,93 @@
                 }
             }
         },
+        "/gov/proposals": {
+            "get": {
+                "description": "At most one of the query parameters must exist(excluding offset)",
+                "tags": [
+                    "Governance"
+                ],
+                "summary": "Returns a list of x/gov Votes entities.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Author address",
+                        "name": "author",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Base64 encoded electorate ID",
+                        "name": "electorate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Base64 encoded Elector ID",
+                        "name": "elector",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Elector ID",
+                        "name": "electorID",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {},
+                    "400": {},
+                    "404": {},
+                    "500": {}
+                }
+            }
+        },
+        "/gov/votes": {
+            "get": {
+                "description": "At most one of the query parameters must exist(excluding offset)",
+                "tags": [
+                    "Governance"
+                ],
+                "summary": "Returns a list of Votes made on the governance.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Base64 encoded Proposal ID",
+                        "name": "proposal",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Proposal ID",
+                        "name": "proposalID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Base64 encoded Elector ID",
+                        "name": "elector",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Elector ID",
+                        "name": "electorID",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {},
+                    "400": {},
+                    "404": {},
+                    "500": {}
+                }
+            }
+        },
         "/info/": {
             "get": {
+                "tags": [
+                    "Status"
+                ],
                 "summary": "Returns information about this instance of `bnsapi`.",
                 "responses": {
                     "200": {}
@@ -111,7 +209,10 @@
         "/multisig/contracts": {
             "get": {
                 "description": "At most one of the query parameters must exist(excluding offset)",
-                "summary": "Returns a list of multisig Contract entities.",
+                "tags": [
+                    "IOV token"
+                ],
+                "summary": "Returns a list of all the multisig Contracts.",
                 "parameters": [
                     {
                         "type": "string",
@@ -129,7 +230,11 @@
         },
         "/username/owner/{ownerAddress}": {
             "get": {
-                "summary": "Returns the list of iov starname owned by this iov address",
+                "description": "The iov address may be in the bech32 (iov....) or hex (ON3LK...) format.",
+                "tags": [
+                    "Starname"
+                ],
+                "summary": "Returns the list of iov username (like bob*iov) owned by this iov address.",
                 "parameters": [
                     {
                         "type": "string",
@@ -152,7 +257,10 @@
         },
         "/username/resolve/{username}": {
             "get": {
-                "summary": "Returns balances based on iov address.",
+                "tags": [
+                    "Starname"
+                ],
+                "summary": "Returns the username object with associated info for an iov username, like bob*iov",
                 "parameters": [
                     {
                         "type": "string",

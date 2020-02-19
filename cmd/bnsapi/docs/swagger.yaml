@@ -28,8 +28,12 @@ paths:
         "200": {}
         "404": {}
       summary: Get block details by height
+      tags:
+      - Status
   /cash/balances:
     get:
+      description: The iov address may be in the bech32 (iov....) or hex (ON3LK...)
+        format.
       parameters:
       - description: Bech32 or hex representation of an address
         in: path
@@ -43,7 +47,9 @@ paths:
         "200": {}
         "404": {}
         "500": {}
-      summary: returns balances based on iov address
+      summary: returns balance in IOV Token of the given iov address
+      tags:
+      - IOV token
   /escrow/escrows:
     get:
       description: At most one of the query parameters must exist(excluding offset)
@@ -65,7 +71,9 @@ paths:
         "400": {}
         "404": {}
         "500": {}
-      summary: Returns a list of x/escrow Escrow entities.
+      summary: Returns a list of all the smart contract Escrows.
+      tags:
+      - IOV token
   /gconf/{extensionName}:
     get:
       parameters:
@@ -79,11 +87,71 @@ paths:
         "404": {}
         "500": {}
       summary: Get configuration with extension name
+      tags:
+      - Status
+  /gov/proposals:
+    get:
+      description: At most one of the query parameters must exist(excluding offset)
+      parameters:
+      - description: Author address
+        in: query
+        name: author
+        type: string
+      - description: Base64 encoded electorate ID
+        in: query
+        name: electorate
+        type: string
+      - description: Base64 encoded Elector ID
+        in: query
+        name: elector
+        type: string
+      - description: Elector ID
+        in: query
+        name: electorID
+        type: integer
+      responses:
+        "200": {}
+        "400": {}
+        "404": {}
+        "500": {}
+      summary: Returns a list of x/gov Votes entities.
+      tags:
+      - Governance
+  /gov/votes:
+    get:
+      description: At most one of the query parameters must exist(excluding offset)
+      parameters:
+      - description: Base64 encoded Proposal ID
+        in: query
+        name: proposal
+        type: string
+      - description: Proposal ID
+        in: query
+        name: proposalID
+        type: integer
+      - description: Base64 encoded Elector ID
+        in: query
+        name: elector
+        type: string
+      - description: Elector ID
+        in: query
+        name: electorID
+        type: integer
+      responses:
+        "200": {}
+        "400": {}
+        "404": {}
+        "500": {}
+      summary: Returns a list of Votes made on the governance.
+      tags:
+      - Governance
   /info/:
     get:
       responses:
         "200": {}
       summary: Returns information about this instance of `bnsapi`.
+      tags:
+      - Status
   /multisig/contracts:
     get:
       description: At most one of the query parameters must exist(excluding offset)
@@ -96,9 +164,13 @@ paths:
         "200": {}
         "404": {}
         "500": {}
-      summary: Returns a list of multisig Contract entities.
+      summary: Returns a list of all the multisig Contracts.
+      tags:
+      - IOV token
   /username/owner/{ownerAddress}:
     get:
+      description: The iov address may be in the bech32 (iov....) or hex (ON3LK...)
+        format.
       parameters:
       - description: Bech32 or hex representation of an address
         in: path
@@ -111,7 +183,9 @@ paths:
             $ref: '#/definitions/username.Token'
         "404": {}
         "500": {}
-      summary: Returns the list of iov starname owned by this iov address
+      summary: Returns the list of iov username (like bob*iov) owned by this iov address.
+      tags:
+      - Starname
   /username/resolve/{username}:
     get:
       parameters:
@@ -126,5 +200,8 @@ paths:
             $ref: '#/definitions/username.Token'
         "404": {}
         "500": {}
-      summary: Returns balances based on iov address.
+      summary: Returns the username object with associated info for an iov username,
+        like bob*iov
+      tags:
+      - Starname
 swagger: "2.0"
