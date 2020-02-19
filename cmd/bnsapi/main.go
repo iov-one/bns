@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 
 	"github.com/iov-one/bns/cmd/bnsapi/client"
@@ -32,7 +33,7 @@ func main() {
 
 	conf := Configuration{
 		HTTP:       env("HTTP", ":8000"),
-		Tendermint: env("TENDERMINT", "http://localhost:26657")}
+		Tendermint: env("TENDERMINT", "https://rpc-private-a-vip-mainnet.iov.one:443")}
 
 	if err := run(conf); err != nil {
 		log.Fatal(err)
@@ -61,6 +62,8 @@ func run(conf Configuration) error {
 		"migration": func() gconf.Configuration { return &migration.Configuration{} },
 		"username":  func() gconf.Configuration { return &username.Configuration{} },
 	}
+
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	rt := http.NewServeMux()
 	rt.Handle("/info", &handlers.InfoHandler{})
