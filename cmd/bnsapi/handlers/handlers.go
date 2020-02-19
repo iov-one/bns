@@ -29,9 +29,14 @@ import (
 	"github.com/iov-one/weave/x/multisig"
 )
 
+type GovProposalsHandler struct {
+	Bns client.BnsClient
+}
+
 // GovProposalsHandler godoc
 // @Summary Returns a list of x/gov Votes entities.
 // @Description At most one of the query parameters must exist(excluding offset)
+// @Tags Governance
 // @Param author query string false "Author address"
 // @Param electorate query string false "Base64 encoded electorate ID"
 // @Param elector query string false "Base64 encoded Elector ID"
@@ -41,10 +46,6 @@ import (
 // @Failure 400
 // @Failure 500
 // @Router /gov/proposals [get]
-type GovProposalsHandler struct {
-	Bns client.BnsClient
-}
-
 func (h *GovProposalsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
@@ -113,9 +114,14 @@ fetchProposals:
 	})
 }
 
+type GovVotesHandler struct {
+	Bns client.BnsClient
+}
+
 // GovVotesHandler godoc
-// @Summary Returns a list of x/gov Votes entities.
+// @Summary Returns a list of Votes made on the governance.
 // @Description At most one of the query parameters must exist(excluding offset)
+// @Tags Governance
 // @Param proposal query string false "Base64 encoded Proposal ID"
 // @Param proposalID query int false "Proposal ID"
 // @Param elector query string false "Base64 encoded Elector ID"
@@ -125,10 +131,6 @@ fetchProposals:
 // @Failure 400
 // @Failure 500
 // @Router /gov/votes [get]
-type GovVotesHandler struct {
-	Bns client.BnsClient
-}
-
 func (h *GovVotesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
@@ -212,8 +214,9 @@ type EscrowEscrowsHandler struct {
 }
 
 // EscrowEscrowsHandler godoc
-// @Summary Returns a list of x/escrow Escrow entities.
+// @Summary Returns a list of all the smart contract Escrows.
 // @Description At most one of the query parameters must exist(excluding offset)
+// @Tags IOV token
 // @Param offset query string false "Iteration offset"
 // @Param source query string false "Source address"
 // @Param destination query string false "Destination address"
@@ -286,8 +289,9 @@ type MultisigContractsHandler struct {
 }
 
 // MultisigContractsHandler godoc
-// @Summary Returns a list of multisig Contract entities.
+// @Summary Returns a list of all the multisig Contracts.
 // @Description At most one of the query parameters must exist(excluding offset)
+// @Tags IOV token
 // @Param offset query string false "Iteration offset"
 // @Success 200
 // @Failure 404
@@ -333,6 +337,7 @@ type GconfHandler struct {
 
 // GConfHandler godoc
 // @Summary Get configuration with extension name
+// @Tags Status
 // @Param extensionName path string true "Extension name"
 // @Success 200
 // @Failure 404
@@ -380,6 +385,7 @@ type InfoHandler struct{}
 
 // InfoHandler godoc
 // @Summary Returns information about this instance of `bnsapi`.
+// @Tags Status
 // @Success 200
 // @Router /info/ [get]
 func (h *InfoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -399,6 +405,7 @@ type BlocksHandler struct {
 // BlocksHandler godoc
 // @Summary Get block details by height
 // @Description get block detail by blockHeight
+// @Tags Status
 // @Param blockHeight path int true "Block Height"
 // @Success 200
 // @Failure 404
@@ -450,6 +457,8 @@ var wEndpoint = []string{
 
 var withoutParamEndpoint = []string{
 	"/info/",
+	"/gov/proposals",
+	"/gov/votes",
 	"/account/accounts/{accountKey}",
 	"/blocks/{blockHeight}",
 	"/gconf/{extensionName}",
@@ -500,7 +509,9 @@ type CashBalanceHandler struct {
 }
 
 // CashBalanceHandler godoc
-// @Summary returns balances based on iov address
+// @Summary returns balance in IOV Token of the given iov address
+// @Description The iov address may be in the bech32 (iov....) or hex (ON3LK...) format.
+// @Tags IOV token
 // @Param address path string false "Bech32 or hex representation of an address"
 // @Param offset query string false "Bech32 or hex representation of an address to be used as offset"
 // @Success 200
@@ -577,7 +588,9 @@ type UsernameOwnerHandler struct {
 }
 
 // UsernameOwnerHandler godoc
-// @Summary Returns the list of iov starname owned by this iov address
+// @Summary Returns the list of iov username (like bob*iov) owned by this iov address.
+// @Description The iov address may be in the bech32 (iov....) or hex (ON3LK...) format.
+// @Tags Starname
 // @Param ownerAddress path string false "Bech32 or hex representation of an address"
 // @Success 200 {object} username.Token
 // @Failure 404
@@ -609,7 +622,8 @@ type UsernameResolveHandler struct {
 }
 
 // UsernameResolveHandler godoc
-// @Summary Returns balances based on iov address.
+// @Summary Returns the username object with associated info for an iov username, like bob*iov
+// @Tags Starname
 // @Param username path string false "username. example: bob*iov"
 // @Success 200 {object} username.Token
 // @Failure 404
