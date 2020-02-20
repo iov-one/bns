@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/iov-one/weave"
+	"github.com/iov-one/bns/cmd/bnsapi/models"
 	weaveapp "github.com/iov-one/weave/app"
 	"github.com/iov-one/weave/errors"
 	"github.com/iov-one/weave/orm"
@@ -135,24 +135,33 @@ func (e *jsonResponseError) Error() string {
 	return fmt.Sprintf("code %d, %s", e.Code, e.Message)
 }
 
-func ABCIKeyQuery(ctx context.Context, c BnsClient, path string, data []byte, destination weave.Persistent) error {
+func ABCIKeyQuery(ctx context.Context, c BnsClient, path string, data []byte, destination *models.KeyModel) error {
 	var abciResponse AbciQueryResponse
 
 	if err := c.Post(ctx, path, data, &abciResponse); err != nil {
 		return errors.Wrap(err, "response")
 	}
 
-	if len(abciResponse.Response.Value) == 0 {
+	if len(abciResponse.Response.Key) == 0 && len(abciResponse.Response.Value) == 0 {
 		return errors.Wrap(errors.ErrNotFound, "empty response")
+	}
+
+	var keys weaveapp.ResultSet
+	if err := keys.Unmarshal(abciResponse.Response.Key); err != nil {
+		return errors.Wrap(err, "cannot unmarshal values")
 	}
 
 	var values weaveapp.ResultSet
 	if err := values.Unmarshal(abciResponse.Response.Value); err != nil {
 		return errors.Wrap(err, "cannot unmarshal values")
 	}
-	if err := destination.Unmarshal(values.Results[0]); err != nil {
+
+	if err := destination.Model.Unmarshal(values.Results[0]); err != nil {
 		return errors.Wrap(err, "cannot unmarshal to destination")
 	}
+
+	destination.Key = keys.Results[0]
+
 	return nil
 }
 
@@ -190,6 +199,7 @@ type AbciQueryResponseResponse struct {
 	Key   []byte
 	Value []byte
 }
+
 
 type ABCIIterator interface {
 	Next(orm.Model) ([]byte, error)

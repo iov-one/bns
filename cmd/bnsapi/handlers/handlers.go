@@ -21,8 +21,6 @@ import (
 	"github.com/iov-one/weave/x/cash"
 
 	"github.com/iov-one/weave"
-	"github.com/iov-one/weave/cmd/bnsd/x/account"
-	"github.com/iov-one/weave/cmd/bnsd/x/termdeposit"
 	"github.com/iov-one/weave/errors"
 	"github.com/iov-one/weave/gconf"
 	"github.com/iov-one/weave/orm"
@@ -217,13 +215,11 @@ type EscrowEscrowsHandler struct {
 
 // EscrowEscrowsHandler godoc
 // @Summary Returns a list of all the smart contract Escrows.
-// @Description If no parameters are provided, it returns the list of all escrows.
-// @Description If either a source address or a destination address is provided, it returns the filtered on this parameter.
-// @Description (The filter is not working on source AND destination).
+// @Description At most one of the query parameters must exist(excluding offset)
 // @Tags IOV token
-// @Param sourcAddress query string false "Source address in bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2)"
-// @Param destinationAddress query string false "Destination address in bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2)"
-// @Param offset query string false "Pagination offset"
+// @Param offset query string false "Iteration offset"
+// @Param source query string false "Source address"
+// @Param destination query string false "Destination address"
 // @Success 200
 // @Failure 404
 // @Failure 400
@@ -294,9 +290,9 @@ type MultisigContractsHandler struct {
 
 // MultisigContractsHandler godoc
 // @Summary Returns a list of all the multisig Contracts.
-// @Description Returns a list of all the multisig Contracts.
+// @Description At most one of the query parameters must exist(excluding offset)
 // @Tags IOV token
-// @Param offset query string false "Pagination offset"
+// @Param offset query string false "Iteration offset"
 // @Success 200
 // @Failure 404
 // @Failure 500
@@ -322,138 +318,6 @@ fetchContracts:
 			break fetchContracts
 		default:
 			log.Printf("multisig contract ABCI query: %s", err)
-			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-			return
-		}
-	}
-
-	JSONResp(w, http.StatusOK, struct {
-		Objects []KeyValue `json:"objects"`
-	}{
-		Objects: objects,
-	})
-}
-
-type TermdepositContractsHandler struct {
-	Bns client.BnsClient
-}
-
-// TermdepositContractsHandler  godoc
-// @Summary Returns a list of bnsd/x/termdeposit entities.
-// @Description The term deposit Contract are the contract defining the dates until which one can deposit.
-// @Tags IOV token
-// @Param offset query string false "Pagination offset"
-// @Success 200 {object} json.RawMessage
-// @Failure 404 {object} json.RawMessage
-// @Failure 500
-// @Router /termdeposit/contracts [get]
-func (h *TermdepositContractsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	offset := extractIDFromKey(r.URL.Query().Get("offset"))
-	it := client.ABCIRangeQuery(r.Context(), h.Bns, "/depositcontracts", fmt.Sprintf("%x:", offset))
-
-	objects := make([]KeyValue, 0, paginationMaxItems)
-fetchContracts:
-	for {
-		var c termdeposit.DepositContract
-		switch key, err := it.Next(&c); {
-		case err == nil:
-			objects = append(objects, KeyValue{
-				Key:   key,
-				Value: &c,
-			})
-			if len(objects) == paginationMaxItems {
-				break fetchContracts
-			}
-		case errors.ErrIteratorDone.Is(err):
-			break fetchContracts
-		default:
-			log.Printf("termdeposit contract ABCI query: %s", err)
-			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-			return
-		}
-	}
-
-	JSONResp(w, http.StatusOK, struct {
-		Objects []KeyValue `json:"objects"`
-	}{
-		Objects: objects,
-	})
-}
-
-type TermdepositDepositsHandler struct {
-	Bns client.BnsClient
-}
-
-// TermdepositDepositsHandler  godoc
-// @Summary Returns a list of bnsd/x/termdeposit Deposit entities (individual deposits).
-// @Description At most one of the query parameters must exist (excluding offset).
-// @Description The query may be filtered by Depositor, in which case it returns all the deposits from the Depositor.
-// @Description The query may be filtered by Deposit Contract, in which case it returns all the deposits from this Contract.
-// @Description The query may be filtered by Contract ID, in which case it returns the deposits from the Deposit Contract with this ID.
-// @Tags IOV token
-// @Param depositor query string false "Depositor address in bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex(C1721181E83376EF978AA4A9A38A5E27C08C7BB2)"
-// @Param contract query string false "Base64 encoded ID"
-// @Param contract_id query int false "Contract ID as integer"
-// @Success 200 {object} json.RawMessage
-// @Failure 404 {object} json.RawMessage
-// @Failure 500
-// @Router /termdeposit/deposits [get]
-func (h *TermdepositDepositsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
-
-	if !atMostOne(q, "depositor", "contract_id", "contract") {
-		JSONErr(w, http.StatusBadRequest, "At most one filter can be used at a time.")
-		return
-	}
-
-	var it client.ABCIIterator
-	offset := extractIDFromKey(q.Get("offset"))
-	if d := q.Get("depositor"); len(d) > 0 {
-		rawAddr, err := weaveAddressFromQuery(d)
-		if err != nil {
-			JSONErr(w, http.StatusBadRequest, "Depositor address must be a valid address value..")
-			return
-		}
-		end := nextKeyValue(rawAddr)
-		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/deposits/depositor", fmt.Sprintf("%s:%x:%x", d, offset, end))
-	} else if c := q.Get("contract_id"); len(c) > 0 {
-		n, err := strconv.ParseInt(c, 10, 64)
-		if err != nil {
-			JSONErr(w, http.StatusBadGateway, "contract_id must be an integer contract sequence number.")
-			return
-		}
-		cid := encodeSequence(uint64(n))
-		end := nextKeyValue(cid)
-		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/deposits/contract", fmt.Sprintf("%x:%x:%x", cid, offset, end))
-	} else if c := q.Get("contract"); len(c) > 0 {
-		cid, err := base64.StdEncoding.DecodeString(c)
-		if err != nil {
-			JSONErr(w, http.StatusBadGateway, "Contract must be a base64 encoded contract key.")
-			return
-		}
-		end := nextKeyValue(cid)
-		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/deposits/contract", fmt.Sprintf("%x:%x:%x", cid, offset, end))
-	} else {
-		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/deposits", fmt.Sprintf("%x:", offset))
-	}
-
-	objects := make([]KeyValue, 0, paginationMaxItems)
-fetchDeposits:
-	for {
-		var d termdeposit.Deposit
-		switch key, err := it.Next(&d); {
-		case err == nil:
-			objects = append(objects, KeyValue{
-				Key:   key,
-				Value: &d,
-			})
-			if len(objects) == paginationMaxItems {
-				break fetchDeposits
-			}
-		case errors.ErrIteratorDone.Is(err):
-			break fetchDeposits
-		default:
-			log.Printf("termdeposit deposit ABCI query: %s", err)
 			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
@@ -506,9 +370,12 @@ func (h *GconfHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/gconf", []byte(extensionName), conf); {
+	res := models.KeyModel{
+		Model: conf,
+	}
+	switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/gconf", []byte(extensionName), &res); {
 	case err == nil:
-		JSONResp(w, http.StatusOK, conf)
+		JSONResp(w, http.StatusOK, res)
 	case errors.ErrNotFound.Is(err):
 		JSONErr(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 	default:
@@ -584,20 +451,18 @@ func lastChunk(path string) string {
 type DefaultHandler struct{}
 
 var wEndpoint = []string{
-	"/account/accounts/?domainKey=_&ownerKey=_",
-	"/account/domains/?admin=_&offset=_",
 	"/cash/balances?address=_[OR]offset=_",
+	"/username/resolve/{username}",
+	"/username/owner/{ownerAddress}",
 	"/escrow/escrows/?source=_&destination=_&offset=_",
 	"/multisig/contracts/?offset=_",
-	"/termdeposit/contracts/?offset=_",
-	"/termdeposit/deposits/?depositor=_&contract=_&contract_id=?_offset=_",
 }
 
 var withoutParamEndpoint = []string{
 	"/info/",
 	"/gov/proposals",
 	"/gov/votes",
-	"/account/resolve/{starname}",
+	"/account/accounts/{accountKey}",
 	"/blocks/{blockHeight}",
 	"/gconf/{extensionName}",
 }
@@ -634,8 +499,7 @@ func (h *DefaultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	eps := endpoints{
 		WithParam:    wEndpoint,
-		WithoutParam: withoutParamEndpoint,
-	}
+		WithoutParam: withoutParamEndpoint}
 
 	if err := availableEndpointsTempl.Execute(w, eps); err != nil {
 		log.Print(err)
@@ -643,173 +507,15 @@ func (h *DefaultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type AccountDomainsHandler struct {
-	Bns client.BnsClient
-}
-
-// AccountDomainsHandler godoc
-// @Summary Returns a list of `bnsd/x/domain` entities (like *neuma).
-// @Description The list of all premium starnames for a given admin.
-// @Description If no admin address is provided, you get the list of all premium starnames.
-// @Param adminAddress query string false "The admin address may be in the bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2) format."
-// @Param offset query string false "Pagination offset"
-// @Tags Starname
-// @Success 200 {object} json.RawMessage
-// @Failure 404 {object} json.RawMessage
-// @Redirect 303
-// @Router /account/domains/ [get]
-func (h *AccountDomainsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var it client.ABCIIterator
-	q := r.URL.Query()
-	offset := extractIDFromKey(q.Get("offset"))
-	if admin := q.Get("admin"); len(admin) > 0 {
-		rawAddr, err := weaveAddressFromQuery(admin)
-		if err != nil {
-			JSONErr(w, http.StatusBadRequest, "Admin address must be a valid address value..")
-			return
-		}
-		end := nextKeyValue(rawAddr)
-		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/domains/admin", fmt.Sprintf("%s:%x:%x", admin, offset, end))
-	} else {
-		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/domains", fmt.Sprintf("%x:", offset))
-	}
-
-	objects := make([]KeyValue, 0, paginationMaxItems)
-fetchDomains:
-	for {
-		var model account.Domain
-		switch key, err := it.Next(&model); {
-		case err == nil:
-			objects = append(objects, KeyValue{
-				Key:   key,
-				Value: &model,
-			})
-			if len(objects) == paginationMaxItems {
-				break fetchDomains
-			}
-		case errors.ErrIteratorDone.Is(err):
-			break fetchDomains
-		default:
-			log.Printf("account domain ABCI query: %s", err)
-			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-			return
-		}
-	}
-	JSONResp(w, http.StatusOK, struct {
-		Objects []KeyValue `json:"objects"`
-	}{
-		Objects: objects,
-	})
-}
-
-type AccountAccountsDetailHandler struct {
-	Bns client.BnsClient
-}
-
-// AccountAccountsDetailHandler godoc
-// @Summary Resolve a starname (orkun*neuma) and returns a `bnsd/x/account` entity (the associated info).
-// @Description Resolve a given starname (like orkun*neuma) and return all metadata related to this starname,
-// @Description list of crypto-addresses (targets), expiration date and owner address of the starname.
-// @Param starname path string true "starname ex: orkun*neuma"
-// @Tags Starname
-// @Success 200 {object} json.RawMessage
-// @Failure 404 {object} json.RawMessage
-// @Failure 500 {object} json.RawMessage
-// @Router /account/resolve/{starname} [get]
-func (h *AccountAccountsDetailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	accountKey := lastChunk(r.URL.Path)
-	var acc account.Account
-	switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/accounts", []byte(accountKey), &acc); {
-	case err == nil:
-		JSONResp(w, http.StatusOK, acc)
-	case errors.ErrNotFound.Is(err):
-		JSONErr(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
-	default:
-		log.Printf("account ABCI query: %s", err)
-		JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-	}
-}
-
-type AccountAccountsHandler struct {
-	Bns client.BnsClient
-}
-
-// AccountAccountsDetailHandler godoc
-// @Summary Returns a list of `bnsd/x/account` entities (like orkun*neuma).
-// @Description The list is either the list of all the starname (orkun*neuma) for a given premium starname (*neuma), or the list of all starnames for a given owner address.
-// @Description You need to provide exactly one argument, either the premium starname (*neuma) or the owner address.
-// @Description
-// @Tags Starname
-// @Param starname query string false "Premium Starname ex: *neuma"
-// @Param ownerAddress query string false "The owner address format is either in iov address (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2)"
-// @Param offset query string false "Pagination offset"
-// @Success 200 {object} json.RawMessage
-// @Failure 404 {object} json.RawMessage
-// @Failure 500 {object} json.RawMessage
-// @Router /account/accounts [get]
-func (h *AccountAccountsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
-
-	if !atMostOne(q, "domain", "owner") {
-		JSONErr(w, http.StatusBadRequest, "At most one filter can be used at a time.")
-		return
-	}
-
-	var it client.ABCIIterator
-	offset := extractIDFromKey(q.Get("offset"))
-	if d := q.Get("domain"); len(d) > 0 {
-		end := nextKeyValue([]byte(d))
-		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/accounts/domain", fmt.Sprintf("%x:%x:%x", d, offset, end))
-	} else if o := q.Get("owner"); len(o) > 0 {
-		rawAddr, err := weaveAddressFromQuery(o)
-		if err != nil {
-			JSONErr(w, http.StatusBadRequest, "Owner address must be a valid address value..")
-			return
-		}
-		end := nextKeyValue(rawAddr)
-		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/accounts/owner", fmt.Sprintf("%s:%x:%x", o, offset, end))
-	} else {
-		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/accounts", fmt.Sprintf("%x:", offset))
-	}
-
-	objects := make([]KeyValue, 0, paginationMaxItems)
-fetchAccounts:
-	for {
-		var acc account.Account
-		switch key, err := it.Next(&acc); {
-		case err == nil:
-			objects = append(objects, KeyValue{
-				Key:   key,
-				Value: &acc,
-			})
-			if len(objects) == paginationMaxItems {
-				break fetchAccounts
-			}
-		case errors.ErrIteratorDone.Is(err):
-			break fetchAccounts
-		default:
-			log.Printf("account account ABCI query: %s", err)
-			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-			return
-		}
-	}
-
-	JSONResp(w, http.StatusOK, struct {
-		Objects []KeyValue `json:"objects"`
-	}{
-		Objects: objects,
-	})
-}
-
 type CashBalanceHandler struct {
 	Bns client.BnsClient
 }
 
 // CashBalanceHandler godoc
-// @Summary returns the list of all balances in IOV Token or the balance for the given iov address.
-// @Description returns the list of all balances in IOV Token or the balance for the given iov address.
+// @Summary returns balance in IOV Token of the given iov address
+// @Description The iov address may be in the bech32 (iov....) or hex (ON3LK...) format.
 // @Tags IOV token
-// @Param address path string false "The iov address may be in the bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2) format."
+// @Param address path string false "Bech32 or hex representation of an address"
 // @Param offset query string false "Bech32 or hex representation of an address to be used as offset"
 // @Success 200
 // @Failure 404
@@ -825,6 +531,9 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	key := q.Get("address")
 	if key != "" {
+		if strings.HasPrefix(key, "iov") || strings.HasPrefix(key, "tiov") {
+			key = "bech32:" + key
+		}
 		addr, err := weaveAddressFromQuery(key)
 
 		if err != nil {
@@ -833,7 +542,11 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		var set cash.Set
-		switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/wallets", addr, &set); {
+
+		res := models.KeyModel{
+			Model: &set,
+		}
+		switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/wallets", addr, &res); {
 		case err == nil:
 			JSONResp(w, http.StatusOK, set)
 		case errors.ErrNotFound.Is(err):
@@ -883,8 +596,7 @@ type UsernameOwnerHandler struct {
 
 func (h *UsernameOwnerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	rawKey := lastChunk(r.URL.Path)
-	addr, err := weaveAddressFromQuery(rawKey)
-
+	key, err := weaveAddressFromQuery(rawKey)
 	if err != nil {
 		log.Print(err)
 		JSONErr(w, http.StatusBadRequest, "wrong input, must be address")
@@ -892,9 +604,12 @@ func (h *UsernameOwnerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 
 	var token username.Token
-	switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/usernames/owner", addr, &token); {
+	res := models.KeyModel{
+		Model: &token,
+	}
+	switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/usernames/owner", key, &res); {
 	case err == nil:
-		JSONResp(w, http.StatusOK, token)
+		JSONResp(w, http.StatusOK, res)
 	case errors.ErrNotFound.Is(err):
 		JSONErr(w, http.StatusNotFound, "Username not found by owner")
 	default:
@@ -907,13 +622,24 @@ type UsernameResolveHandler struct {
 	Bns client.BnsClient
 }
 
+// UsernameResolveHandler godoc
+// @Summary Returns the username object with associated info for an iov username, like bob*iov
+// @Tags Starname
+// @Param username path string false "username. example: bob*iov"
+// @Success 200 {object} username.Token
+// @Failure 404
+// @Failure 500
+// @Router /username/resolve/{username} [get]
 func (h *UsernameResolveHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	uname := lastChunk(r.URL.Path)
 	if uname != "" {
 		var token username.Token
-		switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/usernames", []byte(uname), &token); {
+		res := models.KeyModel{
+			Model: &token,
+		}
+		switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/usernames", []byte(uname), &res); {
 		case err == nil:
-			JSONResp(w, http.StatusOK, token)
+			JSONResp(w, http.StatusOK, res)
 		case errors.ErrNotFound.Is(err):
 			JSONErr(w, http.StatusNotFound, "Username not found")
 		default:
@@ -940,16 +666,8 @@ func atMostOne(query url.Values, names ...string) bool {
 	return true
 }
 
-func weaveAddressFromQuery(rawAddr string) (weave.Address, error) {
-	if strings.HasPrefix(rawAddr, "iov") || strings.HasPrefix(rawAddr, "tiov") {
-		rawAddr = "bech32:" + rawAddr
-	}
-	addr, err := weave.ParseAddress(rawAddr)
-	return addr, err
-}
-
 func extractIDFromKey(key string) []byte {
-	raw, err := weave.ParseAddress(key)
+	raw, err := weaveAddressFromQuery(key)
 	if err != nil {
 		// Cannot decode, return everything.
 		return []byte(key)
@@ -1053,6 +771,14 @@ func nextKeyValue(b []byte) []byte {
 		next = append(next, 0)
 	}
 	return next
+}
+
+func weaveAddressFromQuery(rawAddr string) (weave.Address, error) {
+	if strings.HasPrefix(rawAddr, "iov") || strings.HasPrefix(rawAddr, "tiov") {
+		rawAddr = "bech32:" + rawAddr
+	}
+	addr, err := weave.ParseAddress(rawAddr)
+	return addr, err
 }
 
 func encodeSequence(val uint64) []byte {
