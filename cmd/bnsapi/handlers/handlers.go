@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/iov-one/bns/cmd/bnsapi/models"
 	"html/template"
 	"log"
 	"math"
