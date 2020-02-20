@@ -76,7 +76,7 @@ func (h *GovProposalsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		end := nextKeyValue(start)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/proposals/electorate", fmt.Sprintf("%x:%x:%x", start, offset, end))
 	} else if s := q.Get("author"); len(s) > 0 {
-		rawAddr, err := weave.ParseAddress(s)
+		rawAddr, err := weaveAddressFromQuery(s)
 		if err != nil {
 			JSONErr(w, http.StatusBadRequest, "author address must be a valid address value.")
 			return
@@ -144,7 +144,7 @@ func (h *GovVotesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var it client.ABCIIterator
 	offset := extractIDFromKey(q.Get("offset"))
 	if e := q.Get("elector"); len(e) > 0 {
-		rawAddr, err := weave.ParseAddress(e)
+		rawAddr, err := weaveAddressFromQuery(e)
 		if err != nil {
 			JSONErr(w, http.StatusBadRequest, "elector ID address must be a valid address value..")
 			return
@@ -162,7 +162,7 @@ func (h *GovVotesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		end := nextKeyValue(start)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/votes/electors", fmt.Sprintf("%x:%x:%x", start, offset, end))
 	} else if p := q.Get("proposal"); len(p) > 0 {
-		rawAddr, err := weave.ParseAddress(p)
+		rawAddr, err := weaveAddressFromQuery(p)
 		if err != nil {
 			JSONErr(w, http.StatusBadRequest, "proposal ID address must be a valid address value..")
 			return
@@ -240,7 +240,7 @@ func (h *EscrowEscrowsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	var it client.ABCIIterator
 	offset := extractIDFromKey(q.Get("offset"))
 	if d := q.Get("destination"); len(d) > 0 {
-		rawAddr, err := weave.ParseAddress(d)
+		rawAddr, err := weaveAddressFromQuery(d)
 		if err != nil {
 			JSONErr(w, http.StatusBadRequest, "Destination address must be a valid address value..")
 			return
@@ -248,7 +248,7 @@ func (h *EscrowEscrowsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 		end := nextKeyValue(rawAddr)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/escrows/destination", fmt.Sprintf("%x:%x:%x", rawAddr, offset, end))
 	} else if s := q.Get("source"); len(s) > 0 {
-		rawAddr, err := weave.ParseAddress(s)
+		rawAddr, err := weaveAddressFromQuery(s)
 		if err != nil {
 			JSONErr(w, http.StatusBadRequest, "Source address must be a valid address value..")
 			return
@@ -409,7 +409,7 @@ func (h *TermdepositDepositsHandler) ServeHTTP(w http.ResponseWriter, r *http.Re
 	var it client.ABCIIterator
 	offset := extractIDFromKey(q.Get("offset"))
 	if d := q.Get("depositor"); len(d) > 0 {
-		rawAddr, err := weave.ParseAddress(d)
+		rawAddr, err := weaveAddressFromQuery(d)
 		if err != nil {
 			JSONErr(w, http.StatusBadRequest, "Depositor address must be a valid address value..")
 			return
@@ -663,7 +663,7 @@ func (h *AccountDomainsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request
 	q := r.URL.Query()
 	offset := extractIDFromKey(q.Get("offset"))
 	if admin := q.Get("admin"); len(admin) > 0 {
-		rawAddr, err := weave.ParseAddress(admin)
+		rawAddr, err := weaveAddressFromQuery(admin)
 		if err != nil {
 			JSONErr(w, http.StatusBadRequest, "Admin address must be a valid address value..")
 			return
@@ -761,7 +761,7 @@ func (h *AccountAccountsHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 		end := nextKeyValue([]byte(d))
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/accounts/domain", fmt.Sprintf("%x:%x:%x", d, offset, end))
 	} else if o := q.Get("owner"); len(o) > 0 {
-		rawAddr, err := weave.ParseAddress(o)
+		rawAddr, err := weaveAddressFromQuery(o)
 		if err != nil {
 			JSONErr(w, http.StatusBadRequest, "Owner address must be a valid address value..")
 			return
@@ -825,10 +825,7 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	key := q.Get("address")
 	if key != "" {
-		if strings.HasPrefix(key, "iov") || strings.HasPrefix(key, "tiov") {
-			key = "bech32:" + key
-		}
-		addr, err := weave.ParseAddress(key)
+		addr, err := weaveAddressFromQuery(key)
 
 		if err != nil {
 			log.Print(err)
@@ -886,7 +883,8 @@ type UsernameOwnerHandler struct {
 
 func (h *UsernameOwnerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	rawKey := lastChunk(r.URL.Path)
-	key, err := weave.ParseAddress(rawKey)
+	addr, err := weaveAddressFromQuery(rawKey)
+
 	if err != nil {
 		log.Print(err)
 		JSONErr(w, http.StatusBadRequest, "wrong input, must be address")
@@ -894,7 +892,7 @@ func (h *UsernameOwnerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 
 	var token username.Token
-	switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/usernames/owner", key, &token); {
+	switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/usernames/owner", addr, &token); {
 	case err == nil:
 		JSONResp(w, http.StatusOK, token)
 	case errors.ErrNotFound.Is(err):
@@ -940,6 +938,14 @@ func atMostOne(query url.Values, names ...string) bool {
 		}
 	}
 	return true
+}
+
+func weaveAddressFromQuery(rawAddr string) (weave.Address, error) {
+	if strings.HasPrefix(rawAddr, "iov") || strings.HasPrefix(rawAddr, "tiov") {
+		rawAddr = "bech32:" + rawAddr
+	}
+	addr, err := weave.ParseAddress(rawAddr)
+	return addr, err
 }
 
 func extractIDFromKey(key string) []byte {
