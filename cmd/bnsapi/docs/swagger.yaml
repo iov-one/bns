@@ -1,8 +1,125 @@
 definitions:
-  json.RawMessage:
+  account.Account:
+    properties:
+      certificates:
+        items:
+          items:
+            type: integer
+          type: array
+        type: array
+      domain:
+        description: Domain references a domain that this account belongs to.
+        type: string
+      metadata:
+        $ref: '#/definitions/weave.Metadata'
+        type: object
+      name:
+        type: string
+      owner:
+        $ref: '#/definitions/weave.Address'
+        description: |-
+          Owner is a weave.Address that controls this account. Can be empty.
+
+          An account can be administrated by the domain admin. In addition,
+          ownership can be assigned to an address to allow another party to manage
+          selected account.
+        type: object
+      targets:
+        items:
+          $ref: '#/definitions/account.BlockchainAddress'
+        type: array
+      valid_until:
+        description: |-
+          Valid until defines the expiration date for the account. Expired account
+          cannot be used or modified. This date is always considered in context of
+          the domain that this account belongs. Expired domain expires all belonging
+          accounts as well, event if that account valid until date is not yet due.
+        type: integer
+    type: object
+  account.BlockchainAddress:
+    properties:
+      address:
+        description: |-
+          An address on the specified blockchain network. Address is not a
+          weave.Address as we cannot know what is the format of an address on the
+          chain that this token instance links to. Because we do not know the rules
+          to validate an address for any blockchain ID, this is an arbitrary bulk of
+          data.
+          It is more convenient to always use encoded representation of each address
+          and store it as a string. Using bytes while compact is not as comfortable
+          to use.
+        type: string
+      blockchain_id:
+        description: An arbitrary blockchain ID.
+        type: string
+    type: object
+  handlers.KeyValue:
+    properties:
+      key:
+        $ref: '#/definitions/handlers.hexbytes'
+        type: object
+      value:
+        $ref: '#/definitions/orm.Model'
+        type: object
+    type: object
+  handlers.MultipleObjectsResponse:
+    properties:
+      objects:
+        items:
+          $ref: '#/definitions/handlers.KeyValue'
+        type: array
+    type: object
+  handlers.hexbytes:
     items:
       type: integer
     type: array
+  orm.Model:
+    type: object
+  username.BlockchainAddress:
+    properties:
+      address:
+        description: |-
+          An address on the specified blockchain network. Address is not a
+          weave.Address as we cannot know what is the format of an address on the
+          chain that this token instance links to. Because we do not know the rules
+          to validate an address for any blockchain ID, this is an arbitrary bulk of
+          data.
+          It is more convinient to always use encoded representation of each address
+          and store it as a string. Using bytes while compact is not as comfortable
+          to use.
+        type: string
+      blockchain_id:
+        description: An arbitrary blockchain ID.
+        type: string
+    type: object
+  username.Token:
+    properties:
+      metadata:
+        $ref: '#/definitions/weave.Metadata'
+        type: object
+      owner:
+        $ref: '#/definitions/weave.Address'
+        description: |-
+          Owner is a weave.Address that controls this token. Only the owner can
+          modify a username token.
+        type: object
+      targets:
+        description: |-
+          Targets specifies where this username token points to. This must be at
+          least one blockchain address elemenet.
+        items:
+          $ref: '#/definitions/username.BlockchainAddress'
+        type: array
+    type: object
+  weave.Address:
+    items:
+      type: integer
+    type: array
+  weave.Metadata:
+    properties:
+      schema:
+        type: integer
+    type: object
 info:
   contact: {}
   license: {}
@@ -10,42 +127,18 @@ info:
 paths:
   /account/accounts:
     get:
-      description: 'The list is either the list of all the starname for a given premium
-        starname ex: *cocacola, or the list of all starnames for a given owner.'
+      description: |
+        The list is either the list of all the starname (orkun*neuma) for a given premium starname (*neuma), or the list of all starnames for a given owner address.
+        You need to provide exactly one argument, either the premium starname (*neuma) or the owner address.
       parameters:
-      - description: 'Premium Starname ex: *cocacola'
+      - description: 'Premium Starname ex: *neuma'
         in: query
-        name: domainKey
+        name: starname
         type: string
-      - description: Owner address
+      - description: The owner address format is either in iov address (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr)
+          or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2)
         in: query
-        name: ownerKey
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-      summary: Returns a list of `bnsd/x/account` entities.
-      tags:
-      - Starname
-  /account/domains/:
-    get:
-      description: |-
-        The list of all premium starname for a given owner.
-        The owner address may be in the bech32 (iov....) or hex (ON3LK...) format.
-      parameters:
-      - description: Address of the admin
-        in: query
-        name: admin
+        name: ownerAddress
         type: string
       - description: Pagination offset
         in: query
@@ -55,38 +148,56 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/json.RawMessage'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-      summary: Returns a list of `bnsd/x/domain` entities.
+            $ref: '#/definitions/handlers.MultipleObjectsResponse'
+        "404": {}
+        "500": {}
+      summary: Returns a list of `bnsd/x/account` entities (like orkun*neuma).
       tags:
       - Starname
-  /account/resolve/{starname}:
+  /account/domains/:
     get:
       description: |-
-        Resolve a given *starname and return all metadata related to this starname,
-        list of crypto-addresses (targets), expiration date and owner of the starname.
+        The list of all premium starnames for a given admin.
+        If no admin address is provided, you get the list of all premium starnames.
       parameters:
-      - description: 'starname ex: bobby*cocacola'
-        in: path
-        name: starname
+      - description: The admin address may be in the bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr)
+          or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2) format.
+        in: query
+        name: adminAddress
+        type: string
+      - description: Pagination offset
+        in: query
+        name: offset
         type: string
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/json.RawMessage'
-        "404":
-          description: Not Found
+            $ref: '#/definitions/handlers.MultipleObjectsResponse'
+        "404": {}
+      summary: Returns a list of `bnsd/x/domain` entities (like *neuma).
+      tags:
+      - Starname
+  /account/resolve/{starname}:
+    get:
+      description: |-
+        Resolve a given starname (like orkun*neuma) and return all metadata related to this starname,
+        list of crypto-addresses (targets), expiration date and owner address of the starname.
+      parameters:
+      - description: 'starname ex: orkun*neuma'
+        in: path
+        name: starname
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
           schema:
-            $ref: '#/definitions/json.RawMessage'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/json.RawMessage'
-      summary: Resolve a starname and returns a `bnsd/x/account` entity.
+            $ref: '#/definitions/account.Account'
+        "404": {}
+        "500": {}
+      summary: Resolve a starname (orkun*neuma) and returns a `bnsd/x/account` entity
+        (the associated info).
       tags:
       - Starname
   /blocks/{blockHeight}:
@@ -128,7 +239,7 @@ paths:
     get:
       description: At most one of the query parameters must exist(excluding offset)
       parameters:
-      - description: Pagination offset
+      - description: Iteration offset
         in: query
         name: offset
         type: string
@@ -230,7 +341,7 @@ paths:
     get:
       description: At most one of the query parameters must exist(excluding offset)
       parameters:
-      - description: Pagination offset
+      - description: Iteration offset
         in: query
         name: offset
         type: string
@@ -254,11 +365,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/json.RawMessage'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/json.RawMessage'
+            $ref: '#/definitions/handlers.MultipleObjectsResponse'
+        "404": {}
         "500": {}
       summary: Returns a list of bnsd/x/termdeposit entities.
       tags:
@@ -267,11 +375,12 @@ paths:
     get:
       description: |-
         At most one of the query parameters must exist (excluding offset).
-        The query can be made by Depositor, in which case it returns all the deposits from the Depositor.
-        The query can be made by Deposit Contract, in which case it returns all the deposits from this Contract.
-        The query can be made by Contract ID, in which case it returns the deposits from the Deposit Contract with this ID.
+        The query may be filtered by Depositor, in which case it returns all the deposits from the Depositor.
+        The query may be filtered by Deposit Contract, in which case it returns all the deposits from this Contract.
+        The query may be filtered by Contract ID, in which case it returns the deposits from the Deposit Contract with this ID.
       parameters:
-      - description: Depositor address
+      - description: Depositor address in bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr)
+          or hex(C1721181E83376EF978AA4A9A38A5E27C08C7BB2)
         in: query
         name: depositor
         type: string
@@ -287,13 +396,46 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/json.RawMessage'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/json.RawMessage'
+            $ref: '#/definitions/handlers.MultipleObjectsResponse'
+        "404": {}
         "500": {}
-      summary: Returns a list of bnsd/x/termdeposit Deposit entities.
+      summary: Returns a list of bnsd/x/termdeposit Deposit entities (individual deposits).
       tags:
       - IOV token
+  /username/owner/{address}:
+    get:
+      parameters:
+      - description: 'Address. example: C1721181E83376EF978AA4A9A38A5E27C08C7BB2 or
+          iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr'
+        in: path
+        name: owner
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/username.Token'
+        "404": {}
+        "500": {}
+      summary: Returns the username object with associated info for an owner
+      tags:
+      - Starname
+  /username/resolve/{username}:
+    get:
+      parameters:
+      - description: 'username. example: thematrix*iov'
+        in: path
+        name: username
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/username.Token'
+        "404": {}
+        "500": {}
+      summary: Returns the username object with associated info for an iov username,
+        like thematrix*iov
+      tags:
+      - Starname
 swagger: "2.0"

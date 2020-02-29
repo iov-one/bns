@@ -6,6 +6,8 @@ import (
 	"github.com/iov-one/bns/cmd/bnsapi/client"
 	"github.com/iov-one/bns/cmd/bnsapi/docs"
 	"github.com/iov-one/bns/cmd/bnsapi/handlers"
+	accountHandlers "github.com/iov-one/bns/cmd/bnsapi/handlers/account"
+	usernameHandlers "github.com/iov-one/bns/cmd/bnsapi/handlers/username"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
 	httpSwagger "github.com/swaggo/http-swagger"
 
@@ -77,10 +79,10 @@ func run(conf Configuration) error {
 	rt := http.NewServeMux()
 	rt.Handle("/info", &handlers.InfoHandler{})
 	rt.Handle("/blocks/", &handlers.BlocksHandler{Bns: bnscli})
-	rt.Handle("/account/domains", &handlers.AccountDomainsHandler{Bns: bnscli})
-	rt.Handle("/account/accounts", &handlers.AccountAccountsHandler{Bns: bnscli})
-	rt.Handle("/account/resolve/", &handlers.AccountAccountsDetailHandler{Bns: bnscli})
-	rt.Handle("/username/owner/", &handlers.UsernameOwnerHandler{Bns: bnscli})
+	rt.Handle("/account/domains", &accountHandlers.DomainsHandler{Bns: bnscli})
+	rt.Handle("/account/accounts", &accountHandlers.AccountsHandler{Bns: bnscli})
+	rt.Handle("/account/resolve/", &accountHandlers.DetailHandler{Bns: bnscli})
+	rt.Handle("/username/owner/", &usernameHandlers.OwnerHandler{Bns: bnscli})
 	rt.Handle("/cash/balances", &handlers.CashBalanceHandler{Bns: bnscli})
 	rt.Handle("/termdeposit/contracts", &handlers.TermdepositContractsHandler{Bns: bnscli})
 	rt.Handle("/termdeposit/deposits", &handlers.TermdepositDepositsHandler{Bns: bnscli})

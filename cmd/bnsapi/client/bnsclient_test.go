@@ -6,7 +6,11 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/iov-one/bns/cmd/bnsapi/models"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
+	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -17,7 +21,7 @@ import (
 	"github.com/iov-one/weave/orm"
 )
 
-/*func TestABCIKeyQuery(t *testing.T) {
+func TestABCIKeyQuery(t *testing.T) {
 	// Run a fake Tendermint API server that will answer to only expected
 	// query requests.
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +47,7 @@ import (
 		}
 
 		bodyParam := fullBodyParam.BodyParam
-		log.Print(bodyParam)
+
 		switch {
 		case bodyParam.Path == "/myentity" && bodyParam.Data == "656E746974796B6579":
 			writeServerResponse(t, w, [][]byte{
@@ -63,8 +67,8 @@ import (
 	bns := NewHTTPBnsClient(srv.URL)
 
 	model := persistentMock{Raw: []byte("content")}
-	dest := resultSetMock{
-		keyModel: model
+	dest := models.KeyModel{
+		Model: &model,
 	}
 	if err := ABCIKeyQuery(context.Background(), bns, "/myentity", []byte("entitykey"), &dest); err != nil {
 		t.Fatalf("cannot get by key: %v", err)
@@ -97,7 +101,7 @@ func TestBnsClientDo(t *testing.T) {
 	if result != "a result" {
 		t.Fatalf("unexpected result: %q", result)
 	}
-}*/
+}
 
 func TestABCIFullRangeQuery(t *testing.T) {
 	hexit := func(s string) string {

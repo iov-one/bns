@@ -2,29 +2,24 @@ package handlers
 
 import (
 	"encoding/base64"
-	"encoding/binary"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/models"
+	"github.com/iov-one/weave/cmd/bnsd/x/termdeposit"
 	"html/template"
 	"log"
-	"math"
 	"net/http"
-	"net/url"
 	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/iov-one/bns/cmd/bnsapi/client"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
-	"github.com/iov-one/weave/cmd/bnsd/x/username"
 	"github.com/iov-one/weave/x/cash"
 
 	"github.com/iov-one/weave"
 	"github.com/iov-one/weave/errors"
 	"github.com/iov-one/weave/gconf"
-	"github.com/iov-one/weave/orm"
 	"github.com/iov-one/weave/x/escrow"
 	"github.com/iov-one/weave/x/gov"
 	"github.com/iov-one/weave/x/multisig"
@@ -50,20 +45,20 @@ type GovProposalsHandler struct {
 func (h *GovProposalsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
-	if !atMostOne(q, "author", "electorate", "electorate_id") {
+	if !AtMostOne(q, "author", "electorate", "electorate_id") {
 		JSONErr(w, http.StatusBadRequest, "At most one filter can be used at a time.")
 		return
 	}
 
 	var it client.ABCIIterator
-	offset := extractIDFromKey(q.Get("offset"))
+	offset := ExtractIDFromKey(q.Get("offset"))
 	if e := q.Get("electorate"); len(e) > 0 {
 		rawAddr, err := base64.StdEncoding.DecodeString(e)
 		if err != nil {
 			JSONErr(w, http.StatusBadRequest, "electorate address must be a base64 encoded value.")
 			return
 		}
-		end := nextKeyValue(rawAddr)
+		end := NextKeyValue(rawAddr)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/proposals/electorate", fmt.Sprintf("%x:%x:%x", rawAddr, offset, end))
 	} else if e := q.Get("electorate_id"); len(e) > 0 {
 		n, err := strconv.ParseInt(e, 10, 64)
@@ -71,22 +66,22 @@ func (h *GovProposalsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			JSONErr(w, http.StatusBadGateway, "electorate_id must be an integer contract sequence number.")
 			return
 		}
-		start := encodeSequence(uint64(n))
-		end := nextKeyValue(start)
+		start := EncodeSequence(uint64(n))
+		end := NextKeyValue(start)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/proposals/electorate", fmt.Sprintf("%x:%x:%x", start, offset, end))
 	} else if s := q.Get("author"); len(s) > 0 {
-		rawAddr, err := weaveAddressFromQuery(s)
+		rawAddr, err := WeaveAddressFromQuery(s)
 		if err != nil {
 			JSONErr(w, http.StatusBadRequest, "author address must be a valid address value.")
 			return
 		}
-		end := nextKeyValue(rawAddr)
+		end := NextKeyValue(rawAddr)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/proposals/author", fmt.Sprintf("%x:%x:%x", rawAddr, offset, end))
 	} else {
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/proposals", fmt.Sprintf("%x:", offset))
 	}
 
-	objects := make([]KeyValue, 0, paginationMaxItems)
+	objects := make([]KeyValue, 0, PaginationMaxItems)
 fetchProposals:
 	for {
 		var p gov.Proposal
@@ -96,7 +91,7 @@ fetchProposals:
 				Key:   key,
 				Value: &p,
 			})
-			if len(objects) == paginationMaxItems {
+			if len(objects) == PaginationMaxItems {
 				break fetchProposals
 			}
 		case errors.ErrIteratorDone.Is(err):
@@ -108,9 +103,7 @@ fetchProposals:
 		}
 	}
 
-	JSONResp(w, http.StatusOK, struct {
-		Objects []KeyValue `json:"objects"`
-	}{
+	JSONResp(w, http.StatusOK, MultipleObjectsResponse{
 		Objects: objects,
 	})
 }
@@ -135,20 +128,20 @@ type GovVotesHandler struct {
 func (h *GovVotesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
-	if !atMostOne(q, "proposal", "proposal_id", "elector", "elector_id") {
+	if !AtMostOne(q, "proposal", "proposal_id", "elector", "elector_id") {
 		JSONErr(w, http.StatusBadRequest, "At most one filter can be used at a time.")
 		return
 	}
 
 	var it client.ABCIIterator
-	offset := extractIDFromKey(q.Get("offset"))
+	offset := ExtractIDFromKey(q.Get("offset"))
 	if e := q.Get("elector"); len(e) > 0 {
-		rawAddr, err := weaveAddressFromQuery(e)
+		rawAddr, err := WeaveAddressFromQuery(e)
 		if err != nil {
 			JSONErr(w, http.StatusBadRequest, "elector ID address must be a valid address value..")
 			return
 		}
-		end := nextKeyValue(rawAddr)
+		end := NextKeyValue(rawAddr)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/votes/electors", fmt.Sprintf("%x:%x:%x", rawAddr, offset, end))
 	} else if e := q.Get("elector_id"); len(e) > 0 {
 		// TODO - is elector the same as electorate?
@@ -157,16 +150,16 @@ func (h *GovVotesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			JSONErr(w, http.StatusBadGateway, "elector_id must be an integer contract sequence number.")
 			return
 		}
-		start := encodeSequence(uint64(n))
-		end := nextKeyValue(start)
+		start := EncodeSequence(uint64(n))
+		end := NextKeyValue(start)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/votes/electors", fmt.Sprintf("%x:%x:%x", start, offset, end))
 	} else if p := q.Get("proposal"); len(p) > 0 {
-		rawAddr, err := weaveAddressFromQuery(p)
+		rawAddr, err := WeaveAddressFromQuery(p)
 		if err != nil {
 			JSONErr(w, http.StatusBadRequest, "proposal ID address must be a valid address value..")
 			return
 		}
-		end := nextKeyValue(rawAddr)
+		end := NextKeyValue(rawAddr)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/votes/proposals", fmt.Sprintf("%x:%x:%x", rawAddr, offset, end))
 	} else if p := q.Get("proposal_id"); len(p) > 0 {
 		n, err := strconv.ParseInt(p, 10, 64)
@@ -174,14 +167,14 @@ func (h *GovVotesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			JSONErr(w, http.StatusBadGateway, "proposal_id must be an integer contract sequence number.")
 			return
 		}
-		start := encodeSequence(uint64(n))
-		end := nextKeyValue(start)
+		start := EncodeSequence(uint64(n))
+		end := NextKeyValue(start)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/votes/proposals", fmt.Sprintf("%x:%x:%x", start, offset, end))
 	} else {
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/votes", fmt.Sprintf("%x:", offset))
 	}
 
-	objects := make([]KeyValue, 0, paginationMaxItems)
+	objects := make([]KeyValue, 0, PaginationMaxItems)
 fetchVotes:
 	for {
 		var v gov.Vote
@@ -191,7 +184,7 @@ fetchVotes:
 				Key:   key,
 				Value: &v,
 			})
-			if len(objects) == paginationMaxItems {
+			if len(objects) == PaginationMaxItems {
 				break fetchVotes
 			}
 		case errors.ErrIteratorDone.Is(err):
@@ -203,9 +196,7 @@ fetchVotes:
 		}
 	}
 
-	JSONResp(w, http.StatusOK, struct {
-		Objects []KeyValue `json:"objects"`
-	}{
+	JSONResp(w, http.StatusOK, MultipleObjectsResponse{
 		Objects: objects,
 	})
 }
@@ -229,34 +220,34 @@ type EscrowEscrowsHandler struct {
 func (h *EscrowEscrowsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
-	if !atMostOne(q, "source", "destination") {
+	if !AtMostOne(q, "source", "destination") {
 		JSONErr(w, http.StatusBadRequest, "At most one filter can be used at a time.")
 		return
 	}
 
 	var it client.ABCIIterator
-	offset := extractIDFromKey(q.Get("offset"))
+	offset := ExtractIDFromKey(q.Get("offset"))
 	if d := q.Get("destination"); len(d) > 0 {
-		rawAddr, err := weaveAddressFromQuery(d)
+		rawAddr, err := WeaveAddressFromQuery(d)
 		if err != nil {
 			JSONErr(w, http.StatusBadRequest, "Destination address must be a valid address value..")
 			return
 		}
-		end := nextKeyValue(rawAddr)
+		end := NextKeyValue(rawAddr)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/escrows/destination", fmt.Sprintf("%x:%x:%x", rawAddr, offset, end))
 	} else if s := q.Get("source"); len(s) > 0 {
-		rawAddr, err := weaveAddressFromQuery(s)
+		rawAddr, err := WeaveAddressFromQuery(s)
 		if err != nil {
 			JSONErr(w, http.StatusBadRequest, "Source address must be a valid address value..")
 			return
 		}
-		end := nextKeyValue(rawAddr)
+		end := NextKeyValue(rawAddr)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/escrows/source", fmt.Sprintf("%x:%x:%x", rawAddr, offset, end))
 	} else {
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/escrows", fmt.Sprintf("%x:", offset))
 	}
 
-	objects := make([]KeyValue, 0, paginationMaxItems)
+	objects := make([]KeyValue, 0, PaginationMaxItems)
 fetchEscrows:
 	for {
 		var e escrow.Escrow
@@ -266,7 +257,7 @@ fetchEscrows:
 				Key:   key,
 				Value: &e,
 			})
-			if len(objects) == paginationMaxItems {
+			if len(objects) == PaginationMaxItems {
 				break fetchEscrows
 			}
 		case errors.ErrIteratorDone.Is(err):
@@ -278,9 +269,7 @@ fetchEscrows:
 		}
 	}
 
-	JSONResp(w, http.StatusOK, struct {
-		Objects []KeyValue `json:"objects"`
-	}{
+	JSONResp(w, http.StatusOK, MultipleObjectsResponse{
 		Objects: objects,
 	})
 }
@@ -299,10 +288,10 @@ type MultisigContractsHandler struct {
 // @Failure 500
 // @Router /multisig/contracts [get]
 func (h *MultisigContractsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	offset := extractIDFromKey(r.URL.Query().Get("offset"))
+	offset := ExtractIDFromKey(r.URL.Query().Get("offset"))
 	it := client.ABCIRangeQuery(r.Context(), h.Bns, "/contracts", fmt.Sprintf("%x:", offset))
 
-	objects := make([]KeyValue, 0, paginationMaxItems)
+	objects := make([]KeyValue, 0, PaginationMaxItems)
 fetchContracts:
 	for {
 		var c multisig.Contract
@@ -312,7 +301,7 @@ fetchContracts:
 				Key:   key,
 				Value: &c,
 			})
-			if len(objects) == paginationMaxItems {
+			if len(objects) == PaginationMaxItems {
 				break fetchContracts
 			}
 		case errors.ErrIteratorDone.Is(err):
@@ -324,9 +313,135 @@ fetchContracts:
 		}
 	}
 
-	JSONResp(w, http.StatusOK, struct {
-		Objects []KeyValue `json:"objects"`
-	}{
+	JSONResp(w, http.StatusOK, MultipleObjectsResponse{
+		Objects: objects,
+	})
+}
+
+type TermdepositContractsHandler struct {
+	Bns client.BnsClient
+}
+
+// TermdepositContractsHandler  godoc
+// @Summary Returns a list of bnsd/x/termdeposit entities.
+// @Description The term deposit Contract are the contract defining the dates until which one can deposit.
+// @Tags IOV token
+// @Param offset query string false "Pagination offset"
+// @Success 200 {object} handlers.MultipleObjectsResponse
+// @Failure 404
+// @Failure 500
+// @Router /termdeposit/contracts [get]
+func (h *TermdepositContractsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	offset := ExtractIDFromKey(r.URL.Query().Get("offset"))
+	it := client.ABCIRangeQuery(r.Context(), h.Bns, "/depositcontracts", fmt.Sprintf("%x:", offset))
+
+	objects := make([]KeyValue, 0, PaginationMaxItems)
+fetchContracts:
+	for {
+		var c termdeposit.DepositContract
+		switch key, err := it.Next(&c); {
+		case err == nil:
+			objects = append(objects, KeyValue{
+				Key:   key,
+				Value: &c,
+			})
+			if len(objects) == PaginationMaxItems {
+				break fetchContracts
+			}
+		case errors.ErrIteratorDone.Is(err):
+			break fetchContracts
+		default:
+			log.Printf("termdeposit contract ABCI query: %s", err)
+			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			return
+		}
+	}
+
+	JSONResp(w, http.StatusOK, MultipleObjectsResponse{
+		Objects: objects,
+	})
+}
+
+type TermdepositDepositsHandler struct {
+	Bns client.BnsClient
+}
+
+// TermdepositDepositsHandler  godoc
+// @Summary Returns a list of bnsd/x/termdeposit Deposit entities (individual deposits).
+// @Description At most one of the query parameters must exist (excluding offset).
+// @Description The query may be filtered by Depositor, in which case it returns all the deposits from the Depositor.
+// @Description The query may be filtered by Deposit Contract, in which case it returns all the deposits from this Contract.
+// @Description The query may be filtered by Contract ID, in which case it returns the deposits from the Deposit Contract with this ID.
+// @Tags IOV token
+// @Param depositor query string false "Depositor address in bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex(C1721181E83376EF978AA4A9A38A5E27C08C7BB2)"
+// @Param contract query string false "Base64 encoded ID"
+// @Param contract_id query int false "Contract ID as integer"
+// @Success 200 {object} handlers.MultipleObjectsResponse
+// @Failure 404
+// @Failure 500
+// @Router /termdeposit/deposits [get]
+func (h *TermdepositDepositsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+
+	if !AtMostOne(q, "depositor", "contract_id", "contract") {
+		JSONErr(w, http.StatusBadRequest, "At most one filter can be used at a time.")
+		return
+	}
+
+	var it client.ABCIIterator
+	offset := ExtractIDFromKey(q.Get("offset"))
+	if d := q.Get("depositor"); len(d) > 0 {
+		rawAddr, err := weave.ParseAddress(d)
+		if err != nil {
+			JSONErr(w, http.StatusBadRequest, "Depositor address must be a valid address value..")
+			return
+		}
+		end := NextKeyValue(rawAddr)
+		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/deposits/depositor", fmt.Sprintf("%s:%x:%x", d, offset, end))
+	} else if c := q.Get("contract_id"); len(c) > 0 {
+		n, err := strconv.ParseInt(c, 10, 64)
+		if err != nil {
+			JSONErr(w, http.StatusBadGateway, "contract_id must be an integer contract sequence number.")
+			return
+		}
+		cid := EncodeSequence(uint64(n))
+		end := NextKeyValue(cid)
+		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/deposits/contract", fmt.Sprintf("%x:%x:%x", cid, offset, end))
+	} else if c := q.Get("contract"); len(c) > 0 {
+		cid, err := base64.StdEncoding.DecodeString(c)
+		if err != nil {
+			JSONErr(w, http.StatusBadGateway, "Contract must be a base64 encoded contract key.")
+			return
+		}
+		end := NextKeyValue(cid)
+		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/deposits/contract", fmt.Sprintf("%x:%x:%x", cid, offset, end))
+	} else {
+		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/deposits", fmt.Sprintf("%x:", offset))
+	}
+
+	objects := make([]KeyValue, 0, PaginationMaxItems)
+fetchDeposits:
+	for {
+		var d termdeposit.Deposit
+		switch key, err := it.Next(&d); {
+		case err == nil:
+			objects = append(objects, KeyValue{
+				Key:   key,
+				Value: &d,
+			})
+			if len(objects) == PaginationMaxItems {
+				break fetchDeposits
+			}
+		case errors.ErrIteratorDone.Is(err):
+			break fetchDeposits
+		default:
+			log.Printf("termdeposit deposit ABCI query: %s", err)
+			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			return
+		}
+	}
+
+	JSONResp(w, http.StatusOK, MultipleObjectsResponse{
 		Objects: objects,
 	})
 }
@@ -354,7 +469,7 @@ func (h *GconfHandler) knownConfigurations() []string {
 }
 
 func (h *GconfHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	extensionName := lastChunk(r.URL.Path)
+	extensionName := LastChunk(r.URL.Path)
 	if extensionName == "" {
 		JSONErr(w, http.StatusNotFound,
 			fmt.Sprintf("Extension name must be provided. Supported extensions are %q", h.knownConfigurations()))
@@ -416,7 +531,7 @@ type BlocksHandler struct {
 // @Redirect 303
 // @Router /blocks/{blockHeight} [get]
 func (h *BlocksHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	heightStr := lastChunk(r.URL.Path)
+	heightStr := LastChunk(r.URL.Path)
 	if heightStr == "" {
 		JSONRedirect(w, http.StatusSeeOther, "/blocks/1")
 		return
@@ -437,33 +552,26 @@ func (h *BlocksHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	JSONResp(w, http.StatusOK, payload)
 }
 
-// lastChunk returns last path chunk - everything after the last `/` character.
-// For example LAST in /foo/bar/LAST and empty string in /foo/bar/
-func lastChunk(path string) string {
-	for i := len(path) - 1; i >= 0; i-- {
-		if path[i] == '/' {
-			return path[i+1:]
-		}
-	}
-	return path
-}
-
 // DefaultHandler is used to handle the request that no other handler wants.
 type DefaultHandler struct{}
 
 var wEndpoint = []string{
+	"/account/accounts/?domainKey=_&ownerKey=_",
+	"/account/domains/?admin=_&offset=_",
+	"/account/accounts/{accountKey}",
 	"/cash/balances?address=_[OR]offset=_",
 	"/username/resolve/{username}",
 	"/username/owner/{ownerAddress}",
 	"/escrow/escrows/?source=_&destination=_&offset=_",
 	"/multisig/contracts/?offset=_",
+	"/termdeposit/contracts/?offset=_",
+	"/termdeposit/deposits/?depositor=_&contract=_&contract_id=?_offset=_",
 }
 
 var withoutParamEndpoint = []string{
 	"/info/",
 	"/gov/proposals",
 	"/gov/votes",
-	"/account/accounts/{accountKey}",
 	"/blocks/{blockHeight}",
 	"/gconf/{extensionName}",
 }
@@ -525,7 +633,7 @@ type CashBalanceHandler struct {
 func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
-	if !atMostOne(q, "address", "offset") {
+	if !AtMostOne(q, "address", "offset") {
 		JSONErr(w, http.StatusBadRequest, "At most one filter can be used at a time.")
 		return
 	}
@@ -535,7 +643,7 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(key, "iov") || strings.HasPrefix(key, "tiov") {
 			key = "bech32:" + key
 		}
-		addr, err := weaveAddressFromQuery(key)
+		addr, err := WeaveAddressFromQuery(key)
 
 		if err != nil {
 			log.Print(err)
@@ -558,10 +666,10 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		// query all wallets
-		offset := extractIDFromKey(q.Get("offset"))
+		offset := ExtractIDFromKey(q.Get("offset"))
 		it := client.ABCIRangeQuery(r.Context(), h.Bns, "/wallets", fmt.Sprintf("%x:", offset))
 
-		objects := make([]KeyValue, 0, paginationMaxItems)
+		objects := make([]KeyValue, 0, PaginationMaxItems)
 	fetchBalances:
 		for {
 			var set cash.Set
@@ -571,7 +679,7 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					Key:   key,
 					Value: &set,
 				})
-				if len(objects) == paginationMaxItems {
+				if len(objects) == PaginationMaxItems {
 					break fetchBalances
 				}
 			case errors.ErrIteratorDone.Is(err):
@@ -583,207 +691,8 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		JSONResp(w, http.StatusOK, struct {
-			Objects []KeyValue `json:"objects"`
-		}{
+		JSONResp(w, http.StatusOK, MultipleObjectsResponse{
 			Objects: objects,
 		})
 	}
-}
-
-type UsernameOwnerHandler struct {
-	Bns client.BnsClient
-}
-
-func (h *UsernameOwnerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	rawKey := lastChunk(r.URL.Path)
-	key, err := weaveAddressFromQuery(rawKey)
-	if err != nil {
-		log.Print(err)
-		JSONErr(w, http.StatusBadRequest, "wrong input, must be address")
-		return
-	}
-
-	var token username.Token
-	res := models.KeyModel{
-		Model: &token,
-	}
-	switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/usernames/owner", key, &res); {
-	case err == nil:
-		JSONResp(w, http.StatusOK, res)
-	case errors.ErrNotFound.Is(err):
-		JSONErr(w, http.StatusNotFound, "Username not found by owner")
-	default:
-		log.Printf("account ABCI query: %s", err)
-		JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-	}
-}
-
-type UsernameResolveHandler struct {
-	Bns client.BnsClient
-}
-
-// UsernameResolveHandler godoc
-// @Summary Returns the username object with associated info for an iov username, like bob*iov
-// @Tags Starname
-// @Param username path string false "username. example: bob*iov"
-// @Success 200 {object} username.Token
-// @Failure 404
-// @Failure 500
-// @Router /username/resolve/{username} [get]
-func (h *UsernameResolveHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	uname := lastChunk(r.URL.Path)
-	if uname != "" {
-		var token username.Token
-		res := models.KeyModel{
-			Model: &token,
-		}
-		switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/usernames", []byte(uname), &res); {
-		case err == nil:
-			JSONResp(w, http.StatusOK, res)
-		case errors.ErrNotFound.Is(err):
-			JSONErr(w, http.StatusNotFound, "Username not found")
-		default:
-			log.Printf("account ABCI query: %s", err)
-			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-		}
-	} else {
-		JSONErr(w, http.StatusBadRequest, "Bad username input")
-	}
-}
-
-// atMostOne returns true if at most one non empty value from given list of
-// names exists in the query.
-func atMostOne(query url.Values, names ...string) bool {
-	var nonempty int
-	for _, name := range names {
-		if query.Get(name) != "" {
-			nonempty++
-		}
-		if nonempty > 1 {
-			return false
-		}
-	}
-	return true
-}
-
-func extractIDFromKey(key string) []byte {
-	raw, err := weaveAddressFromQuery(key)
-	if err != nil {
-		// Cannot decode, return everything.
-		return []byte(key)
-	}
-	for i, c := range raw {
-		if c == ':' {
-			return raw[i+1:]
-		}
-	}
-	return raw
-}
-
-// paginationMaxItems defines how many items should a single result return.
-// This values should not be greater than orm.queryRangeLimit so that each
-// query returns enough results.
-const paginationMaxItems = 50
-
-type KeyValue struct {
-	Key   hexbytes  `json:"key"`
-	Value orm.Model `json:"value"`
-}
-
-// hexbytes is a byte type that JSON serialize to hex encoded string.
-type hexbytes []byte
-
-func (b hexbytes) MarshalJSON() ([]byte, error) {
-	return json.Marshal(hex.EncodeToString(b))
-}
-
-func (b *hexbytes) UnmarshalJSON(enc []byte) error {
-	var s string
-	if err := json.Unmarshal(enc, &s); err != nil {
-		return err
-	}
-	val, err := hex.DecodeString(s)
-	if err != nil {
-		return err
-	}
-	*b = val
-	return nil
-}
-
-// JSONResp write content as JSON encoded response.
-func JSONResp(w http.ResponseWriter, code int, content interface{}) {
-	b, err := json.MarshalIndent(content, "", "\t")
-	if err != nil {
-		log.Printf("cannot JSON serialize response: %s", err)
-		code = http.StatusInternalServerError
-		b = []byte(`{"errors":["Internal Server Errror"]}`)
-	}
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(code)
-
-	const MB = 1 << (10 * 2)
-	if len(b) > MB {
-		log.Printf("response JSON body is huge: %d", len(b))
-	}
-	_, _ = w.Write(b)
-}
-
-// JSONErr write single error as JSON encoded response.
-func JSONErr(w http.ResponseWriter, code int, errText string) {
-	JSONErrs(w, code, []string{errText})
-}
-
-// JSONErrs write multiple errors as JSON encoded response.
-func JSONErrs(w http.ResponseWriter, code int, errs []string) {
-	resp := struct {
-		Errors []string `json:"errors"`
-	}{
-		Errors: errs,
-	}
-	JSONResp(w, code, resp)
-}
-
-// JSONRedirect return redirect response, but with JSON formatted body.
-func JSONRedirect(w http.ResponseWriter, code int, urlStr string) {
-	w.Header().Set("Location", urlStr)
-	var content = struct {
-		Code     int
-		Location string
-	}{
-		Code:     code,
-		Location: urlStr,
-	}
-	JSONResp(w, code, content)
-}
-
-func nextKeyValue(b []byte) []byte {
-	if len(b) == 0 {
-		return nil
-	}
-	next := make([]byte, len(b))
-	copy(next, b)
-
-	// If the last value does not overflow, increment it. Otherwise this is
-	// an edge case and key must be extended.
-	if next[len(next)-1] < math.MaxUint8 {
-		next[len(next)-1]++
-	} else {
-		next = append(next, 0)
-	}
-	return next
-}
-
-func weaveAddressFromQuery(rawAddr string) (weave.Address, error) {
-	if strings.HasPrefix(rawAddr, "iov") || strings.HasPrefix(rawAddr, "tiov") {
-		rawAddr = "bech32:" + rawAddr
-	}
-	addr, err := weave.ParseAddress(rawAddr)
-	return addr, err
-}
-
-func encodeSequence(val uint64) []byte {
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, val)
-	return bz
 }
