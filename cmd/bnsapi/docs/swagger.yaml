@@ -53,6 +53,8 @@ definitions:
         description: An arbitrary blockchain ID.
         type: string
     type: object
+  gconf.Configuration:
+    type: object
   handlers.KeyValue:
     properties:
       key:
@@ -138,7 +140,11 @@ paths:
       - description: The owner address format is either in iov address (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr)
           or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2)
         in: query
-        name: ownerAddress
+        name: owner
+        type: string
+      - description: Query by domain
+        in: query
+        name: domain
         type: string
       - description: Pagination offset
         in: query
@@ -163,7 +169,7 @@ paths:
       - description: The admin address may be in the bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr)
           or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2) format.
         in: query
-        name: adminAddress
+        name: admin
         type: string
       - description: Pagination offset
         in: query
@@ -252,7 +258,10 @@ paths:
         name: destination
         type: string
       responses:
-        "200": {}
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.MultipleObjectsResponse'
         "400": {}
         "404": {}
         "500": {}
@@ -268,7 +277,10 @@ paths:
         required: true
         type: string
       responses:
-        "200": {}
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gconf.Configuration'
         "404": {}
         "500": {}
       summary: Get configuration with extension name
@@ -290,12 +302,19 @@ paths:
         in: query
         name: elector
         type: string
-      - description: Elector ID
+      - description: Integer Electorate ID
         in: query
-        name: electorID
+        name: electorate_id
         type: integer
+      - description: Pagination offset
+        in: query
+        name: offset
+        type: string
       responses:
-        "200": {}
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.MultipleObjectsResponse'
         "400": {}
         "404": {}
         "500": {}
@@ -310,20 +329,27 @@ paths:
         in: query
         name: proposal
         type: string
-      - description: Proposal ID
+      - description: Integer encoded Proposal ID
         in: query
-        name: proposalID
+        name: proposal_id
         type: integer
       - description: Base64 encoded Elector ID
         in: query
         name: elector
         type: string
-      - description: Elector ID
+      - description: Integer encoded Elector ID
         in: query
-        name: electorID
+        name: elector_id
         type: integer
+      - description: Pagination offset
+        in: query
+        name: offset
+        type: string
       responses:
-        "200": {}
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.MultipleObjectsResponse'
         "400": {}
         "404": {}
         "500": {}
@@ -341,12 +367,15 @@ paths:
     get:
       description: At most one of the query parameters must exist(excluding offset)
       parameters:
-      - description: Iteration offset
+      - description: Pagination offset
         in: query
         name: offset
         type: string
       responses:
-        "200": {}
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.MultipleObjectsResponse'
         "404": {}
         "500": {}
       summary: Returns a list of all the multisig Contracts.
@@ -388,10 +417,14 @@ paths:
         in: query
         name: contract
         type: string
-      - description: Contract ID as integer
+      - description: Integer encoded Contract ID
         in: query
         name: contract_id
         type: integer
+      - description: Pagination offset
+        in: query
+        name: offset
+        type: string
       responses:
         "200":
           description: OK
@@ -405,10 +438,10 @@ paths:
   /username/owner/{address}:
     get:
       parameters:
-      - description: 'Address. example: C1721181E83376EF978AA4A9A38A5E27C08C7BB2 or
-          iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr'
+      - description: 'Address. example: 04C3DB7CCCACF58EEFCC296FF7AD0F6DB7C2FA17 or
+          iov1qnpaklxv4n6cam7v99hl0tg0dkmu97sh6007un'
         in: path
-        name: owner
+        name: address
         type: string
       responses:
         "200":

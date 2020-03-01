@@ -36,8 +36,9 @@ type GovProposalsHandler struct {
 // @Param author query string false "Author address"
 // @Param electorate query string false "Base64 encoded electorate ID"
 // @Param elector query string false "Base64 encoded Elector ID"
-// @Param electorID query int false "Elector ID"
-// @Success 200
+// @Param electorate_id query int false "Integer Electorate ID"
+// @Param offset query string false "Pagination offset"
+// @Success 200 {object} handlers.MultipleObjectsResponse
 // @Failure 404
 // @Failure 400
 // @Failure 500
@@ -117,10 +118,11 @@ type GovVotesHandler struct {
 // @Description At most one of the query parameters must exist(excluding offset)
 // @Tags Governance
 // @Param proposal query string false "Base64 encoded Proposal ID"
-// @Param proposalID query int false "Proposal ID"
+// @Param proposal_id query int false "Integer encoded Proposal ID"
 // @Param elector query string false "Base64 encoded Elector ID"
-// @Param electorID query int false "Elector ID"
-// @Success 200
+// @Param elector_id query int false "Integer encoded Elector ID"
+// @Param offset query string false "Pagination offset"
+// @Success 200 {object} handlers.MultipleObjectsResponse
 // @Failure 404
 // @Failure 400
 // @Failure 500
@@ -212,7 +214,7 @@ type EscrowEscrowsHandler struct {
 // @Param offset query string false "Iteration offset"
 // @Param source query string false "Source address"
 // @Param destination query string false "Destination address"
-// @Success 200
+// @Success 200 {object} handlers.MultipleObjectsResponse
 // @Failure 404
 // @Failure 400
 // @Failure 500
@@ -282,8 +284,8 @@ type MultisigContractsHandler struct {
 // @Summary Returns a list of all the multisig Contracts.
 // @Description At most one of the query parameters must exist(excluding offset)
 // @Tags IOV token
-// @Param offset query string false "Iteration offset"
-// @Success 200
+// @Param offset query string false "Pagination offset"
+// @Success 200 {object} handlers.MultipleObjectsResponse
 // @Failure 404
 // @Failure 500
 // @Router /multisig/contracts [get]
@@ -375,7 +377,8 @@ type TermdepositDepositsHandler struct {
 // @Tags IOV token
 // @Param depositor query string false "Depositor address in bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex(C1721181E83376EF978AA4A9A38A5E27C08C7BB2)"
 // @Param contract query string false "Base64 encoded ID"
-// @Param contract_id query int false "Contract ID as integer"
+// @Param contract_id query int false "Integer encoded Contract ID"
+// @Param offset query string false "Pagination offset"
 // @Success 200 {object} handlers.MultipleObjectsResponse
 // @Failure 404
 // @Failure 500
@@ -451,14 +454,6 @@ type GconfHandler struct {
 	Confs map[string]func() gconf.Configuration
 }
 
-// GConfHandler godoc
-// @Summary Get configuration with extension name
-// @Tags Status
-// @Param extensionName path string true "Extension name"
-// @Success 200
-// @Failure 404
-// @Failure 500
-// @Router /gconf/{extensionName} [get]
 func (h *GconfHandler) knownConfigurations() []string {
 	known := make([]string, 0, len(h.Confs))
 	for name := range h.Confs {
@@ -468,6 +463,14 @@ func (h *GconfHandler) knownConfigurations() []string {
 	return known
 }
 
+// GconfHandler godoc
+// @Summary Get configuration with extension name
+// @Tags Status
+// @Param extensionName path string true "Extension name"
+// @Success 200 {object} gconf.Configuration
+// @Failure 404
+// @Failure 500
+// @Router /gconf/{extensionName} [get]
 func (h *GconfHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	extensionName := LastChunk(r.URL.Path)
 	if extensionName == "" {

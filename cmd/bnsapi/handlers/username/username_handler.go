@@ -17,13 +17,15 @@ type OwnerHandler struct {
 // OwnerHandler godoc
 // @Summary Returns the username object with associated info for an owner
 // @Tags Starname
-// @Param owner path string false "Address. example: C1721181E83376EF978AA4A9A38A5E27C08C7BB2 or iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr"
+// @Param address path string false "Address. example: 04C3DB7CCCACF58EEFCC296FF7AD0F6DB7C2FA17 or iov1qnpaklxv4n6cam7v99hl0tg0dkmu97sh6007un"
 // @Success 200 {object} username.Token
 // @Failure 404
 // @Failure 500
 // @Router /username/owner/{address} [get]
 func (h *OwnerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	rawKey := handlers.LastChunk(r.URL.Path)
+	log.Print(r.URL.Path)
+	log.Print(rawKey)
 	key, err := handlers.WeaveAddressFromQuery(rawKey)
 	if err != nil {
 		log.Print(err)

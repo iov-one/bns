@@ -23,7 +23,13 @@
                     {
                         "type": "string",
                         "description": "The owner address format is either in iov address (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2)",
-                        "name": "ownerAddress",
+                        "name": "owner",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Query by domain",
+                        "name": "domain",
                         "in": "query"
                     },
                     {
@@ -56,7 +62,7 @@
                     {
                         "type": "string",
                         "description": "The admin address may be in the bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2) format.",
-                        "name": "adminAddress",
+                        "name": "admin",
                         "in": "query"
                     },
                     {
@@ -183,7 +189,12 @@
                     }
                 ],
                 "responses": {
-                    "200": {},
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.MultipleObjectsResponse"
+                        }
+                    },
                     "400": {},
                     "404": {},
                     "500": {}
@@ -206,7 +217,12 @@
                     }
                 ],
                 "responses": {
-                    "200": {},
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gconf.Configuration"
+                        }
+                    },
                     "404": {},
                     "500": {}
                 }
@@ -240,13 +256,24 @@
                     },
                     {
                         "type": "integer",
-                        "description": "Elector ID",
-                        "name": "electorID",
+                        "description": "Integer Electorate ID",
+                        "name": "electorate_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Pagination offset",
+                        "name": "offset",
                         "in": "query"
                     }
                 ],
                 "responses": {
-                    "200": {},
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.MultipleObjectsResponse"
+                        }
+                    },
                     "400": {},
                     "404": {},
                     "500": {}
@@ -269,8 +296,8 @@
                     },
                     {
                         "type": "integer",
-                        "description": "Proposal ID",
-                        "name": "proposalID",
+                        "description": "Integer encoded Proposal ID",
+                        "name": "proposal_id",
                         "in": "query"
                     },
                     {
@@ -281,13 +308,24 @@
                     },
                     {
                         "type": "integer",
-                        "description": "Elector ID",
-                        "name": "electorID",
+                        "description": "Integer encoded Elector ID",
+                        "name": "elector_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Pagination offset",
+                        "name": "offset",
                         "in": "query"
                     }
                 ],
                 "responses": {
-                    "200": {},
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.MultipleObjectsResponse"
+                        }
+                    },
                     "400": {},
                     "404": {},
                     "500": {}
@@ -315,13 +353,18 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Iteration offset",
+                        "description": "Pagination offset",
                         "name": "offset",
                         "in": "query"
                     }
                 ],
                 "responses": {
-                    "200": {},
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.MultipleObjectsResponse"
+                        }
+                    },
                     "404": {},
                     "500": {}
                 }
@@ -376,8 +419,14 @@
                     },
                     {
                         "type": "integer",
-                        "description": "Contract ID as integer",
+                        "description": "Integer encoded Contract ID",
                         "name": "contract_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Pagination offset",
+                        "name": "offset",
                         "in": "query"
                     }
                 ],
@@ -402,8 +451,8 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Address. example: C1721181E83376EF978AA4A9A38A5E27C08C7BB2 or iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr",
-                        "name": "owner",
+                        "description": "Address. example: 04C3DB7CCCACF58EEFCC296FF7AD0F6DB7C2FA17 or iov1qnpaklxv4n6cam7v99hl0tg0dkmu97sh6007un",
+                        "name": "address",
                         "in": "path"
                     }
                 ],
@@ -499,6 +548,9 @@
                     "type": "string"
                 }
             }
+        },
+        "gconf.Configuration": {
+            "type": "object"
         },
         "handlers.KeyValue": {
             "type": "object",

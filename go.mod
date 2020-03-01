@@ -9,6 +9,7 @@ require (
 	github.com/golang/protobuf v1.3.3 // indirect
 	github.com/iov-one/weave v1.0.0
 	github.com/mailru/easyjson v0.7.0 // indirect
+	github.com/prometheus/common v0.4.0
 	github.com/swaggo/http-swagger v0.0.0-20200103000832-0e9263c4b516
 	github.com/swaggo/swag v1.6.5
 	github.com/tendermint/go-amino v0.15.1 // indirect

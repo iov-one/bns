@@ -20,7 +20,7 @@ type DomainsHandler struct {
 // @Summary Returns a list of `bnsd/x/domain` entities (like *neuma).
 // @Description The list of all premium starnames for a given admin.
 // @Description If no admin address is provided, you get the list of all premium starnames.
-// @Param adminAddress query string false "The admin address may be in the bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2) format."
+// @Param admin query string false "The admin address may be in the bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2) format."
 // @Param offset query string false "Pagination offset"
 // @Tags Starname
 // @Success 200 {object} handlers.MultipleObjectsResponse
@@ -111,7 +111,8 @@ type AccountsHandler struct {
 // @Description
 // @Tags Starname
 // @Param starname query string false "Premium Starname ex: *neuma"
-// @Param ownerAddress query string false "The owner address format is either in iov address (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2)"
+// @Param owner query string false "The owner address format is either in iov address (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2)"
+// @Param domain query string false "Query by domain"
 // @Param offset query string false "Pagination offset"
 // @Success 200 {object} handlers.MultipleObjectsResponse
 // @Failure 404
