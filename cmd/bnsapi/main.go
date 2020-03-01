@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/iov-one/bns/cmd/bnsapi/handlers/termdeposit"
 
 	"github.com/iov-one/bns/cmd/bnsapi/client"
 	"github.com/iov-one/bns/cmd/bnsapi/docs"
@@ -84,8 +85,8 @@ func run(conf Configuration) error {
 	rt.Handle("/account/resolve/", &accountHandlers.DetailHandler{Bns: bnscli})
 	rt.Handle("/username/owner/", &usernameHandlers.OwnerHandler{Bns: bnscli})
 	rt.Handle("/cash/balances", &handlers.CashBalanceHandler{Bns: bnscli})
-	rt.Handle("/termdeposit/contracts", &handlers.TermdepositContractsHandler{Bns: bnscli})
-	rt.Handle("/termdeposit/deposits", &handlers.TermdepositDepositsHandler{Bns: bnscli})
+	rt.Handle("/termdeposit/contracts", &termdeposits.ContractsHandler{Bns: bnscli})
+	rt.Handle("/termdeposit/deposits", &termdeposits.DepositsHandler{Bns: bnscli})
 	rt.Handle("/multisig/contracts", &handlers.MultisigContractsHandler{Bns: bnscli})
 	rt.Handle("/escrow/escrows", &handlers.EscrowEscrowsHandler{Bns: bnscli})
 	rt.Handle("/gov/proposals", &handlers.GovProposalsHandler{Bns: bnscli})
