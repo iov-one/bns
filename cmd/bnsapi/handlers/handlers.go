@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/models"
+	"github.com/iov-one/weave/x/msgfee"
 	"html/template"
 	"log"
 	"net/http"
@@ -567,4 +568,50 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			Objects: objects,
 		})
 	}
+}
+
+type MsgFeeHandler struct {
+	Bns client.BnsClient
+}
+
+// MsgFeeHandler godoc
+// @Summary Return message fee information based on message path: username/register_token
+// @Description Return message fee information based on message path: username/register_token
+// @Param msgFeePrefix query string false "msgfee key ex: account, username etc..." if no parameter is given, it will return all the msgfees
+// @Tags Message Fee
+// @Success 200 {object} msgfee.MsgFee
+// @Failure 404
+// @Failure 500
+// @Router /msgfee/msgfees [get]
+func (h *MsgFeeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	msgFeePrefix := q.Get("msgFeePrefix")
+
+	it := client.ABCIPrefixQuery(r.Context(), h.Bns, "/msgfee", []byte(msgFeePrefix))
+	
+	objects := make([]KeyValue, 0, PaginationMaxItems)
+fetchMsgFees:
+	for {
+		var msgFee msgfee.MsgFee
+		switch key, err := it.Next(&msgFee); {
+		case err == nil:
+			objects = append(objects, KeyValue{
+				Key:   key,
+				Value: &msgFee,
+			})
+			if len(objects) == PaginationMaxItems {
+				break fetchMsgFees
+			}
+		case errors.ErrIteratorDone.Is(err):
+			break fetchMsgFees
+		default:
+			log.Printf("msgfee ABCI query: %s", err)
+			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			return
+		}
+	}
+
+	JSONResp(w, http.StatusOK, MultipleObjectsResponse{
+		Objects: objects,
+	})
 }

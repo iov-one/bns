@@ -343,6 +343,33 @@
                 }
             }
         },
+        "/msgfee/msgfees": {
+            "get": {
+                "description": "Return message fee information based on message path: username/register_token",
+                "tags": [
+                    "Message Fee"
+                ],
+                "summary": "Return message fee information based on message path: username/register_token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "msgfee key ex: account, username etc...",
+                        "name": "msgFeePrefix",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/msgfee.MsgFee"
+                        }
+                    },
+                    "404": {},
+                    "500": {}
+                }
+            }
+        },
         "/multisig/contracts": {
             "get": {
                 "description": "At most one of the query parameters must exist(excluding offset)",
@@ -549,6 +576,23 @@
                 }
             }
         },
+        "coin.Coin": {
+            "type": "object",
+            "properties": {
+                "fractional": {
+                    "description": "Billionth of coins. 0 \u003c= abs(fractional) \u003c 10^9\nIf fractional != 0, must have same sign as integer",
+                    "type": "integer"
+                },
+                "ticker": {
+                    "description": "Ticker is 3-4 upper-case letters and\nall Coins of the same currency can be combined",
+                    "type": "string"
+                },
+                "whole": {
+                    "description": "Whole coins, -10^15 \u003c integer \u003c 10^15",
+                    "type": "integer"
+                }
+            }
+        },
         "gconf.Configuration": {
             "type": "object"
         },
@@ -580,6 +624,22 @@
             "type": "array",
             "items": {
                 "type": "integer"
+            }
+        },
+        "msgfee.MsgFee": {
+            "type": "object",
+            "properties": {
+                "fee": {
+                    "type": "object",
+                    "$ref": "#/definitions/coin.Coin"
+                },
+                "metadata": {
+                    "type": "object",
+                    "$ref": "#/definitions/weave.Metadata"
+                },
+                "msg_path": {
+                    "type": "string"
+                }
             }
         },
         "orm.Model": {

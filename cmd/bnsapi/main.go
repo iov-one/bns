@@ -92,6 +92,7 @@ func run(conf Configuration) error {
 	rt.Handle("/gov/proposals", &handlers.GovProposalsHandler{Bns: bnscli})
 	rt.Handle("/gov/votes", &handlers.GovVotesHandler{Bns: bnscli})
 	rt.Handle("/gconf/", &handlers.GconfHandler{Bns: bnscli, Confs: gconfConfigurations})
+	rt.Handle("/msgfee/msgfees", &handlers.MsgFeeHandler{Bns: bnscli})
 	rt.Handle("/", &handlers.DefaultHandler{})
 
 	docs.SwaggerInfo.Title = "IOV Name Service Rest API"

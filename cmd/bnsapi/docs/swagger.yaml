@@ -53,6 +53,22 @@ definitions:
         description: An arbitrary blockchain ID.
         type: string
     type: object
+  coin.Coin:
+    properties:
+      fractional:
+        description: |-
+          Billionth of coins. 0 <= abs(fractional) < 10^9
+          If fractional != 0, must have same sign as integer
+        type: integer
+      ticker:
+        description: |-
+          Ticker is 3-4 upper-case letters and
+          all Coins of the same currency can be combined
+        type: string
+      whole:
+        description: Whole coins, -10^15 < integer < 10^15
+        type: integer
+    type: object
   gconf.Configuration:
     type: object
   handlers.KeyValue:
@@ -75,6 +91,17 @@ definitions:
     items:
       type: integer
     type: array
+  msgfee.MsgFee:
+    properties:
+      fee:
+        $ref: '#/definitions/coin.Coin'
+        type: object
+      metadata:
+        $ref: '#/definitions/weave.Metadata'
+        type: object
+      msg_path:
+        type: string
+    type: object
   orm.Model:
     type: object
   username.BlockchainAddress:
@@ -363,6 +390,24 @@ paths:
       summary: Returns information about this instance of `bnsapi`.
       tags:
       - Status
+  /msgfee/msgfees:
+    get:
+      description: 'Return message fee information based on message path: username/register_token'
+      parameters:
+      - description: 'msgfee key ex: account, username etc...'
+        in: query
+        name: msgFeePrefix
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/msgfee.MsgFee'
+        "404": {}
+        "500": {}
+      summary: 'Return message fee information based on message path: username/register_token'
+      tags:
+      - Message Fee
   /multisig/contracts:
     get:
       description: At most one of the query parameters must exist(excluding offset)

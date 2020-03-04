@@ -184,6 +184,78 @@ consumeIterator:
 	}
 }
 
+func TestABCIPrefixQuery(t *testing.T) {
+	// Run a fake Tendermint API server that will answer to only expected
+	// query requests.
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/abci_query" {
+			t.Fatalf("unexpected path: %q", r.URL)
+		}
+		q := r.URL.Query()
+		switch {
+		case q.Get("path") == `"/myquery?prefix"` && q.Get("data") == `""`:
+			writeServerResponse(t, w, [][]byte{
+				[]byte("0001"),
+				[]byte("0002"),
+				[]byte("0003"),
+			}, []weave.Persistent{
+				&persistentMock{Raw: []byte("1")},
+				&persistentMock{Raw: []byte("2")},
+				&persistentMock{Raw: []byte("3")},
+			})
+		case q.Get("path") == `"/myquery?prefix"` && q.Get("data") == `"0001"`:
+			writeServerResponse(t, w, [][]byte{
+				[]byte("0001"),
+				[]byte("0002"),
+				[]byte("0003"),
+			}, []weave.Persistent{
+				&persistentMock{Raw: []byte("1")},
+				&persistentMock{Raw: []byte("2")},
+				&persistentMock{Raw: []byte("3")},
+			})
+		default:
+			t.Logf("query: %q", q.Get("query"))
+			t.Logf("data: %q", q.Get("data"))
+			t.Errorf("not supported request: %q", r.URL)
+			http.Error(w, "not supported", http.StatusNotImplemented)
+		}
+	}))
+	defer srv.Close()
+
+	bns := NewHTTPBnsClient(srv.URL)
+	it := ABCIPrefixQuery(context.Background(), bns, "/myquery", []byte(""))
+
+	var keys [][]byte
+consumeIterator:
+	for {
+		switch key, err := it.Next(ignoreModel{}); {
+		case err == nil:
+			keys = append(keys, key)
+		case errors.ErrIteratorDone.Is(err):
+			break consumeIterator
+		default:
+			t.Fatalf("iterator failed: %s", err)
+		}
+
+	}
+
+	// ABCIFullRangeQuery iterator must return all available keys in the
+	// right order and each key only once. We do not check values because
+	// we ignore them in this test.
+	wantKeys := [][]byte{
+		[]byte("0001"),
+		[]byte("0002"),
+		[]byte("0003"),
+	}
+
+	if !reflect.DeepEqual(wantKeys, keys) {
+		for i, k := range keys {
+			t.Logf("key %2d: %q", i, k)
+		}
+		t.Fatalf("unexpected %d keys", len(keys))
+	}
+}
+
 // ignoreModel is a stub. Its unmarshal is a no-op. Use it together with an
 // iterator if you do not care about the result unloading.
 type ignoreModel struct {

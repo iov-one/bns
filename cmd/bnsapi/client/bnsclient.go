@@ -191,6 +191,32 @@ func ABCIRangeQuery(ctx context.Context, c BnsClient, path string, data string) 
 	}
 }
 
+func ABCIPrefixQuery(ctx context.Context, c BnsClient, path string, prefix []byte) ABCIIterator {
+	v := make(url.Values)
+	v.Add("path", `"`+path+`?prefix"`)
+	v.Add("data", `"`+string(prefix)+`"`)
+	apiPath := "/abci_query?" + v.Encode()
+
+	var abciResponse AbciQueryResponse
+	if err := c.Get(ctx, apiPath, &abciResponse); err != nil {
+		return &resultIterator{err: errors.Wrap(err, "bns client")}
+	}
+
+	var values weaveapp.ResultSet
+	if err := values.Unmarshal(abciResponse.Response.Value); err != nil {
+		return &resultIterator{err: errors.Wrap(err, "unmarshal values response")}
+	}
+	var keys weaveapp.ResultSet
+	if err := keys.Unmarshal(abciResponse.Response.Key); err != nil {
+		return &resultIterator{err: errors.Wrap(err, "unmarshal keys response")}
+	}
+
+	return &resultIterator{
+		keys:   keys.Results,
+		values: values.Results,
+	}
+}
+
 type AbciQueryResponse struct {
 	Response AbciQueryResponseResponse
 }
