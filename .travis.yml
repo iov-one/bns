@@ -31,6 +31,7 @@ env:
   global:
     - GO111MODULE=on
     - TM_VERSION=v0.31.11
+    - BNSD_VERSION=v1.0.0
     - BUILD_VERSION=$(echo ${TRAVIS_COMMIT} | cut -c 1-10)
     - MAIN_GO_VERSION=1.13.5
     - GORACE="halt_on_error=1"
@@ -45,6 +46,13 @@ install:
   git checkout ${TM_VERSION} ;
   make get_tools && make check && make install ;
   cd -;
+  ## TODO Discard this when bnsd is moved
+- go get -d github.com/iov-one/weave/... ;
+  cd ${GOPATH}/src/github.com/iov-one/weave;
+  git checkout ${BNSD_VERSION} ;
+  make install ;
+  cd -;
+
 
 script:
 - set -eo pipefail

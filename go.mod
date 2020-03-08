@@ -10,7 +10,6 @@ require (
 	github.com/iov-one/weave v1.0.0
 	github.com/mailru/easyjson v0.7.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0
-	github.com/prometheus/common v0.4.0
 	github.com/stellar/go v0.0.0-20190723221356-14eed5a46caf
 	github.com/swaggo/http-swagger v0.0.0-20200103000832-0e9263c4b516
 	github.com/swaggo/swag v1.6.5
