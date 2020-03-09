@@ -45,8 +45,8 @@ install:
   unzip tendermint_linux_amd64.zip &&
   sudo install -D -m 777 -o root tendermint /usr/local/bin
   ## TODO Discard this when bnsd is moved
-- wget --quiet https://github.com/iov-one/weave/releases/download/${BNSD_VERSION}/bnsd_${BNSD_VERSION}_linux_amd64.zip -O bnsd_linux_amd64.zip &&
-  unzip bnsd_linux_amd64.zip &&
+- wget --quiet https://github.com/iov-one/weave/releases/download/${BNSD_VERSION}/bnsd-${BNSD_VERSION}-linux-amd64.tar.gz -O bnsd_linux_amd64.tar.gz &&
+  tar -xvzf bnsd_linux_amd64.tar.gz &&
   sudo install -D -m 777 -o root bnsd /usr/local/bin
 
 script:
