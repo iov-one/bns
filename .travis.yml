@@ -44,12 +44,16 @@ install:
 - wget --quiet https://github.com/tendermint/tendermint/releases/download/${TM_VERSION}/tendermint_${TM_VERSION}_linux_amd64.zip -O tendermint_linux_amd64.zip &&
   unzip tendermint_linux_amd64.zip &&
   sudo install -D -m 777 -o root tendermint /usr/local/bin
+- wget --quiet https://github.com/swaggo/swag/releases/download/v1.6.5/swag_1.6.5_Linux_i386.tar.gz -O swag_linux_amd64.zip &&
+  tar -xvzf swag_linux_amd64.zip;
+  sudo install -D -m 777 -o root swag /usr/local/bin
 
 script:
 - set -eo pipefail
 # TODO uncomment when bnsd is imported
 # - make protolint
 # - make protodocs
+- make swaggerdocs
 - make install
 - make all
 # - if [[ "$TRAVIS_GO_VERSION" == "$MAIN_GO_VERSION" ]]; then

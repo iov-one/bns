@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/models"
+	weavecrypto "github.com/iov-one/weave/crypto"
 	"github.com/iov-one/weave/x/msgfee"
+	"github.com/iov-one/weave/x/sigs"
 	"html/template"
 	"log"
 	"net/http"
@@ -432,6 +434,8 @@ var wEndpoint = []string{
 	"/account/accounts/?domainKey=_&ownerKey=_",
 	"/account/domains/?admin=_&offset=_",
 	"/account/accounts/{accountKey}",
+	"/account/nonce/address/{address}",
+	"/account/nonce/pubkey/{pubKey}",
 	"/cash/balances?address=_[OR]offset=_",
 	"/username/resolve/{username}",
 	"/username/owner/{ownerAddress}",
@@ -567,6 +571,75 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		JSONResp(w, http.StatusOK, MultipleObjectsResponse{
 			Objects: objects,
 		})
+	}
+}
+
+type NonceAddressHandler struct {
+	Bns client.BnsClient
+}
+
+// NonceAddressHandler godoc
+// @Summary Returns nonce based on an address
+// @Description Returns nonce and public key registered for a given address if it was ever used.
+// @Param address path string true "Address to query for nonce. ex: iov1qnpaklxv4n6cam7v99hl0tg0dkmu97sh6007un"
+// @Tags Nonce
+// @Success 200
+// @Failure 404
+// @Failure 500
+// @Router /account/nonce/address/{address} [get]
+func (h *NonceAddressHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	addressStr := LastChunk(r.URL.Path)
+	addr, err := WeaveAddressFromQuery(addressStr)
+	if err != nil {
+		JSONErr(w, http.StatusBadRequest, "provide a weave address")
+		return
+	}
+
+	var userData sigs.UserData
+	res := models.KeyModel{
+		Model: &userData,
+	}
+	switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/auth", addr, &res); {
+	case err == nil:
+		JSONResp(w, http.StatusOK, res)
+	case errors.ErrNotFound.Is(err):
+		JSONErr(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
+	default:
+		log.Printf("gconf ABCI query: %s", err)
+		JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+	}
+}
+
+type NoncePubKeyHandler struct {
+	Bns client.BnsClient
+}
+
+// NonceAddressHandler godoc
+// @Summary Returns nonce based on an address
+// @Description Returns nonce and public key registered for a given pubkey if it was ever used.
+// @Param pubKey path string true "Public key to query for nonce. ex: 12ee6f581fe55673a1e9e1382a0829e32075a0aa4763c968bc526e1852e78c95"
+// @Tags Nonce
+// @Success 200
+// @Failure 404
+// @Failure 500
+// @Router /account/nonce/pubkey/{pubKey} [get]
+func (h *NoncePubKeyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	pubKeyStr := LastChunk(r.URL.Path)
+	pubKey := weavecrypto.PublicKey_Ed25519{Ed25519:[]byte(pubKeyStr)}
+	addr := pubKey.Condition().Address()
+
+	var userData sigs.UserData
+	res := models.KeyModel{
+		Model: &userData,
+	}
+	switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/auth", addr, &res); {
+	case err == nil:
+		JSONResp(w, http.StatusOK, res)
+	case errors.ErrNotFound.Is(err):
+		JSONErr(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
+	default:
+		log.Printf("gconf ABCI query: %s", err)
+		JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 }
 

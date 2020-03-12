@@ -33,4 +33,3 @@ swagger-docs:
 	@cp -r ../../vendor .
 	$(SWAG_BASE) swag init --parseVendor
 	@rm -rf vendor
-

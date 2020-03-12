@@ -79,3 +79,6 @@ protogen:
 protodocs:
 	./scripts/clean_protos.sh
 	./scripts/build_protodocs_docker.sh
+
+swaggerdocs:
+	cd cmd/bnsapi && make docs && cd -;

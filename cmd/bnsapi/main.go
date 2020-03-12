@@ -83,6 +83,8 @@ func run(conf Configuration) error {
 	rt.Handle("/account/domains", &accountHandlers.DomainsHandler{Bns: bnscli})
 	rt.Handle("/account/accounts", &accountHandlers.AccountsHandler{Bns: bnscli})
 	rt.Handle("/account/resolve/", &accountHandlers.DetailHandler{Bns: bnscli})
+	rt.Handle("/account/nonce/address/", &handlers.NonceAddressHandler{Bns: bnscli})
+	rt.Handle("/account/nonce/pubkey/", &handlers.NoncePubKeyHandler{Bns: bnscli})
 	rt.Handle("/username/owner/", &usernameHandlers.OwnerHandler{Bns: bnscli})
 	rt.Handle("/cash/balances", &handlers.CashBalanceHandler{Bns: bnscli})
 	rt.Handle("/termdeposit/contracts", &termdeposits.ContractsHandler{Bns: bnscli})
