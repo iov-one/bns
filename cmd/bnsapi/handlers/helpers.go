@@ -2,10 +2,9 @@ package handlers
 
 import (
 	"encoding/binary"
-	"encoding/hex"
 	"encoding/json"
+	"github.com/iov-one/bns/cmd/bnsapi/util"
 	"github.com/iov-one/weave"
-	"github.com/iov-one/weave/orm"
 	"log"
 	"math"
 	"net/http"
@@ -14,7 +13,7 @@ import (
 )
 
 type MultipleObjectsResponse struct {
-	Objects []KeyValue `json:"objects"`
+	Objects []util.KeyValue `json:"objects"`
 }
 
 // AtMostOne returns true if at most one non empty value from given list of
@@ -44,36 +43,6 @@ func ExtractIDFromKey(key string) []byte {
 		}
 	}
 	return raw
-}
-
-// paginationMaxItems defines how many items should a single result return.
-// This values should not be greater than orm.queryRangeLimit so that each
-// query returns enough results.
-const PaginationMaxItems = 50
-
-type KeyValue struct {
-	Key   hexbytes  `json:"key"`
-	Value orm.Model `json:"value"`
-}
-
-// hexbytes is a byte type that JSON serialize to hex encoded string.
-type hexbytes []byte
-
-func (b hexbytes) MarshalJSON() ([]byte, error) {
-	return json.Marshal(hex.EncodeToString(b))
-}
-
-func (b *hexbytes) UnmarshalJSON(enc []byte) error {
-	var s string
-	if err := json.Unmarshal(enc, &s); err != nil {
-		return err
-	}
-	val, err := hex.DecodeString(s)
-	if err != nil {
-		return err
-	}
-	*b = val
-	return nil
 }
 
 // JSONResp write content as JSON encoded response.

@@ -5,6 +5,7 @@ import (
 	"github.com/iov-one/bns/cmd/bnsapi/client"
 	"github.com/iov-one/bns/cmd/bnsapi/handlers"
 	"github.com/iov-one/bns/cmd/bnsapi/models"
+	"github.com/iov-one/bns/cmd/bnsapi/util"
 	"github.com/iov-one/weave"
 	"github.com/iov-one/weave/cmd/bnsd/x/account"
 	"github.com/iov-one/weave/errors"
@@ -43,17 +44,17 @@ func (h *DomainsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/domains", fmt.Sprintf("%x:", offset))
 	}
 
-	objects := make([]handlers.KeyValue, 0, handlers.PaginationMaxItems)
+	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
 fetchDomains:
 	for {
 		var model account.Domain
 		switch key, err := it.Next(&model); {
 		case err == nil:
-			objects = append(objects, handlers.KeyValue{
+			objects = append(objects, util.KeyValue{
 				Key:   key,
 				Value: &model,
 			})
-			if len(objects) == handlers.PaginationMaxItems {
+			if len(objects) == util.PaginationMaxItems {
 				break fetchDomains
 			}
 		case errors.ErrIteratorDone.Is(err):
@@ -143,17 +144,17 @@ func (h *AccountsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/accounts", fmt.Sprintf("%x:", offset))
 	}
 
-	objects := make([]handlers.KeyValue, 0, handlers.PaginationMaxItems)
+	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
 fetchAccounts:
 	for {
 		var acc account.Account
 		switch key, err := it.Next(&acc); {
 		case err == nil:
-			objects = append(objects, handlers.KeyValue{
+			objects = append(objects, util.KeyValue{
 				Key:   key,
 				Value: &acc,
 			})
-			if len(objects) == handlers.PaginationMaxItems {
+			if len(objects) == util.PaginationMaxItems {
 				break fetchAccounts
 			}
 		case errors.ErrIteratorDone.Is(err):

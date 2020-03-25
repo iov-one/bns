@@ -5,7 +5,7 @@ import (
 	"github.com/iov-one/bns/cmd/bnsapi/bnsapitest"
 	_ "github.com/iov-one/bns/cmd/bnsapi/bnsapitest"
 	"github.com/iov-one/bns/cmd/bnsapi/client"
-	"github.com/iov-one/bns/cmd/bnsapi/handlers"
+	"github.com/iov-one/bns/cmd/bnsapi/util"
 	"github.com/iov-one/weave"
 	"github.com/iov-one/weave/cmd/bnsd/x/account"
 	"net/http"
@@ -73,7 +73,7 @@ func TestAccountAccountssHandler(t *testing.T) {
 	w := httptest.NewRecorder()
 	h.ServeHTTP(w, r)
 
-	bnsapitest.AssertAPIResponse(t, w, []handlers.KeyValue{
+	bnsapitest.AssertAPIResponse(t, w, []util.KeyValue{
 		{
 			Key:   []byte("first"),
 			Value: &account.Account{Name: "first", Domain: "adomain"},
@@ -97,7 +97,7 @@ func TestAccountAccountssHandlerOffsetAndFilter(t *testing.T) {
 	w := httptest.NewRecorder()
 	h.ServeHTTP(w, r)
 
-	bnsapitest.AssertAPIResponse(t, w, []handlers.KeyValue{})
+	bnsapitest.AssertAPIResponse(t, w, []util.KeyValue{})
 }
 
 func TestAccountDomainsHandler(t *testing.T) {
@@ -121,7 +121,7 @@ func TestAccountDomainsHandler(t *testing.T) {
 	w := httptest.NewRecorder()
 	h.ServeHTTP(w, r)
 
-	bnsapitest.AssertAPIResponse(t, w, []handlers.KeyValue{
+	bnsapitest.AssertAPIResponse(t, w, []util.KeyValue{
 		{
 			Key:   []byte("first"),
 			Value: &account.Domain{Domain: "f"},

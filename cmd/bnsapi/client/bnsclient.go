@@ -217,6 +217,33 @@ func ABCIPrefixQuery(ctx context.Context, c BnsClient, path string, prefix []byt
 	}
 }
 
+func ABCIKeyQueryIter(ctx context.Context, c BnsClient, path string, data []byte) ABCIIterator {
+	var abciResponse AbciQueryResponse
+
+	if err := c.Post(ctx, path, data, &abciResponse); err != nil {
+		return &resultIterator{err: errors.Wrap(err, "response")}
+	}
+
+	if len(abciResponse.Response.Key) == 0 && len(abciResponse.Response.Value) == 0 {
+		return &resultIterator{err: errors.Wrap(errors.ErrNotFound, "empty response")}
+	}
+
+	var keys weaveapp.ResultSet
+	if err := keys.Unmarshal(abciResponse.Response.Key); err != nil {
+		return &resultIterator{err: errors.Wrap(errors.ErrNotFound, "cannot unmarshal values")}
+	}
+
+	var values weaveapp.ResultSet
+	if err := values.Unmarshal(abciResponse.Response.Value); err != nil {
+		return &resultIterator{err: errors.Wrap(errors.ErrNotFound, "cannot unmarshal values")}
+	}
+
+	return &resultIterator{
+		keys:   keys.Results,
+		values: values.Results,
+	}
+}
+
 type AbciQueryResponse struct {
 	Response AbciQueryResponseResponse
 }

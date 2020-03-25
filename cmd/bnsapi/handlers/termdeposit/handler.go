@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/client"
 	"github.com/iov-one/bns/cmd/bnsapi/handlers"
+	"github.com/iov-one/bns/cmd/bnsapi/util"
 	"github.com/iov-one/weave"
 	"github.com/iov-one/weave/cmd/bnsd/x/termdeposit"
 	"github.com/iov-one/weave/errors"
@@ -30,17 +31,17 @@ func (h *ContractsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	offset := handlers.ExtractIDFromKey(r.URL.Query().Get("offset"))
 	it := client.ABCIRangeQuery(r.Context(), h.Bns, "/depositcontracts", fmt.Sprintf("%x:", offset))
 
-	objects := make([]handlers.KeyValue, 0, handlers.PaginationMaxItems)
+	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
 fetchContracts:
 	for {
 		var c termdeposit.DepositContract
 		switch key, err := it.Next(&c); {
 		case err == nil:
-			objects = append(objects, handlers.KeyValue{
+			objects = append(objects, util.KeyValue{
 				Key:   key,
 				Value: &c,
 			})
-			if len(objects) == handlers.PaginationMaxItems {
+			if len(objects) == util.PaginationMaxItems {
 				break fetchContracts
 			}
 		case errors.ErrIteratorDone.Is(err):
@@ -115,17 +116,17 @@ func (h *DepositsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/deposits", fmt.Sprintf("%x:", offset))
 	}
 
-	objects := make([]handlers.KeyValue, 0, handlers.PaginationMaxItems)
+	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
 fetchDeposits:
 	for {
 		var d termdeposit.Deposit
 		switch key, err := it.Next(&d); {
 		case err == nil:
-			objects = append(objects, handlers.KeyValue{
+			objects = append(objects, util.KeyValue{
 				Key:   key,
 				Value: &d,
 			})
-			if len(objects) == handlers.PaginationMaxItems {
+			if len(objects) == util.PaginationMaxItems {
 				break fetchDeposits
 			}
 		case errors.ErrIteratorDone.Is(err):

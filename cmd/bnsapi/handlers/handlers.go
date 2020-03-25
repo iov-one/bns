@@ -83,17 +83,17 @@ func (h *GovProposalsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/proposals", fmt.Sprintf("%x:", offset))
 	}
 
-	objects := make([]KeyValue, 0, PaginationMaxItems)
+	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
 fetchProposals:
 	for {
 		var p gov.Proposal
 		switch key, err := it.Next(&p); {
 		case err == nil:
-			objects = append(objects, KeyValue{
+			objects = append(objects, util.KeyValue{
 				Key:   key,
 				Value: &p,
 			})
-			if len(objects) == PaginationMaxItems {
+			if len(objects) == util.PaginationMaxItems {
 				break fetchProposals
 			}
 		case errors.ErrIteratorDone.Is(err):
@@ -177,17 +177,17 @@ func (h *GovVotesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/votes", fmt.Sprintf("%x:", offset))
 	}
 
-	objects := make([]KeyValue, 0, PaginationMaxItems)
+	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
 fetchVotes:
 	for {
 		var v gov.Vote
 		switch key, err := it.Next(&v); {
 		case err == nil:
-			objects = append(objects, KeyValue{
+			objects = append(objects, util.KeyValue{
 				Key:   key,
 				Value: &v,
 			})
-			if len(objects) == PaginationMaxItems {
+			if len(objects) == util.PaginationMaxItems {
 				break fetchVotes
 			}
 		case errors.ErrIteratorDone.Is(err):
@@ -250,17 +250,17 @@ func (h *EscrowEscrowsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/escrows", fmt.Sprintf("%x:", offset))
 	}
 
-	objects := make([]KeyValue, 0, PaginationMaxItems)
+	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
 fetchEscrows:
 	for {
 		var e escrow.Escrow
 		switch key, err := it.Next(&e); {
 		case err == nil:
-			objects = append(objects, KeyValue{
+			objects = append(objects, util.KeyValue{
 				Key:   key,
 				Value: &e,
 			})
-			if len(objects) == PaginationMaxItems {
+			if len(objects) == util.PaginationMaxItems {
 				break fetchEscrows
 			}
 		case errors.ErrIteratorDone.Is(err):
@@ -294,17 +294,17 @@ func (h *MultisigContractsHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	offset := ExtractIDFromKey(r.URL.Query().Get("offset"))
 	it := client.ABCIRangeQuery(r.Context(), h.Bns, "/contracts", fmt.Sprintf("%x:", offset))
 
-	objects := make([]KeyValue, 0, PaginationMaxItems)
+	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
 fetchContracts:
 	for {
 		var c multisig.Contract
 		switch key, err := it.Next(&c); {
 		case err == nil:
-			objects = append(objects, KeyValue{
+			objects = append(objects, util.KeyValue{
 				Key:   key,
 				Value: &c,
 			})
-			if len(objects) == PaginationMaxItems {
+			if len(objects) == util.PaginationMaxItems {
 				break fetchContracts
 			}
 		case errors.ErrIteratorDone.Is(err):
@@ -546,17 +546,17 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		offset := ExtractIDFromKey(q.Get("offset"))
 		it := client.ABCIRangeQuery(r.Context(), h.Bns, "/wallets", fmt.Sprintf("%x:", offset))
 
-		objects := make([]KeyValue, 0, PaginationMaxItems)
+		objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
 	fetchBalances:
 		for {
 			var set cash.Set
 			switch key, err := it.Next(&set); {
 			case err == nil:
-				objects = append(objects, KeyValue{
+				objects = append(objects, util.KeyValue{
 					Key:   key,
 					Value: &set,
 				})
-				if len(objects) == PaginationMaxItems {
+				if len(objects) == util.PaginationMaxItems {
 					break fetchBalances
 				}
 			case errors.ErrIteratorDone.Is(err):
@@ -662,17 +662,17 @@ func (h *MsgFeeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	it := client.ABCIPrefixQuery(r.Context(), h.Bns, "/msgfee", []byte(msgFeePrefix))
 	
-	objects := make([]KeyValue, 0, PaginationMaxItems)
+	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
 fetchMsgFees:
 	for {
 		var msgFee msgfee.MsgFee
 		switch key, err := it.Next(&msgFee); {
 		case err == nil:
-			objects = append(objects, KeyValue{
+			objects = append(objects, util.KeyValue{
 				Key:   key,
 				Value: &msgFee,
 			})
-			if len(objects) == PaginationMaxItems {
+			if len(objects) == util.PaginationMaxItems {
 				break fetchMsgFees
 			}
 		case errors.ErrIteratorDone.Is(err):

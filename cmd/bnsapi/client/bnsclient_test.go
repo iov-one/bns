@@ -79,6 +79,107 @@ func TestABCIKeyQuery(t *testing.T) {
 	}
 }
 
+func TestABCIKeyQueryIter(t *testing.T) {
+	keys := [][]byte{
+		[]byte("0001"),
+		[]byte("0002"),
+		[]byte("0003"),
+	}
+	values := []weave.Persistent{
+		&persistentMock{Raw: []byte("1")},
+		&persistentMock{Raw: []byte("2")},
+		&persistentMock{Raw: []byte("3")},
+	}
+
+	// Run a fake Tendermint API server that will answer to only expected
+	// query requests.
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("Error reading body: %v", err)
+			http.Error(w, "can't read body", http.StatusBadRequest)
+			return
+		}
+
+		type fullBody struct {
+			Rpc       float32        `json:"json-rpc"`
+			Method    string         `json:"method"`
+			BodyParam postBodyParams `json:"params"`
+		}
+
+		var fullBodyParam fullBody
+		err = json.Unmarshal(body, &fullBodyParam)
+		if err != nil {
+			log.Printf("Error reading body: %v", err)
+			http.Error(w, "can't read body", http.StatusBadRequest)
+			return
+		}
+
+		bodyParam := fullBodyParam.BodyParam
+
+		switch {
+		case bodyParam.Path == "/myentity" && bodyParam.Data == "656E746974796B6579":
+			writeServerResponse(t, w, keys, values)
+		case bodyParam.Path == "/myentity":
+			writeServerResponse(t, w, nil, nil)
+		default:
+			t.Fatalf("unknown condition: %q", bodyParam)
+		}
+
+	}))
+	defer srv.Close()
+
+	bns := NewHTTPBnsClient(srv.URL)
+
+	it := ABCIKeyQueryIter(context.Background(), bns, "/myentity", []byte("entitykey"))
+	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
+iterate:
+	for {
+		m := &persistentMock{}
+		switch key, err := it.Next(m); {
+		case err == nil:
+			objects = append(objects, util.KeyValue{
+				Key:   key,
+				Value: m,
+			})
+			if len(objects) == util.PaginationMaxItems {
+				break iterate
+			}
+		case errors.ErrIteratorDone.Is(err):
+			break iterate
+		default:
+			log.Fatalf("ABCI query: %s", err)
+		}
+	}
+
+	var resKeys [][]byte
+	var resValues []weave.Persistent
+	for _,o := range objects {
+		resKeys = append(resKeys, o.Key)
+		resValues = append(resValues, o.Value)
+	}
+
+	if !reflect.DeepEqual(resKeys, keys) {
+		for i, k := range keys {
+			t.Logf("key %2d: %q", i, k)
+		}
+		t.Fatalf("unexpected %d keys", len(keys))
+	}
+
+	if !reflect.DeepEqual(values, resValues) {
+		for i, k := range keys {
+			t.Logf("value %2d: %q", i, k)
+		}
+		t.Fatalf("unexpected %d values", len(values))
+	}
+
+	it = ABCIKeyQueryIter(context.Background(), bns, "/myentity", []byte("xxx"))
+	if _, err := it.Next(nil); !errors.ErrNotFound.Is(err) {
+		t.Fatalf("want ErrNotFound, got %v", err)
+	}
+}
+
 func TestBnsClientDo(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/foo" {

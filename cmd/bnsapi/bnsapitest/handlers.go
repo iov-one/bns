@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/client"
-	"github.com/iov-one/bns/cmd/bnsapi/handlers"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
 	"github.com/iov-one/weave"
 	"net/http"
@@ -30,7 +29,7 @@ func NewAbciQueryResponse(t testing.TB, keys [][]byte, models []weave.Persistent
 	}
 }
 
-func AssertAPIResponse(t testing.TB, w *httptest.ResponseRecorder, want []handlers.KeyValue) {
+func AssertAPIResponse(t testing.TB, w *httptest.ResponseRecorder, want []util.KeyValue) {
 	t.Helper()
 
 	if w.Code != http.StatusOK {
