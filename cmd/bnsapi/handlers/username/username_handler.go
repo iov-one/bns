@@ -4,6 +4,7 @@ import (
 	"github.com/iov-one/bns/cmd/bnsapi/client"
 	"github.com/iov-one/bns/cmd/bnsapi/handlers"
 	"github.com/iov-one/bns/cmd/bnsapi/models"
+	"github.com/iov-one/bns/cmd/bnsapi/util"
 	"github.com/iov-one/weave/cmd/bnsd/x/username"
 	"github.com/iov-one/weave/errors"
 	"log"
@@ -33,19 +34,32 @@ func (h *OwnerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var token username.Token
-	res := models.KeyModel{
-		Model: &token,
+	it := client.ABCIKeyQueryIter(r.Context(), h.Bns, "/usernames/owner", key)
+	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
+iterate:
+	for {
+		var m username.Token
+		switch key, err := it.Next(&m); {
+		case err == nil:
+			objects = append(objects, util.KeyValue{
+				Key:   key,
+				Value: &m,
+			})
+			if len(objects) == util.PaginationMaxItems {
+				break iterate
+			}
+		case errors.ErrIteratorDone.Is(err):
+			break iterate
+		default:
+			log.Printf("username owner ABCI query: %s", err)
+			handlers.JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			return
+		}
 	}
-	switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/usernames/owner", key, &res); {
-	case err == nil:
-		handlers.JSONResp(w, http.StatusOK, res)
-	case errors.ErrNotFound.Is(err):
-		handlers.JSONErr(w, http.StatusNotFound, "Username not found by owner")
-	default:
-		log.Printf("account ABCI query: %s", err)
-		handlers.JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-	}
+
+	handlers.JSONResp(w, http.StatusOK, handlers.MultipleObjectsResponse{
+		Objects: objects,
+	})
 }
 
 type ResolveHandler struct {
