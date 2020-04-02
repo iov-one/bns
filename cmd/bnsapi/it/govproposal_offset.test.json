@@ -1,0 +1,628 @@
+{
+  "objects": [
+    {
+      "key": "70726f706f73616c3a0000000000000028",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Set product fee account_delete_account to 0.1 IOV 1581098227",
+        "raw_option": "ggUoCgIIARIWYWNjb3VudC9kZWxldGVfYWNjb3VudBoKEIDC1y8aA0lPVg==",
+        "description": "lees than antispam",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581098280,
+        "voting_end_time": 1581098400,
+        "submission_time": 1581098176,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXxMJ6eJdQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000029",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Set product fee account_delete_account to 1.1 IOV 1581098563",
+        "raw_option": "ggUqCgIIARIWYWNjb3VudC9kZWxldGVfYWNjb3VudBoMCAEQgMLXLxoDSU9W",
+        "description": "more than antispam",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581098580,
+        "voting_end_time": 1581098700,
+        "submission_time": 1581098500,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXxMOR3iowA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000002a",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Set product fee account_delete_domain to 1.15 IOV 1581099229",
+        "raw_option": "ggUpCgIIARIVYWNjb3VudC9kZWxldGVfZG9tYWluGgwIARCAo8NHGgNJT1Y=",
+        "description": "more than antispam",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581099240,
+        "voting_end_time": 1581099360,
+        "submission_time": 1581099157,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXxMX4im1QA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000002b",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain iov",
+        "raw_option": "mgVSCgIIARIDaW92GhTBchGB6DN275eKpKmjil4nwIx7siABMioKG2FjY291bnQvZGVsZXRlX2FsbF9hY2NvdW50cxILCP+T69wDGgNJT1Y4gJqeAQ==",
+        "description": "iov's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582223280,
+        "voting_end_time": 1582223400,
+        "submission_time": 1582222997,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1L80XhSQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000002c",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain iov",
+        "raw_option": "mgVSCgIIARIDaW92GhTBchGB6DN275eKpKmjil4nwIx7siABMioKG2FjY291bnQvZGVsZXRlX2FsbF9hY2NvdW50cxILCP+T69wDGgNJT1Y4gJqeAQ==",
+        "description": "iov's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582225260,
+        "voting_end_time": 1582225380,
+        "submission_time": 1582225199,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1MZoYt3wA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000002d",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain iov1",
+        "raw_option": "mgVTCgIIARIEaW92MRoUwXIRgegzdu+XiqSpo4peJ8CMe7IgATIqChthY2NvdW50L2RlbGV0ZV9hbGxfYWNjb3VudHMSCwj/k+vcAxoDSU9WOICangE=",
+        "description": "iov1's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582225920,
+        "voting_end_time": 1582226040,
+        "submission_time": 1582225598,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1MjPDyEQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000002e",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain dave",
+        "raw_option": "mgVTCgIIARIEZGF2ZRoUwXIRgegzdu+XiqSpo4peJ8CMe7IgATIqChthY2NvdW50L2RlbGV0ZV9hbGxfYWNjb3VudHMSCwj/k+vcAxoDSU9WOICangE=",
+        "description": "dave's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582226100,
+        "voting_end_time": 1582226220,
+        "submission_time": 1582225957,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1Ml2snkwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000002f",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain pooch",
+        "raw_option": "mgVUCgIIARIFcG9vY2gaFMFyEYHoM3bvl4qkqaOKXifAjHuyIAEyKgobYWNjb3VudC9kZWxldGVfYWxsX2FjY291bnRzEgsI/5Pr3AMaA0lPVjiAmp4B",
+        "description": "pooch's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582226220,
+        "voting_end_time": 1582226340,
+        "submission_time": 1582226132,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1MnmdLPwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000030",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain karim",
+        "raw_option": "mgVUCgIIARIFa2FyaW0aFMFyEYHoM3bvl4qkqaOKXifAjHuyIAEyKgobYWNjb3VudC9kZWxldGVfYWxsX2FjY291bnRzEgsI/5Pr3AMaA0lPVjiAmp4B",
+        "description": "karim's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582226340,
+        "voting_end_time": 1582226460,
+        "submission_time": 1582226275,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1MpWNu6wA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000031",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain antoine",
+        "raw_option": "mgVWCgIIARIHYW50b2luZRoUwXIRgegzdu+XiqSpo4peJ8CMe7IgATIqChthY2NvdW50L2RlbGV0ZV9hbGxfYWNjb3VudHMSCwj/k+vcAxoDSU9WOICangE=",
+        "description": "antoine's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582226520,
+        "voting_end_time": 1582226640,
+        "submission_time": 1582226404,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1Mr92kbQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000032",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain crypto4good",
+        "raw_option": "mgVaCgIIARILY3J5cHRvNGdvb2QaFMFyEYHoM3bvl4qkqaOKXifAjHuyIAEyKgobYWNjb3VudC9kZWxldGVfYWxsX2FjY291bnRzEgsI/5Pr3AMaA0lPVjiAmp4B",
+        "description": "crypto4good's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582226640,
+        "voting_end_time": 1582226760,
+        "submission_time": 1582226546,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1MttnIGQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000033",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain iov",
+        "raw_option": "mgVSCgIIARIDaW92GhTBchGB6DN275eKpKmjil4nwIx7siABMioKG2FjY291bnQvZGVsZXRlX2FsbF9hY2NvdW50cxILCP+T69wDGgNJT1Y4gJqeAQ==",
+        "description": "iov's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582299600,
+        "voting_end_time": 1582299720,
+        "submission_time": 1582299459,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 3,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1dTa6AmQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000034",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain iov",
+        "raw_option": "mgVSCgIIARIDaW92GhTBchGB6DN275eKpKmjil4nwIx7siABMioKG2FjY291bnQvZGVsZXRlX2FsbF9hY2NvdW50cxILCP+T69wDGgNJT1Y4gJqeAQ==",
+        "description": "iov's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582299780,
+        "voting_end_time": 1582299900,
+        "submission_time": 1582299766,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1dWCi2GwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000035",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain iov",
+        "raw_option": "mgVQCgIIARIDaW92GhTBchGB6DN275eKpKmjil4nwIx7sjIqChthY2NvdW50L2RlbGV0ZV9hbGxfYWNjb3VudHMSCwj/k+vcAxoDSU9WOOCPhg8=",
+        "description": "iov's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582300380,
+        "voting_end_time": 1582300500,
+        "submission_time": 1582300312,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 3,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1dexVodwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000036",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain iov",
+        "raw_option": "mgVQCgIIARIDaW92GhTBchGB6DN275eKpKmjil4nwIx7sjIqChthY2NvdW50L2RlbGV0ZV9hbGxfYWNjb3VudHMSCwj/k+vcAxoDSU9WOOCPhg8=",
+        "description": "iov's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 1
+        },
+        "voting_start_time": 1582300920,
+        "voting_end_time": 1582301040,
+        "submission_time": 1582300598,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1dmoQI/QA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000037",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Set product fee account_add_account_certificate to 69 IOV 1585664726",
+        "raw_option": "ggUuCgIIARIfYWNjb3VudC9hZGRfYWNjb3VudF9jZXJ0aWZpY2F0ZRoHCEUaA0lPVg==",
+        "description": "We need to stimulate the token economy.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1585664760,
+        "voting_end_time": 1585664880,
+        "submission_time": 1585664653,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhYBac8Ya/QA"
+      }
+    }
+  ]
+}

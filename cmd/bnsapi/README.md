@@ -43,6 +43,11 @@ To see documentation:
 - `go mod vendor`
 - `swag init -parseVendor`
 
+## Integration tests
+
+- Set environment value `IT_TENDERMINT` to the address of the network to test against
+- run `make it-test`
+
 ## Development
 
 Make sure to enable `export GO111MODULE=on`

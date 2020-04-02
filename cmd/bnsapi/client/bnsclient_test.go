@@ -3,11 +3,12 @@ package client
 import (
 	"bytes"
 	"context"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/iov-one/bns/cmd/bnsapi/bnsapitest"
 	"github.com/iov-one/bns/cmd/bnsapi/models"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
+	rpctypes "github.com/tendermint/tendermint/rpc/lib/types"
 	"io"
 	"io/ioutil"
 	"log"
@@ -33,9 +34,9 @@ func TestABCIKeyQuery(t *testing.T) {
 		}
 
 		type fullBody struct {
-			Rpc       float32        `json:"json-rpc"`
-			Method    string         `json:"method"`
-			BodyParam postBodyParams `json:"params"`
+			Rpc       float32         `json:"json-rpc"`
+			Method    string          `json:"method"`
+			BodyParam abciQueryParams `json:"params"`
 		}
 
 		var fullBodyParam fullBody
@@ -103,9 +104,9 @@ func TestABCIKeyQueryIter(t *testing.T) {
 		}
 
 		type fullBody struct {
-			Rpc       float32        `json:"json-rpc"`
-			Method    string         `json:"method"`
-			BodyParam postBodyParams `json:"params"`
+			Rpc       float32         `json:"json-rpc"`
+			Method    string          `json:"method"`
+			BodyParam abciQueryParams `json:"params"`
 		}
 
 		var fullBodyParam fullBody
@@ -155,7 +156,7 @@ iterate:
 
 	var resKeys [][]byte
 	var resValues []weave.Persistent
-	for _,o := range objects {
+	for _, o := range objects {
 		resKeys = append(resKeys, o.Key)
 		resValues = append(resValues, o.Value)
 	}
@@ -205,19 +206,34 @@ func TestBnsClientDo(t *testing.T) {
 }
 
 func TestABCIFullRangeQuery(t *testing.T) {
-	hexit := func(s string) string {
-		return hex.EncodeToString([]byte(s))
-	}
-
 	// Run a fake Tendermint API server that will answer to only expected
 	// query requests.
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/abci_query" {
-			t.Fatalf("unexpected path: %q", r.URL)
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("Error reading body: %v", err)
+			http.Error(w, "can't read body", http.StatusBadRequest)
+			return
 		}
-		q := r.URL.Query()
+
+		type fullBody struct {
+			Rpc       float32         `json:"json-rpc"`
+			Method    string          `json:"method"`
+			BodyParam abciQueryParams `json:"params"`
+		}
+
+		var fullBodyParam fullBody
+		err = json.Unmarshal(body, &fullBodyParam)
+		if err != nil {
+			log.Printf("Error reading body: %v", err)
+			http.Error(w, "can't read body", http.StatusBadRequest)
+			return
+		}
+
+		bodyParam := fullBodyParam.BodyParam
+
 		switch {
-		case q.Get("path") == `"/myquery?range"` && q.Get("data") == `""`:
+		case bodyParam.Path == "/myquery?range" && bodyParam.Data == "":
 			writeServerResponse(t, w, [][]byte{
 				[]byte("0001"),
 				[]byte("0002"),
@@ -227,7 +243,7 @@ func TestABCIFullRangeQuery(t *testing.T) {
 				&persistentMock{Raw: []byte("2")},
 				&persistentMock{Raw: []byte("3")},
 			})
-		case q.Get("path") == `"/myquery?range"` && q.Get("data") == `"`+hexit("0003")+`:"`:
+		case bodyParam.Path == "/myquery?range" && bodyParam.Data == "33303330333033333A":
 			writeServerResponse(t, w, [][]byte{
 				[]byte("0003"), // Filter is inclusive.
 				[]byte("0004"),
@@ -235,15 +251,14 @@ func TestABCIFullRangeQuery(t *testing.T) {
 				&persistentMock{Raw: []byte("3")},
 				&persistentMock{Raw: []byte("4")},
 			})
-		case q.Get("path") == `"/myquery?range"` && q.Get("data") == `"`+hexit("0004")+`:"`:
+		case bodyParam.Path == "/myquery?range" && bodyParam.Data == "33303330333033343A":
 			writeServerResponse(t, w, [][]byte{
 				[]byte("0004"), // Filter is inclusive.
 			}, []weave.Persistent{
 				&persistentMock{Raw: []byte("4")},
 			})
 		default:
-			t.Logf("query: %q", q.Get("query"))
-			t.Logf("data: %q", q.Get("data"))
+			t.Logf("data: %q", bodyParam.Data)
 			t.Errorf("not supported request: %q", r.URL)
 			http.Error(w, "not supported", http.StatusNotImplemented)
 		}
@@ -289,12 +304,18 @@ func TestABCIPrefixQuery(t *testing.T) {
 	// Run a fake Tendermint API server that will answer to only expected
 	// query requests.
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/abci_query" {
+		var rpc rpctypes.RPCRequest
+		if err := json.NewDecoder(r.Body).Decode(&rpc); err != nil {
 			t.Fatalf("unexpected path: %q", r.URL)
 		}
-		q := r.URL.Query()
+
+		var params abciQueryParams
+		if err := json.Unmarshal(rpc.Params, &params); err != nil {
+			t.Fatalf("unexpected path: %q", r.URL)
+		}
+
 		switch {
-		case q.Get("path") == `"/myquery?prefix"` && q.Get("data") == `""`:
+		case params.Path == "/myquery?prefix" && params.Data == "":
 			writeServerResponse(t, w, [][]byte{
 				[]byte("0001"),
 				[]byte("0002"),
@@ -304,7 +325,7 @@ func TestABCIPrefixQuery(t *testing.T) {
 				&persistentMock{Raw: []byte("2")},
 				&persistentMock{Raw: []byte("3")},
 			})
-		case q.Get("path") == `"/myquery?prefix"` && q.Get("data") == `"0001"`:
+		case params.Path == "/myquery?prefix" && params.Data == "0001":
 			writeServerResponse(t, w, [][]byte{
 				[]byte("0001"),
 				[]byte("0002"),
@@ -315,8 +336,8 @@ func TestABCIPrefixQuery(t *testing.T) {
 				&persistentMock{Raw: []byte("3")},
 			})
 		default:
-			t.Logf("query: %q", q.Get("query"))
-			t.Logf("data: %q", q.Get("data"))
+			t.Logf("path: %q", params.Path)
+			t.Logf("data: %q", params.Data)
 			t.Errorf("not supported request: %q", r.URL)
 			http.Error(w, "not supported", http.StatusNotImplemented)
 		}
@@ -368,7 +389,7 @@ func (ignoreModel) Unmarshal([]byte) error { return nil }
 func writeServerResponse(t testing.TB, w http.ResponseWriter, keys [][]byte, models []weave.Persistent) {
 	t.Helper()
 
-	k, v := util.SerializePairs(t, keys, models)
+	k, v := bnsapitest.SerializePairs(t, keys, models)
 
 	// Minimal acceptable by our code jsonrpc response.
 	type dict map[string]interface{}

@@ -1,0 +1,206 @@
+{
+            "objects": [
+                {
+                    "key": "636f6e7472616374733a0000000000000001",
+                    "value": {
+                        "metadata": {
+                            "schema": 1
+                        },
+                        "participants": [
+                            {
+                                "signature": "A43634B9903FD5F380A132AB1D5F3AE9F688CE79",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "DBDDC00799AF374DB4AC9D45450D6188F768635D",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "E3EE27D303F22E8C4FBC510D593FA34811DD7331",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "8DBA0B168A2F92101A726383AFE69121145072BA",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "23A3EBA9D45102B9B65FA83C9C1094EBB3F9CECC",
+                                "weight": 1
+                            }
+                        ],
+                        "activation_threshold": 3,
+                        "admin_threshold": 3,
+                        "address": "5AE2C58796B0AD48FFE7602EAC3353488C859A2B"
+                    }
+                },
+                {
+                    "key": "636f6e7472616374733a0000000000000002",
+                    "value": {
+                        "metadata": {
+                            "schema": 1
+                        },
+                        "participants": [
+                            {
+                                "signature": "A43634B9903FD5F380A132AB1D5F3AE9F688CE79",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "DBDDC00799AF374DB4AC9D45450D6188F768635D",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "E3EE27D303F22E8C4FBC510D593FA34811DD7331",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "8DBA0B168A2F92101A726383AFE69121145072BA",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "23A3EBA9D45102B9B65FA83C9C1094EBB3F9CECC",
+                                "weight": 1
+                            }
+                        ],
+                        "activation_threshold": 3,
+                        "admin_threshold": 3,
+                        "address": "1369E8BBB1384C964CBB3303696F5D3B179033A3"
+                    }
+                },
+                {
+                    "key": "636f6e7472616374733a0000000000000003",
+                    "value": {
+                        "metadata": {
+                            "schema": 1
+                        },
+                        "participants": [
+                            {
+                                "signature": "A43634B9903FD5F380A132AB1D5F3AE9F688CE79",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "DBDDC00799AF374DB4AC9D45450D6188F768635D",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "E3EE27D303F22E8C4FBC510D593FA34811DD7331",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "8DBA0B168A2F92101A726383AFE69121145072BA",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "23A3EBA9D45102B9B65FA83C9C1094EBB3F9CECC",
+                                "weight": 1
+                            }
+                        ],
+                        "activation_threshold": 3,
+                        "admin_threshold": 3,
+                        "address": "084430510E07F109B9ACF8BC62EF853A66BD8754"
+                    }
+                },
+                {
+                    "key": "636f6e7472616374733a0000000000000004",
+                    "value": {
+                        "metadata": {
+                            "schema": 1
+                        },
+                        "participants": [
+                            {
+                                "signature": "A43634B9903FD5F380A132AB1D5F3AE9F688CE79",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "DBDDC00799AF374DB4AC9D45450D6188F768635D",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "E3EE27D303F22E8C4FBC510D593FA34811DD7331",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "8DBA0B168A2F92101A726383AFE69121145072BA",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "23A3EBA9D45102B9B65FA83C9C1094EBB3F9CECC",
+                                "weight": 1
+                            }
+                        ],
+                        "activation_threshold": 3,
+                        "admin_threshold": 3,
+                        "address": "26E3C3612C28BA356DAF336370299DBBD5C8A77A"
+                    }
+                },
+                {
+                    "key": "636f6e7472616374733a0000000000000005",
+                    "value": {
+                        "metadata": {
+                            "schema": 1
+                        },
+                        "participants": [
+                            {
+                                "signature": "A43634B9903FD5F380A132AB1D5F3AE9F688CE79",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "DBDDC00799AF374DB4AC9D45450D6188F768635D",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "E3EE27D303F22E8C4FBC510D593FA34811DD7331",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "8DBA0B168A2F92101A726383AFE69121145072BA",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "23A3EBA9D45102B9B65FA83C9C1094EBB3F9CECC",
+                                "weight": 1
+                            }
+                        ],
+                        "activation_threshold": 3,
+                        "admin_threshold": 3,
+                        "address": "D901488C850F75D77CE7DBCC80A95503DA8749AC"
+                    }
+                },
+                {
+                    "key": "636f6e7472616374733a0000000000000006",
+                    "value": {
+                        "metadata": {
+                            "schema": 1
+                        },
+                        "participants": [
+                            {
+                                "signature": "A43634B9903FD5F380A132AB1D5F3AE9F688CE79",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "DBDDC00799AF374DB4AC9D45450D6188F768635D",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "E3EE27D303F22E8C4FBC510D593FA34811DD7331",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "8DBA0B168A2F92101A726383AFE69121145072BA",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "23A3EBA9D45102B9B65FA83C9C1094EBB3F9CECC",
+                                "weight": 1
+                            },
+                            {
+                                "signature": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+                                "weight": 100
+                            }
+                        ],
+                        "activation_threshold": 3,
+                        "admin_threshold": 3,
+                        "address": "2D301012D484AFE03922383FBFCC4A63AA4F8A25"
+                    }
+                }
+            ]
+        }

@@ -1,14 +1,19 @@
 package handlers
 
 import (
+	"bytes"
 	"encoding/binary"
 	"encoding/json"
+	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
 	"github.com/iov-one/weave"
+	"github.com/iov-one/weave/errors"
+	"github.com/iov-one/weave/orm"
 	"log"
 	"math"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -31,18 +36,97 @@ func AtMostOne(query url.Values, names ...string) bool {
 	return true
 }
 
-func ExtractIDFromKey(key string) []byte {
-	raw, err := WeaveAddressFromQuery(key)
-	if err != nil {
-		// Cannot decode, return everything.
-		return []byte(key)
-	}
-	for i, c := range raw {
-		if c == ':' {
-			return raw[i+1:]
+func ExtractRefID(s string) ([]byte, error) {
+	tokens := strings.Split(s, "/")
+
+	var version uint32
+	switch len(tokens) {
+	case 1:
+		// Allow providing just the ID value to enable prefix queries.
+		// This is a special case.
+	case 2:
+		if n, err := strconv.ParseUint(tokens[1], 10, 32); err != nil {
+			return nil, fmt.Errorf("cannot decode version: %s", err)
+		} else {
+			version = uint32(n)
 		}
+	default:
+		return nil, errors.ErrInput
 	}
-	return raw
+
+	encID := make([]byte, 8)
+	if n, err := strconv.ParseUint(tokens[0], 10, 64); err != nil {
+		return nil, fmt.Errorf("cannot decode ID: %s", err)
+	} else {
+		binary.BigEndian.PutUint64(encID, n)
+	}
+
+	ref := orm.VersionedIDRef{ID: encID, Version: version}
+
+	if ref.Version == 0 {
+		return ref.ID, nil
+	}
+
+	return orm.MarshalVersionedID(ref), nil
+}
+
+func ExtractAddress(rawAddr string) ([]byte, error) {
+	if strings.HasPrefix(rawAddr, "iov") || strings.HasPrefix(rawAddr, "tiov") {
+		rawAddr = "bech32:" + rawAddr
+	}
+	addr, err := weave.ParseAddress(rawAddr)
+	return addr, err
+}
+
+func ExtractStrID(s string) ([]byte, error) {
+	return []byte(s), nil
+}
+
+func ExtractNumericID(s string) ([]byte, error) {
+	n, err := strconv.ParseUint(s, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("cannot parse number: %s", err)
+	}
+	encID := make([]byte, 8)
+	binary.BigEndian.PutUint64(encID, n)
+	return encID, nil
+}
+
+func RefKey(raw []byte) (string, error) {
+	// Skip the prefix, being the characters before : (including separator)
+	val := raw[bytes.Index(raw, []byte(":"))+1:]
+
+	ref, err := orm.UnmarshalVersionedID(val)
+	if err != nil {
+		return "", fmt.Errorf("cannot unmarshal versioned key: %s", err)
+	}
+
+	id := binary.BigEndian.Uint64(ref.ID)
+	return fmt.Sprintf("%d/%d", id, ref.Version), nil
+}
+
+func SequenceKey(raw []byte) (string, error) {
+	// Skip the prefix, being the characters before : (including separator)
+	seq := raw[bytes.Index(raw, []byte(":"))+1:]
+	if len(seq) != 8 {
+		return "", fmt.Errorf("invalid sequence length: %d", len(seq))
+	}
+	n := binary.BigEndian.Uint64(seq)
+	return fmt.Sprint(int64(n)), nil
+}
+
+// Offset is sent as int and converted to binary
+func ExtractOffsetFromParam(param string) ([]byte, error) {
+	offset := make([]byte, 8)
+	if len(param) > 0 {
+		n, err := strconv.ParseUint(param, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		binary.BigEndian.PutUint64(offset, n)
+		return offset, nil
+	}
+	return nil, errors.Wrap(errors.ErrEmpty, "empty offset")
 }
 
 // JSONResp write content as JSON encoded response.

@@ -22,16 +22,25 @@ type DomainsHandler struct {
 // @Description The list of all premium starnames for a given admin.
 // @Description If no admin address is provided, you get the list of all premium starnames.
 // @Param admin query string false "The admin address may be in the bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2) format."
-// @Param offset query string false "Pagination offset"
+// @Param offset query int false "Pagination offset"
 // @Tags Starname
 // @Success 200 {object} handlers.MultipleObjectsResponse
 // @Failure 404
 // @Redirect 303
 // @Router /account/domains/ [get]
 func (h *DomainsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var it client.ABCIIterator
 	q := r.URL.Query()
-	offset := handlers.ExtractIDFromKey(q.Get("offset"))
+	var offset []byte
+	if q.Get("offset")!= "" {
+		var err error
+		offset, err = handlers.ExtractNumericID(q.Get("offset"))
+		if err != nil && !errors.ErrEmpty.Is(err) {
+			handlers.JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
+			return
+		}
+	}
+
+	var it client.ABCIIterator
 	if admin := q.Get("admin"); len(admin) > 0 {
 		rawAddr, err := weave.ParseAddress(admin)
 		if err != nil {
@@ -114,7 +123,7 @@ type AccountsHandler struct {
 // @Param starname query string false "Premium Starname ex: *neuma"
 // @Param owner query string false "The owner address format is either in iov address (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2)"
 // @Param domain query string false "Query by domain"
-// @Param offset query string false "Pagination offset"
+// @Param offset query int false "Pagination offset"
 // @Success 200 {object} handlers.MultipleObjectsResponse
 // @Failure 404
 // @Failure 500
@@ -127,19 +136,28 @@ func (h *AccountsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var offset []byte
+	if q.Get("offset")!= "" {
+		var err error
+		offset, err = handlers.ExtractNumericID(q.Get("offset"))
+		if err != nil && !errors.ErrEmpty.Is(err) {
+			handlers.JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
+			return
+		}
+	}
+
 	var it client.ABCIIterator
-	offset := handlers.ExtractIDFromKey(q.Get("offset"))
 	if d := q.Get("domain"); len(d) > 0 {
 		end := handlers.NextKeyValue([]byte(d))
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/accounts/domain", fmt.Sprintf("%x:%x:%x", d, offset, end))
 	} else if o := q.Get("owner"); len(o) > 0 {
-		rawAddr, err := weave.ParseAddress(o)
+		rawAddr, err := handlers.WeaveAddressFromQuery(o)
 		if err != nil {
 			handlers.JSONErr(w, http.StatusBadRequest, "Owner address must be a valid address value..")
 			return
 		}
 		end := handlers.NextKeyValue(rawAddr)
-		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/accounts/owner", fmt.Sprintf("%s:%x:%x", o, offset, end))
+		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/accounts/owner", fmt.Sprintf("%s:%x:%x", rawAddr, offset, end))
 	} else {
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/accounts", fmt.Sprintf("%x:", offset))
 	}

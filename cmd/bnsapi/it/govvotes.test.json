@@ -1,0 +1,1942 @@
+{
+  "objects": [
+    {
+      "key": "70726f706f73616c3a0000000000000001",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Reduce governing board voting period",
+        "raw_option": "8gQcCgIIARIIAAAAAAAAAAEYeCIECAEQAioECAEQAg==",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1581001980,
+        "voting_end_time": 1581002280,
+        "submission_time": 1581001679,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2TLvsSQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000002",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Reduce economic executors voting period",
+        "raw_option": "8gQcCgIIARIIAAAAAAAAAAIYeCIECAEQAioECAEQAg==",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1581001980,
+        "voting_end_time": 1581002280,
+        "submission_time": 1581001939,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2TMrS+4A"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000003",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Reduce technical executors voting period",
+        "raw_option": "8gQcCgIIARIIAAAAAAAAAAMYeCIECAEQAioECAEQAg==",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1581001980,
+        "voting_end_time": 1581002280,
+        "submission_time": 1581001940,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2TNm5rgA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000004",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Initialize datamigration schema",
+        "raw_option": "qgQVCgIIARINZGF0YW1pZ3JhdGlvbhgB",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 1
+        },
+        "voting_start_time": 1581002340,
+        "voting_end_time": 1581002460,
+        "submission_time": 1581002318,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 3,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2VzYhywA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000005",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Initialize preregistration schema",
+        "raw_option": "qgQXCgIIARIPcHJlcmVnaXN0cmF0aW9uGAE=",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 1
+        },
+        "voting_start_time": 1581002340,
+        "voting_end_time": 1581002460,
+        "submission_time": 1581002320,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 3,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2V0UIfYA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000006",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Initialize termdeposit schema",
+        "raw_option": "qgQTCgIIARILdGVybWRlcG9zaXQYAQ==",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 1
+        },
+        "voting_start_time": 1581002340,
+        "voting_end_time": 1581002460,
+        "submission_time": 1581002321,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 3,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2V1PvMAA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000007",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Initialize qualityscore schema",
+        "raw_option": "qgQUCgIIARIMcXVhbGl0eXNjb3JlGAE=",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 1
+        },
+        "voting_start_time": 1581002340,
+        "voting_end_time": 1581002460,
+        "submission_time": 1581002322,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 3,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2V2LV4oA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000008",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Initialize txfee schema",
+        "raw_option": "qgQNCgIIARIFdHhmZWUYAQ==",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 1
+        },
+        "voting_start_time": 1581002340,
+        "voting_end_time": 1581002460,
+        "submission_time": 1581002323,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 3,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2V3G8lQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000009",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update msgfee configuration",
+        "raw_option": "ygY2CgIIARIwCgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoi",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 1
+        },
+        "voting_start_time": 1581002580,
+        "voting_end_time": 1581002700,
+        "submission_time": 1581002520,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 3,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2ZS5pIwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000000a",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 1
+        },
+        "voting_start_time": 1581002580,
+        "voting_end_time": 1581002700,
+        "submission_time": 1581002521,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 3,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2ZT1P1YA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000000b",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update preregistration configuration",
+        "raw_option": "wgYcCgIIARIWEhQEw9t8zKz1ju/MKW/3rQ9tt8L6Fw==",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 1
+        },
+        "voting_start_time": 1581002580,
+        "voting_end_time": 1581002700,
+        "submission_time": 1581002522,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2ZUw2iAA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000000c",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update qualityscore configuration",
+        "raw_option": "ugZACgIIARI6CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaAhABIgIQASoCEAEyAhABOgIQAUICEAFKAhABUgIQAQ==",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 1
+        },
+        "voting_start_time": 1581002580,
+        "voting_end_time": 1581002700,
+        "submission_time": 1581002523,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2ZVsdOoA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000000d",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update txfee configuration",
+        "raw_option": "kgYsCgIIARImCgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIYgAgiBwhkGgNJT1Y=",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAM=",
+          "version": 1
+        },
+        "voting_start_time": 1581002580,
+        "voting_end_time": 1581002700,
+        "submission_time": 1581002524,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 3,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2ZWoD7QA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000000e",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Increase username msgfee for register_token to 999999999.9IOV",
+        "raw_option": "ggUwCgIIARIXdXNlcm5hbWUvcmVnaXN0ZXJfdG9rZW4aEQj/k+vcAxCA0pOtAxoDSU9W",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581002760,
+        "voting_end_time": 1581002880,
+        "submission_time": 1581002723,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2b6iepQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000000f",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Increase username msgfee for transfer_token to 999999999.9IOV",
+        "raw_option": "ggUwCgIIARIXdXNlcm5hbWUvdHJhbnNmZXJfdG9rZW4aEQj/k+vcAxCA0pOtAxoDSU9W",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581002760,
+        "voting_end_time": 1581002880,
+        "submission_time": 1581002724,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2b7eFV4A"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000010",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Increase username msgfee for change_token_targets to 999999999.9IOV",
+        "raw_option": "ggU2CgIIARIddXNlcm5hbWUvY2hhbmdlX3Rva2VuX3RhcmdldHMaEQj/k+vcAxCA0pOtAxoDSU9W",
+        "description": "./upgrade.sh",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581002760,
+        "voting_end_time": 1581002880,
+        "submission_time": 1581002725,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw2b8ZsCgA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000011",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "testing against exchangenet",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581010020,
+        "voting_end_time": 1581010140,
+        "submission_time": 1581009965,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 3,
+        "executor_result": 1,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw4Fj8MywA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000012",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "testing against exchangenet",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581010440,
+        "voting_end_time": 1581010560,
+        "submission_time": 1581010287,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 3,
+        "executor_result": 1,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw4LrGJpQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000013",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "testing against exchangenet",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581010680,
+        "voting_end_time": 1581010800,
+        "submission_time": 1581010425,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 3,
+        "executor_result": 1,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw4PKnQ/QA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000014",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "testing against exchangenet 1581010920",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581010980,
+        "voting_end_time": 1581011100,
+        "submission_time": 1581010746,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 3,
+        "executor_result": 1,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw4TiAqKwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000015",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "testing against exchangenet 1581011040",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581011100,
+        "voting_end_time": 1581011220,
+        "submission_time": 1581010986,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 3,
+        "executor_result": 1,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw4VRxN1wA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000016",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "testing against exchangenet 1581011196",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581011220,
+        "voting_end_time": 1581011340,
+        "submission_time": 1581011113,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 3,
+        "executor_result": 1,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw4XBhxgwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000017",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "testing against exchangenet 1581011300",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581011340,
+        "voting_end_time": 1581011460,
+        "submission_time": 1581011226,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 3,
+        "executor_result": 1,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw4YxSVLwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000018",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "testing against exchangenet 1581011376",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581011400,
+        "voting_end_time": 1581011520,
+        "submission_time": 1581011308,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 3,
+        "executor_result": 1,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw4ZpKnBQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000019",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "testing against exchangenet 1581011694",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581011700,
+        "voting_end_time": 1581011820,
+        "submission_time": 1581011409,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw4eAkAMwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000001a",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "testing against exchangenet 1581011801",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581011820,
+        "voting_end_time": 1581011940,
+        "submission_time": 1581011764,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 3,
+        "executor_result": 1,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw4fwUj3wA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000001b",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "testing against exchangenet 1581012084",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581012120,
+        "voting_end_time": 1581012240,
+        "submission_time": 1581011883,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 3,
+        "executor_result": 1,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw4kHt9DQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000001c",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "testing against exchangenet 1581012521",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581012540,
+        "voting_end_time": 1581012660,
+        "submission_time": 1581012459,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 3,
+        "executor_result": 1,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw4qO355wA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000001d",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "testing against exchangenet 1581014573",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581014580,
+        "voting_end_time": 1581014700,
+        "submission_time": 1581014373,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw5H6xYUwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000001e",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration ",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "why is not the vote delay working",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581016680,
+        "voting_end_time": 1581016800,
+        "submission_time": 1581016450,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 3,
+        "executor_result": 1,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw5mejIlQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000001f",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration 1581017152",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "why is not the vote delay working now",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581017160,
+        "voting_end_time": 1581017280,
+        "submission_time": 1581016997,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw5tdlXRQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000020",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration 1581017646",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "it works",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581017700,
+        "voting_end_time": 1581017820,
+        "submission_time": 1581017527,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw51Uf3ywA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000021",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration 1581021567",
+        "raw_option": "sgZ7CgIIARJ1CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhwKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgQIARAD",
+        "description": "do i need eval yes committed already",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581021600,
+        "voting_end_time": 1581021720,
+        "submission_time": 1581021388,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXw6uEp/IQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000022",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update termdeposit configuration 1581066533",
+        "raw_option": "sgZ5CgIIARJzCgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaFLPaFSdt5OGOOlLkALtra1mpxNoiIgsIgJy1BxIECAEQCiILCIC46g4SBAgCEAoiCwiA8NQdEgQIBBAKKhoKFAAAAAAAAAAAAAAAAAAAAAAAAAAAEgIQAQ==",
+        "description": "0 base rate for 0x0",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581066540,
+        "voting_end_time": 1581066660,
+        "submission_time": 1581066528,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXxE8CSuPwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000023",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update qualityscore configuration 1581067036",
+        "raw_option": "ugZACgIIARI6CgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaAhABIgIQASoCEAEyAhABOgIQAUICEAFKAhABUgIQAQ==",
+        "description": "close ticket 55",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581067080,
+        "voting_end_time": 1581067200,
+        "submission_time": 1581066983,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXxFD5NOxQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000024",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Update qualityscore configuration 1581067255",
+        "raw_option": "ugZQCgIIARJKCgIIARIUs9oVJ23k4Y46UuQAu2trWanE2iIaBAgBEAEiBAgKEAMqBAgLEAQyBAgMEAU6BAgNEAZCBAgOEAdKBAgPEAhSBAgJEAI=",
+        "description": "what the",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581067260,
+        "voting_end_time": 1581067380,
+        "submission_time": 1581067255,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXxFGg2ERwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000025",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Set product fee account_register_domain to 6.9 IOV 1581089670",
+        "raw_option": "ggUsCgIIARIXYWNjb3VudC9yZWdpc3Rlcl9kb21haW4aDQgGEIDSk60DGgNJT1Y=",
+        "description": "The default fee is 0",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581089700,
+        "voting_end_time": 1581089820,
+        "submission_time": 1581089563,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXxKNDuS6wA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000026",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Set product fee account_register_domain to 0 IOV 1581090259",
+        "raw_option": "ggUkCgIIARIXYWNjb3VudC9yZWdpc3Rlcl9kb21haW4aBRoDSU9W",
+        "description": "why does not the antispam fee get charged",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581090300,
+        "voting_end_time": 1581090420,
+        "submission_time": 1581090155,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXxKVyhFRwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000027",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Set product fee account_register_account to 26.6 IOV 1581097726",
+        "raw_option": "ggUtCgIIARIYYWNjb3VudC9yZWdpc3Rlcl9hY2NvdW50Gg0IGhCAjI2eAhoDSU9W",
+        "description": "take it to a whole number",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581097740,
+        "voting_end_time": 1581097860,
+        "submission_time": 1581097646,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXxMCDjo7wA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000028",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Set product fee account_delete_account to 0.1 IOV 1581098227",
+        "raw_option": "ggUoCgIIARIWYWNjb3VudC9kZWxldGVfYWNjb3VudBoKEIDC1y8aA0lPVg==",
+        "description": "lees than antispam",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581098280,
+        "voting_end_time": 1581098400,
+        "submission_time": 1581098176,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXxMJ6eJdQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000029",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Set product fee account_delete_account to 1.1 IOV 1581098563",
+        "raw_option": "ggUqCgIIARIWYWNjb3VudC9kZWxldGVfYWNjb3VudBoMCAEQgMLXLxoDSU9W",
+        "description": "more than antispam",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581098580,
+        "voting_end_time": 1581098700,
+        "submission_time": 1581098500,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXxMOR3iowA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000002a",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Set product fee account_delete_domain to 1.15 IOV 1581099229",
+        "raw_option": "ggUpCgIIARIVYWNjb3VudC9kZWxldGVfZG9tYWluGgwIARCAo8NHGgNJT1Y=",
+        "description": "more than antispam",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAI=",
+          "version": 1
+        },
+        "voting_start_time": 1581099240,
+        "voting_end_time": 1581099360,
+        "submission_time": 1581099157,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhXxMX4im1QA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000002b",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain iov",
+        "raw_option": "mgVSCgIIARIDaW92GhTBchGB6DN275eKpKmjil4nwIx7siABMioKG2FjY291bnQvZGVsZXRlX2FsbF9hY2NvdW50cxILCP+T69wDGgNJT1Y4gJqeAQ==",
+        "description": "iov's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582223280,
+        "voting_end_time": 1582223400,
+        "submission_time": 1582222997,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1L80XhSQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000002c",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain iov",
+        "raw_option": "mgVSCgIIARIDaW92GhTBchGB6DN275eKpKmjil4nwIx7siABMioKG2FjY291bnQvZGVsZXRlX2FsbF9hY2NvdW50cxILCP+T69wDGgNJT1Y4gJqeAQ==",
+        "description": "iov's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582225260,
+        "voting_end_time": 1582225380,
+        "submission_time": 1582225199,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1MZoYt3wA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000002d",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain iov1",
+        "raw_option": "mgVTCgIIARIEaW92MRoUwXIRgegzdu+XiqSpo4peJ8CMe7IgATIqChthY2NvdW50L2RlbGV0ZV9hbGxfYWNjb3VudHMSCwj/k+vcAxoDSU9WOICangE=",
+        "description": "iov1's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582225920,
+        "voting_end_time": 1582226040,
+        "submission_time": 1582225598,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1MjPDyEQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000002e",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain dave",
+        "raw_option": "mgVTCgIIARIEZGF2ZRoUwXIRgegzdu+XiqSpo4peJ8CMe7IgATIqChthY2NvdW50L2RlbGV0ZV9hbGxfYWNjb3VudHMSCwj/k+vcAxoDSU9WOICangE=",
+        "description": "dave's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582226100,
+        "voting_end_time": 1582226220,
+        "submission_time": 1582225957,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1Ml2snkwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a000000000000002f",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain pooch",
+        "raw_option": "mgVUCgIIARIFcG9vY2gaFMFyEYHoM3bvl4qkqaOKXifAjHuyIAEyKgobYWNjb3VudC9kZWxldGVfYWxsX2FjY291bnRzEgsI/5Pr3AMaA0lPVjiAmp4B",
+        "description": "pooch's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582226220,
+        "voting_end_time": 1582226340,
+        "submission_time": 1582226132,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1MnmdLPwA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000030",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain karim",
+        "raw_option": "mgVUCgIIARIFa2FyaW0aFMFyEYHoM3bvl4qkqaOKXifAjHuyIAEyKgobYWNjb3VudC9kZWxldGVfYWxsX2FjY291bnRzEgsI/5Pr3AMaA0lPVjiAmp4B",
+        "description": "karim's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582226340,
+        "voting_end_time": 1582226460,
+        "submission_time": 1582226275,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1MpWNu6wA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000031",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain antoine",
+        "raw_option": "mgVWCgIIARIHYW50b2luZRoUwXIRgegzdu+XiqSpo4peJ8CMe7IgATIqChthY2NvdW50L2RlbGV0ZV9hbGxfYWNjb3VudHMSCwj/k+vcAxoDSU9WOICangE=",
+        "description": "antoine's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582226520,
+        "voting_end_time": 1582226640,
+        "submission_time": 1582226404,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1Mr92kbQA"
+      }
+    },
+    {
+      "key": "70726f706f73616c3a0000000000000032",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "title": "Register non-superuser domain crypto4good",
+        "raw_option": "mgVaCgIIARILY3J5cHRvNGdvb2QaFMFyEYHoM3bvl4qkqaOKXifAjHuyIAEyKgobYWNjb3VudC9kZWxldGVfYWxsX2FjY291bnRzEgsI/5Pr3AMaA0lPVjiAmp4B",
+        "description": "crypto4good's admin cannot delete or transfer accounts.",
+        "election_rule_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 2
+        },
+        "electorate_ref": {
+          "id": "AAAAAAAAAAE=",
+          "version": 1
+        },
+        "voting_start_time": 1582226640,
+        "voting_end_time": 1582226760,
+        "submission_time": 1582226546,
+        "author": "C1721181E83376EF978AA4A9A38A5E27C08C7BB2",
+        "vote_state": {
+          "total_yes": 1,
+          "total_electorate_weight": 1,
+          "quorum": {
+            "numerator": 1,
+            "denominator": 2
+          },
+          "threshold": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        "status": 2,
+        "result": 2,
+        "executor_result": 2,
+        "tally_task_id": "X2Nyb250YXNrOnJ1bmF0OhX1MttnIGQA"
+      }
+    }
+  ]
+}

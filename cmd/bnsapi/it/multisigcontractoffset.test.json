@@ -1,0 +1,37 @@
+{
+    "objects": [
+        {
+            "key": "636f6e7472616374733a0000000000000001",
+            "value": {
+                "metadata": {
+                    "schema": 1
+                },
+                "participants": [
+                    {
+                        "signature": "A43634B9903FD5F380A132AB1D5F3AE9F688CE79",
+                        "weight": 1
+                    },
+                    {
+                        "signature": "DBDDC00799AF374DB4AC9D45450D6188F768635D",
+                        "weight": 1
+                    },
+                    {
+                        "signature": "E3EE27D303F22E8C4FBC510D593FA34811DD7331",
+                        "weight": 1
+                    },
+                    {
+                        "signature": "8DBA0B168A2F92101A726383AFE69121145072BA",
+                        "weight": 1
+                    },
+                    {
+                        "signature": "23A3EBA9D45102B9B65FA83C9C1094EBB3F9CECC",
+                        "weight": 1
+                    }
+                ],
+                "activation_threshold": 3,
+                "admin_threshold": 3,
+                "address": "5AE2C58796B0AD48FFE7602EAC3353488C859A2B"
+            }
+        }
+    ]
+}

@@ -22,13 +22,23 @@ type ContractsHandler struct {
 // @Summary Returns a list of bnsd/x/termdeposit entities.
 // @Description The term deposit Contract are the contract defining the dates until which one can deposit.
 // @Tags IOV token
-// @Param offset query string false "Pagination offset"
+// @Param offset query int false "Pagination offset"
 // @Success 200 {object} handlers.MultipleObjectsResponse
 // @Failure 404
 // @Failure 500
 // @Router /termdeposit/contracts [get]
 func (h *ContractsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	offset := handlers.ExtractIDFromKey(r.URL.Query().Get("offset"))
+	q := r.URL.Query()
+	var offset []byte
+	if q.Get("offset")!= "" {
+		var err error
+		offset, err = handlers.ExtractNumericID(q.Get("offset"))
+		if err != nil && !errors.ErrEmpty.Is(err) {
+			handlers.JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
+			return
+		}
+	}
+
 	it := client.ABCIRangeQuery(r.Context(), h.Bns, "/depositcontracts", fmt.Sprintf("%x:", offset))
 
 	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
@@ -72,7 +82,7 @@ type DepositsHandler struct {
 // @Param depositor query string false "Depositor address in bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr) or hex(C1721181E83376EF978AA4A9A38A5E27C08C7BB2)"
 // @Param contract query string false "Base64 encoded ID"
 // @Param contract_id query int false "Integer encoded Contract ID"
-// @Param offset query string false "Pagination offset"
+// @Param offset query int false "Pagination offset"
 // @Success 200 {object} handlers.MultipleObjectsResponse
 // @Failure 404
 // @Failure 500
@@ -85,8 +95,17 @@ func (h *DepositsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var offset []byte
+	if q.Get("offset")!= "" {
+		var err error
+		offset, err = handlers.ExtractNumericID(q.Get("offset"))
+		if err != nil && !errors.ErrEmpty.Is(err) {
+			handlers.JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
+			return
+		}
+	}
+
 	var it client.ABCIIterator
-	offset := handlers.ExtractIDFromKey(q.Get("offset"))
 	if d := q.Get("depositor"); len(d) > 0 {
 		rawAddr, err := weave.ParseAddress(d)
 		if err != nil {
@@ -142,4 +161,3 @@ fetchDeposits:
 		Objects: objects,
 	})
 }
-

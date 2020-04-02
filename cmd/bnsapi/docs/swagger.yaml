@@ -71,26 +71,13 @@ definitions:
     type: object
   gconf.Configuration:
     type: object
-  handlers.KeyValue:
-    properties:
-      key:
-        $ref: '#/definitions/handlers.hexbytes'
-        type: object
-      value:
-        $ref: '#/definitions/orm.Model'
-        type: object
-    type: object
   handlers.MultipleObjectsResponse:
     properties:
       objects:
         items:
-          $ref: '#/definitions/handlers.KeyValue'
+          $ref: '#/definitions/util.KeyValue'
         type: array
     type: object
-  handlers.hexbytes:
-    items:
-      type: integer
-    type: array
   msgfee.MsgFee:
     properties:
       fee:
@@ -140,6 +127,19 @@ definitions:
           $ref: '#/definitions/username.BlockchainAddress'
         type: array
     type: object
+  util.KeyValue:
+    properties:
+      key:
+        $ref: '#/definitions/util.hexbytes'
+        type: object
+      value:
+        $ref: '#/definitions/orm.Model'
+        type: object
+    type: object
+  util.hexbytes:
+    items:
+      type: integer
+    type: array
   weave.Address:
     items:
       type: integer
@@ -176,7 +176,7 @@ paths:
       - description: Pagination offset
         in: query
         name: offset
-        type: string
+        type: integer
       responses:
         "200":
           description: OK
@@ -201,7 +201,7 @@ paths:
       - description: Pagination offset
         in: query
         name: offset
-        type: string
+        type: integer
       responses:
         "200":
           description: OK
@@ -288,13 +288,13 @@ paths:
         format.
       parameters:
       - description: Bech32 or hex representation of an address
-        in: path
+        in: query
         name: address
         type: string
-      - description: Bech32 or hex representation of an address to be used as offset
+      - description: Pagination offset
         in: query
         name: offset
-        type: string
+        type: integer
       responses:
         "200": {}
         "404": {}
@@ -306,10 +306,10 @@ paths:
     get:
       description: At most one of the query parameters must exist(excluding offset)
       parameters:
-      - description: Iteration offset
+      - description: Pagination offset
         in: query
         name: offset
-        type: string
+        type: integer
       - description: Source address
         in: query
         name: source
@@ -370,7 +370,7 @@ paths:
       - description: Pagination offset
         in: query
         name: offset
-        type: string
+        type: integer
       responses:
         "200":
           description: OK
@@ -405,7 +405,7 @@ paths:
       - description: Pagination offset
         in: query
         name: offset
-        type: string
+        type: integer
       responses:
         "200":
           description: OK
@@ -426,11 +426,13 @@ paths:
       - Status
   /msgfee/msgfees:
     get:
-      description: 'Return message fee information based on message path: username/register_token'
+      description: |-
+        If msgfee parameter is provided return the queried mesgfee information
+        otherwise returns all available msgfees
       parameters:
-      - description: 'msgfee key ex: account, username etc...'
+      - description: 'ex: username/register_token'
         in: query
-        name: msgFeePrefix
+        name: msgfee
         type: string
       responses:
         "200":
@@ -446,9 +448,9 @@ paths:
     get:
       description: At most one of the query parameters must exist(excluding offset)
       parameters:
-      - description: Pagination offset
+      - description: Return objects with keys that start with given prefix
         in: query
-        name: offset
+        name: prefix
         type: string
       responses:
         "200":
@@ -468,7 +470,7 @@ paths:
       - description: Pagination offset
         in: query
         name: offset
-        type: string
+        type: integer
       responses:
         "200":
           description: OK
@@ -503,7 +505,7 @@ paths:
       - description: Pagination offset
         in: query
         name: offset
-        type: string
+        type: integer
       responses:
         "200":
           description: OK

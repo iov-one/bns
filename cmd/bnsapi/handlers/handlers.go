@@ -38,7 +38,7 @@ type GovProposalsHandler struct {
 // @Param electorate query string false "Base64 encoded electorate ID"
 // @Param elector query string false "Base64 encoded Elector ID"
 // @Param electorate_id query int false "Integer Electorate ID"
-// @Param offset query string false "Pagination offset"
+// @Param offset query int false "Pagination offset"
 // @Success 200 {object} handlers.MultipleObjectsResponse
 // @Failure 404
 // @Failure 400
@@ -52,8 +52,17 @@ func (h *GovProposalsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	var offset []byte
+	if q.Get("offset")!= "" {
+		var err error
+		offset, err = ExtractNumericID(q.Get("offset"))
+		if err != nil && !errors.ErrEmpty.Is(err) {
+			JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
+			return
+		}
+	}
+
 	var it client.ABCIIterator
-	offset := ExtractIDFromKey(q.Get("offset"))
 	if e := q.Get("electorate"); len(e) > 0 {
 		rawAddr, err := base64.StdEncoding.DecodeString(e)
 		if err != nil {
@@ -78,9 +87,11 @@ func (h *GovProposalsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 		end := NextKeyValue(rawAddr)
-		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/proposals/author", fmt.Sprintf("%x:%x:%x", rawAddr, offset, end))
+		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/proposals/author", fmt.Sprintf("%s:%x:%x", rawAddr, offset, end))
 	} else {
-		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/proposals", fmt.Sprintf("%x:", offset))
+		qe := fmt.Sprintf("%x:", offset)
+		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/proposals", qe)
+
 	}
 
 	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
@@ -122,7 +133,7 @@ type GovVotesHandler struct {
 // @Param proposal_id query int false "Integer encoded Proposal ID"
 // @Param elector query string false "Base64 encoded Elector ID"
 // @Param elector_id query int false "Integer encoded Elector ID"
-// @Param offset query string false "Pagination offset"
+// @Param offset query int false "Pagination offset"
 // @Success 200 {object} handlers.MultipleObjectsResponse
 // @Failure 404
 // @Failure 400
@@ -136,8 +147,17 @@ func (h *GovVotesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var offset []byte
+	if q.Get("offset")!= "" {
+		var err error
+		offset, err = ExtractNumericID(q.Get("offset"))
+		if err != nil && !errors.ErrEmpty.Is(err) {
+			JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
+			return
+		}
+	}
+
 	var it client.ABCIIterator
-	offset := ExtractIDFromKey(q.Get("offset"))
 	if e := q.Get("elector"); len(e) > 0 {
 		rawAddr, err := WeaveAddressFromQuery(e)
 		if err != nil {
@@ -212,7 +232,7 @@ type EscrowEscrowsHandler struct {
 // @Summary Returns a list of all the smart contract Escrows.
 // @Description At most one of the query parameters must exist(excluding offset)
 // @Tags IOV token
-// @Param offset query string false "Iteration offset"
+// @Param offset query int false "Pagination offset"
 // @Param source query string false "Source address"
 // @Param destination query string false "Destination address"
 // @Success 200 {object} handlers.MultipleObjectsResponse
@@ -228,8 +248,13 @@ func (h *EscrowEscrowsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	offset, err := ExtractOffsetFromParam(q.Get("offset"))
+	if err != nil && !errors.ErrEmpty.Is(err) {
+		JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
+		return
+	}
+
 	var it client.ABCIIterator
-	offset := ExtractIDFromKey(q.Get("offset"))
 	if d := q.Get("destination"); len(d) > 0 {
 		rawAddr, err := WeaveAddressFromQuery(d)
 		if err != nil {
@@ -237,7 +262,7 @@ func (h *EscrowEscrowsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 			return
 		}
 		end := NextKeyValue(rawAddr)
-		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/escrows/destination", fmt.Sprintf("%x:%x:%x", rawAddr, offset, end))
+		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/escrows/destination", fmt.Sprintf("%s:%x:%x", rawAddr, offset, end))
 	} else if s := q.Get("source"); len(s) > 0 {
 		rawAddr, err := WeaveAddressFromQuery(s)
 		if err != nil {
@@ -245,7 +270,7 @@ func (h *EscrowEscrowsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 			return
 		}
 		end := NextKeyValue(rawAddr)
-		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/escrows/source", fmt.Sprintf("%x:%x:%x", rawAddr, offset, end))
+		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/escrows/source", fmt.Sprintf("%s:%x:%x", rawAddr, offset, end))
 	} else {
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/escrows", fmt.Sprintf("%x:", offset))
 	}
@@ -285,15 +310,26 @@ type MultisigContractsHandler struct {
 // @Summary Returns a list of all the multisig Contracts.
 // @Description At most one of the query parameters must exist(excluding offset)
 // @Tags IOV token
-// @Param offset query string false "Pagination offset"
+// @Param prefix query string false "Return objects with keys that start with given prefix"
 // @Success 200 {object} handlers.MultipleObjectsResponse
 // @Failure 404
 // @Failure 500
 // @Router /multisig/contracts [get]
 func (h *MultisigContractsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	offset := ExtractIDFromKey(r.URL.Query().Get("offset"))
-	it := client.ABCIRangeQuery(r.Context(), h.Bns, "/contracts", fmt.Sprintf("%x:", offset))
+	// TODO make this offset
+	prefixQuery := r.URL.Query().Get("prefix")
+	var p []byte
+	if prefixQuery != "" {
+		var err error
+		p, err = util.NumericID(prefixQuery)
+		if err != nil {
+			JSONErr(w, http.StatusBadRequest, "prefix must be numeric")
+			return
+		}
+	}
 
+	// TODO make this range query
+	it := client.ABCIPrefixQuery(r.Context(), h.Bns, "/contracts", p)
 	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
 fetchContracts:
 	for {
@@ -501,8 +537,8 @@ type CashBalanceHandler struct {
 // @Summary returns balance in IOV Token of the given iov address
 // @Description The iov address may be in the bech32 (iov....) or hex (ON3LK...) format.
 // @Tags IOV token
-// @Param address path string false "Bech32 or hex representation of an address"
-// @Param offset query string false "Bech32 or hex representation of an address to be used as offset"
+// @Param address query string false "Bech32 or hex representation of an address"
+// @Param offset query int false "Pagination offset"
 // @Success 200
 // @Failure 404
 // @Failure 500
@@ -517,11 +553,7 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	key := q.Get("address")
 	if key != "" {
-		if strings.HasPrefix(key, "iov") || strings.HasPrefix(key, "tiov") {
-			key = "bech32:" + key
-		}
 		addr, err := WeaveAddressFromQuery(key)
-
 		if err != nil {
 			log.Print(err)
 			JSONErr(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
@@ -543,8 +575,18 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		// query all wallets
-		offset := ExtractIDFromKey(q.Get("offset"))
-		it := client.ABCIRangeQuery(r.Context(), h.Bns, "/wallets", fmt.Sprintf("%x:", offset))
+
+		var offset []byte
+		if q.Get("offset")!= "" {
+			var err error
+			offset, err = ExtractAddress(q.Get("offset"))
+			if err != nil && !errors.ErrEmpty.Is(err) {
+				JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
+				return
+			}
+		}
+
+		it := client.ABCIRangeQuery(r.Context(), h.Bns, "/wallets", fmt.Sprintf("%s:", offset))
 
 		objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
 	fetchBalances:
@@ -625,7 +667,7 @@ type NoncePubKeyHandler struct {
 // @Router /account/nonce/pubkey/{pubKey} [get]
 func (h *NoncePubKeyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	pubKeyStr := LastChunk(r.URL.Path)
-	pubKey := weavecrypto.PublicKey_Ed25519{Ed25519:[]byte(pubKeyStr)}
+	pubKey := weavecrypto.PublicKey_Ed25519{Ed25519: []byte(pubKeyStr)}
 	addr := pubKey.Condition().Address()
 
 	var userData sigs.UserData
@@ -649,8 +691,9 @@ type MsgFeeHandler struct {
 
 // MsgFeeHandler godoc
 // @Summary Return message fee information based on message path: username/register_token
-// @Description Return message fee information based on message path: username/register_token
-// @Param msgFeePrefix query string false "msgfee key ex: account, username etc..." if no parameter is given, it will return all the msgfees
+// @Description If msgfee parameter is provided return the queried mesgfee information
+// @Description otherwise returns all available msgfees
+// @Param msgfee query string false "ex: username/register_token"
 // @Tags Message Fee
 // @Success 200 {object} msgfee.MsgFee
 // @Failure 404
@@ -658,33 +701,48 @@ type MsgFeeHandler struct {
 // @Router /msgfee/msgfees [get]
 func (h *MsgFeeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
-	msgFeePrefix := q.Get("msgFeePrefix")
-
-	it := client.ABCIPrefixQuery(r.Context(), h.Bns, "/msgfee", []byte(msgFeePrefix))
-	
-	objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
-fetchMsgFees:
-	for {
-		var msgFee msgfee.MsgFee
-		switch key, err := it.Next(&msgFee); {
-		case err == nil:
-			objects = append(objects, util.KeyValue{
-				Key:   key,
-				Value: &msgFee,
-			})
-			if len(objects) == util.PaginationMaxItems {
-				break fetchMsgFees
-			}
-		case errors.ErrIteratorDone.Is(err):
-			break fetchMsgFees
-		default:
-			log.Printf("msgfee ABCI query: %s", err)
-			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-			return
+	msgFee := q.Get("msgfee")
+	if msgFee != "" {
+		var fee msgfee.MsgFee
+		res := models.KeyModel{
+			Model: &fee,
 		}
-	}
+		switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/msgfee", []byte(msgFee), &res); {
+		case err == nil:
+			JSONResp(w, http.StatusOK, res)
+		case errors.ErrNotFound.Is(err):
+			JSONErr(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
+		default:
+			log.Printf("gconf ABCI query: %s", err)
+			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		}
+	} else {
+		it := client.ABCIPrefixQuery(r.Context(), h.Bns, "/msgfee", []byte{})
 
-	JSONResp(w, http.StatusOK, MultipleObjectsResponse{
-		Objects: objects,
-	})
+		objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
+	fetchMsgFees:
+		for {
+			var msgFee msgfee.MsgFee
+			switch key, err := it.Next(&msgFee); {
+			case err == nil:
+				objects = append(objects, util.KeyValue{
+					Key:   key,
+					Value: &msgFee,
+				})
+				if len(objects) == util.PaginationMaxItems {
+					break fetchMsgFees
+				}
+			case errors.ErrIteratorDone.Is(err):
+				break fetchMsgFees
+			default:
+				log.Printf("msgfee ABCI query: %s", err)
+				JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+				return
+			}
+		}
+
+		JSONResp(w, http.StatusOK, MultipleObjectsResponse{
+			Objects: objects,
+		})
+	}
 }

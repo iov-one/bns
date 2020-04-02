@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/iov-one/bns/cmd/bnsapi/bnsapitest"
 	_ "github.com/iov-one/bns/cmd/bnsapi/bnsapitest"
-	"github.com/iov-one/bns/cmd/bnsapi/client"
+	"github.com/iov-one/bns/cmd/bnsapi/models"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
 	"github.com/iov-one/weave"
 	"github.com/iov-one/weave/cmd/bnsd/x/account"
@@ -16,7 +16,7 @@ import (
 
 func TestAccountAccountDetailHandler(t *testing.T) {
 	bns := &bnsapitest.BnsClientMock{
-		PostResults: map[string]map[string]client.AbciQueryResponse{
+		PostResults: map[string]map[string]models.AbciQueryResponse{
 			"/accounts": {
 				"666F6F2A626172": bnsapitest.NewAbciQueryResponse(t,
 					[][]byte{
@@ -55,8 +55,9 @@ func TestAccountAccountDetailHandler(t *testing.T) {
 
 func TestAccountAccountssHandler(t *testing.T) {
 	bns := &bnsapitest.BnsClientMock{
-		GetResults: map[string]client.AbciQueryResponse{
-			"/abci_query?data=%22%3A%22&path=%22%2Faccounts%3Frange%22": bnsapitest.NewAbciQueryResponse(t,
+		PostResults: map[string]map[string]models.AbciQueryResponse{
+			"/accounts?range": {
+				"3A": bnsapitest.NewAbciQueryResponse(t,
 				[][]byte{
 					[]byte("first"),
 					[]byte("second"),
@@ -65,6 +66,7 @@ func TestAccountAccountssHandler(t *testing.T) {
 					&account.Account{Name: "first", Domain: "adomain"},
 					&account.Account{Name: "second", Domain: "adomain"},
 				}),
+			},
 		},
 	}
 	h := AccountsHandler{Bns: bns}
@@ -87,8 +89,10 @@ func TestAccountAccountssHandler(t *testing.T) {
 
 func TestAccountAccountssHandlerOffsetAndFilter(t *testing.T) {
 	bns := &bnsapitest.BnsClientMock{
-		GetResults: map[string]client.AbciQueryResponse{
-			"/abci_query?data=%2261646f6d61696e%3A36363639373237333734%3A61646f6d61696f%22&path=%22%2Faccounts%2Fdomain%3Frange%22": bnsapitest.NewAbciQueryResponse(t, nil, nil),
+		PostResults: map[string]map[string]models.AbciQueryResponse{
+			"/accounts/domain?range": {
+				"36313634366636643631363936653A303030303030303138643862663638653A3631363436663664363136393666": bnsapitest.NewAbciQueryResponse(t, nil, nil),
+			},
 		},
 	}
 	h := AccountsHandler{Bns: bns}
@@ -102,17 +106,18 @@ func TestAccountAccountssHandlerOffsetAndFilter(t *testing.T) {
 
 func TestAccountDomainsHandler(t *testing.T) {
 	bns := &bnsapitest.BnsClientMock{
-		GetResults: map[string]client.AbciQueryResponse{
-			"/abci_query?data=%22%3A%22&path=%22%2Fdomains%3Frange%22": bnsapitest.NewAbciQueryResponse(t,
-				[][]byte{
-					[]byte("first"),
-					[]byte("second"),
-				},
-				[]weave.Persistent{
-					&account.Domain{Domain: "f"},
-					&account.Domain{Domain: "s"},
-				}),
-			"/abci_query?data=%227365636f6e64%3A%22&path=%22%2Fdomains%3Frange%22": bnsapitest.NewAbciQueryResponse(t, nil, nil),
+		PostResults: map[string]map[string]models.AbciQueryResponse{
+			"/domains?range": {
+				"3A": bnsapitest.NewAbciQueryResponse(t,
+					[][]byte{
+						[]byte("first"),
+						[]byte("second"),
+					},
+					[]weave.Persistent{
+						&account.Domain{Domain: "f"},
+						&account.Domain{Domain: "s"},
+					}),
+			},
 		},
 	}
 	h := DomainsHandler{Bns: bns}

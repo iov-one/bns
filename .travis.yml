@@ -5,13 +5,13 @@ language: go
 dist: xenial
 
 services:
-- docker
+  - docker
 
 addons:
   apt:
     packages:
-    - docker-ce
-    - apt-cacher-ng
+      - docker-ce
+      - apt-cacher-ng
 
 cache:
   directories:
@@ -21,12 +21,12 @@ cache:
     - /var/cache/apt-cacher-ng
 
 os:
-- linux
+  - linux
 
 go:
-# When changing, remember to update MAIN_GO_VERSION below.
-- "1.13.5"
-- master
+  # When changing, remember to update MAIN_GO_VERSION below.
+  - "1.13.5"
+  - master
 
 env:
   global:
@@ -41,51 +41,55 @@ env:
     - IMAGE_NAME="iov1/bnsapi:${BUILD_VERSION}"
 
 install:
-- wget --quiet https://github.com/tendermint/tendermint/releases/download/${TM_VERSION}/tendermint_${TM_VERSION}_linux_amd64.zip -O tendermint_linux_amd64.zip &&
-  unzip tendermint_linux_amd64.zip &&
-  sudo install -D -m 777 -o root tendermint /usr/local/bin
-- wget --quiet https://github.com/swaggo/swag/releases/download/v1.6.5/swag_1.6.5_Linux_i386.tar.gz -O swag_linux_amd64.zip &&
-  tar -xvzf swag_linux_amd64.zip;
-  sudo install -D -m 777 -o root swag /usr/local/bin
+  - wget --quiet https://github.com/tendermint/tendermint/releases/download/${TM_VERSION}/tendermint_${TM_VERSION}_linux_amd64.zip -O tendermint_linux_amd64.zip &&
+    unzip tendermint_linux_amd64.zip &&
+    sudo install -D -m 777 -o root tendermint /usr/local/bin
+  - wget --quiet https://github.com/swaggo/swag/releases/download/v1.6.5/swag_1.6.5_Linux_i386.tar.gz -O swag_linux_amd64.zip &&
+    tar -xvzf swag_linux_amd64.zip;
+    sudo install -D -m 777 -o root swag /usr/local/bin
 
 script:
-- set -eo pipefail
-# TODO uncomment when bnsd is imported
-# - make protolint
-# - make protodocs
-- make swaggerdocs
-- make install
-- make all
-# - if [[ "$TRAVIS_GO_VERSION" == "$MAIN_GO_VERSION" ]]; then
-#     make cover;
-#     ./coverage/upload.sh;
-#   fi;
-- printenv TRAVIS_COMMIT_MESSAGE > commit.msg
-- unset TRAVIS_COMMIT_MESSAGE && printenv | grep -Ev "PATH|path|GEM" > env.list
-- export TRAVIS_COMMIT_MESSAGE=`cat commit.msg` && rm -rf commit.msg
-# - docker run -it --rm --env-file env.list -v "$(pwd):/usr/src/app" iov1ops/danger:latest > danger.out; cat danger.out
-- if [[ "$TRAVIS_GO_VERSION" == "$MAIN_GO_VERSION" && "$TRAVIS_OS_NAME" == "linux" ]]; then
-    release_latest=$( [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_TAG" == "" && "$TRAVIS_PULL_REQUEST_BRANCH" == "" ]] && echo "yes" || echo "no" );
-    release_tag=$( [[ "$TRAVIS_TAG" != "" ]] && echo "yes" || echo "no" );
+  - set -eo pipefail
+  # TODO uncomment when bnsd is imported
+  # - make protolint
+  # - make protodocs
+  - make swaggerdocs
+  - make install
+  - make all
+  # - if [[ "$TRAVIS_GO_VERSION" == "$MAIN_GO_VERSION" ]]; then
+  #     make cover;
+  #     ./coverage/upload.sh;
+  #   fi;
+  - printenv TRAVIS_COMMIT_MESSAGE > commit.msg
+  - unset TRAVIS_COMMIT_MESSAGE && printenv | grep -Ev "PATH|path|GEM" > env.list
+  - export TRAVIS_COMMIT_MESSAGE=`cat commit.msg` && rm -rf commit.msg
+  # - docker run -it --rm --env-file env.list -v "$(pwd):/usr/src/app" iov1ops/danger:latest > danger.out; cat danger.out
+  - if [[ "$TRAVIS_GO_VERSION" == "$MAIN_GO_VERSION" && "$TRAVIS_OS_NAME" == "linux" ]]; then
+      release_latest=$( [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_TAG" == "" && "$TRAVIS_PULL_REQUEST_BRANCH" == "" ]] && echo "yes" || echo "no" );
+      release_tag=$( [[ "$TRAVIS_TAG" != "" ]] && echo "yes" || echo "no" );
 
-    if [[ $release_latest == "yes" || $release_tag == "yes" ]]; then
-      make dist;
-    fi;
+      if [[ $release_latest == "yes" || $release_tag == "yes" ]]; then
+        make dist;
+      fi;
 
-    if [[ $release_latest == "yes" ]]; then
-      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
-      docker tag  "iov1/bnsapi:${BUILD_VERSION}" "iov1/bnsapi:latest" ;
-      docker push "iov1/bnsapi:latest";
-      docker logout;
-    fi;
+      if [[ -z "$IT_TENDERMINT" ]]; then
+        (cd cmd/bnsapi; make it-test);
+      fi;
 
-    if [[ $release_tag == "yes" ]]; then
-      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
-      docker tag  "iov1/bnsapi:${BUILD_VERSION}" "iov1/bnsapi:$TRAVIS_TAG" ;
-      docker push "iov1/bnsapi:$TRAVIS_TAG";
-      docker logout;
+      if [[ $release_latest == "yes" ]]; then
+        echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
+        docker tag  "iov1/bnsapi:${BUILD_VERSION}" "iov1/bnsapi:latest" ;
+        docker push "iov1/bnsapi:latest";
+        docker logout;
+      fi;
+
+      if [[ $release_tag == "yes" ]]; then
+        echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
+        docker tag  "iov1/bnsapi:${BUILD_VERSION}" "iov1/bnsapi:$TRAVIS_TAG" ;
+        docker push "iov1/bnsapi:$TRAVIS_TAG";
+        docker logout;
+      fi;
     fi;
-  fi;
 
 notifications:
   email: false
@@ -93,8 +97,8 @@ notifications:
 # whitelist long living branches to avoid testing feature branches twice (as branch and as pull request)
 branches:
   only:
-  - master
-  - /^v[0-9]+\.[0-9]+\.x$/
-  - /^v[0-9]+\.[0-9]+\.[0-9]+$/
-  # milestone releases
-  - weave-v0.21.x
+    - master
+    - /^v[0-9]+\.[0-9]+\.x$/
+    - /^v[0-9]+\.[0-9]+\.[0-9]+$/
+    # milestone releases
+    - weave-v0.21.x

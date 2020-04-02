@@ -33,7 +33,7 @@
                         "in": "query"
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Pagination offset",
                         "name": "offset",
                         "in": "query"
@@ -66,7 +66,7 @@
                         "in": "query"
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Pagination offset",
                         "name": "offset",
                         "in": "query"
@@ -191,11 +191,11 @@
                         "type": "string",
                         "description": "Bech32 or hex representation of an address",
                         "name": "address",
-                        "in": "path"
+                        "in": "query"
                     },
                     {
-                        "type": "string",
-                        "description": "Bech32 or hex representation of an address to be used as offset",
+                        "type": "integer",
+                        "description": "Pagination offset",
                         "name": "offset",
                         "in": "query"
                     }
@@ -216,8 +216,8 @@
                 "summary": "Returns a list of all the smart contract Escrows.",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Iteration offset",
+                        "type": "integer",
+                        "description": "Pagination offset",
                         "name": "offset",
                         "in": "query"
                     },
@@ -307,7 +307,7 @@
                         "in": "query"
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Pagination offset",
                         "name": "offset",
                         "in": "query"
@@ -359,7 +359,7 @@
                         "in": "query"
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Pagination offset",
                         "name": "offset",
                         "in": "query"
@@ -391,7 +391,7 @@
         },
         "/msgfee/msgfees": {
             "get": {
-                "description": "Return message fee information based on message path: username/register_token",
+                "description": "If msgfee parameter is provided return the queried mesgfee information\notherwise returns all available msgfees",
                 "tags": [
                     "Message Fee"
                 ],
@@ -399,8 +399,8 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "msgfee key ex: account, username etc...",
-                        "name": "msgFeePrefix",
+                        "description": "ex: username/register_token",
+                        "name": "msgfee",
                         "in": "query"
                     }
                 ],
@@ -426,8 +426,8 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Pagination offset",
-                        "name": "offset",
+                        "description": "Return objects with keys that start with given prefix",
+                        "name": "prefix",
                         "in": "query"
                     }
                 ],
@@ -452,7 +452,7 @@
                 "summary": "Returns a list of bnsd/x/termdeposit entities.",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Pagination offset",
                         "name": "offset",
                         "in": "query"
@@ -497,7 +497,7 @@
                         "in": "query"
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Pagination offset",
                         "name": "offset",
                         "in": "query"
@@ -642,34 +642,15 @@
         "gconf.Configuration": {
             "type": "object"
         },
-        "handlers.KeyValue": {
-            "type": "object",
-            "properties": {
-                "key": {
-                    "type": "object",
-                    "$ref": "#/definitions/handlers.hexbytes"
-                },
-                "value": {
-                    "type": "object",
-                    "$ref": "#/definitions/orm.Model"
-                }
-            }
-        },
         "handlers.MultipleObjectsResponse": {
             "type": "object",
             "properties": {
                 "objects": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handlers.KeyValue"
+                        "$ref": "#/definitions/util.KeyValue"
                     }
                 }
-            }
-        },
-        "handlers.hexbytes": {
-            "type": "array",
-            "items": {
-                "type": "integer"
             }
         },
         "msgfee.MsgFee": {
@@ -723,6 +704,25 @@
                         "$ref": "#/definitions/username.BlockchainAddress"
                     }
                 }
+            }
+        },
+        "util.KeyValue": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "object",
+                    "$ref": "#/definitions/util.hexbytes"
+                },
+                "value": {
+                    "type": "object",
+                    "$ref": "#/definitions/orm.Model"
+                }
+            }
+        },
+        "util.hexbytes": {
+            "type": "array",
+            "items": {
+                "type": "integer"
             }
         },
         "weave.Address": {

@@ -24,7 +24,10 @@ image:
 	docker build --pull -t $(IMAGE_NAME) .
 
 test:
-	go test -mod=readonly -race ./...
+	go test -mod=readonly -race -short ./...
+
+it-test:
+	go test -mod=readonly -run Integration ./...
 
 run:
 	go run .
