@@ -467,26 +467,29 @@ func (h *BlocksHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 type DefaultHandler struct{}
 
 var wEndpoint = []string{
-	"/account/accounts/?domainKey=_&ownerKey=_",
-	"/account/domains/?admin=_&offset=_",
+	"/account/accounts?owner=_&domain=_&offset_",
+	"/account/domains?admin=_&offset=_",
+	"/account/resolve/{starname}",
 	"/account/accounts/{accountKey}",
 	"/account/nonce/address/{address}",
 	"/account/nonce/pubkey/{pubKey}",
 	"/cash/balances?address=_[OR]offset=_",
+	"/msgfee/msgfee?msgfee=_",
 	"/username/resolve/{username}",
 	"/username/owner/{ownerAddress}",
-	"/escrow/escrows/?source=_&destination=_&offset=_",
-	"/multisig/contracts/?offset=_",
-	"/termdeposit/contracts/?offset=_",
-	"/termdeposit/deposits/?depositor=_&contract=_&contract_id=?_offset=_",
+	"/escrow/escrows?source=_&destination=_&offset=_",
+	"/multisig/contracts?prefix=_",
+	"/termdeposit/contracts?offset=_",
+	"/termdeposit/deposits?depositor=_&contract=_&contract_id=?_offset=_",
+	"/gconf/{extensionName}",
+	"/blocks/{blockHeight}",
+	"/gov/proposals?author=_&electorate=_&electorate_id=_&offset=_",
+	"/gov/votes?proposal=_&proposal_id=&elector=_&elector_id=_&offset=_",
 }
 
 var withoutParamEndpoint = []string{
 	"/info/",
-	"/gov/proposals",
-	"/gov/votes",
-	"/blocks/{blockHeight}",
-	"/gconf/{extensionName}",
+	"/tx/submit",
 }
 
 type endpoints struct {

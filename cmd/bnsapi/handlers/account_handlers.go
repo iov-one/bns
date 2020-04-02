@@ -78,11 +78,11 @@ fetchDomains:
 	})
 }
 
-type DetailHandler struct {
+type AccountResolveHandler struct {
 	Bns client.BnsClient
 }
 
-// DetailHandler godoc
+// AccountResolveHandler godoc
 // @Summary Resolve a starname (orkun*neuma) and returns a `bnsd/x/account` entity (the associated info).
 // @Description Resolve a given starname (like orkun*neuma) and return all metadata related to this starname,
 // @Description list of crypto-addresses (targets), expiration date and owner address of the starname.
@@ -92,7 +92,7 @@ type DetailHandler struct {
 // @Failure 404
 // @Failure 500
 // @Router /account/resolve/{starname} [get]
-func (h *DetailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *AccountResolveHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	accountKey := LastChunk(r.URL.Path)
 	var acc account.Account
 	res := models.KeyModel{

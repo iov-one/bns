@@ -32,7 +32,7 @@ func TestAccountAccountDetailHandler(t *testing.T) {
 		},
 	}
 
-	h := DetailHandler{Bns: bns}
+	h := AccountResolveHandler{Bns: bns}
 
 	reqBody := `{ "json-rpc": 2.0, "method": "abci_query", "params": { "path": "/accounts", "data": "2F666F6F2F626172"}}`
 
