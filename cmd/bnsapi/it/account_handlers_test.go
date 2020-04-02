@@ -3,7 +3,7 @@ package it
 import (
 	"github.com/iov-one/bns/cmd/bnsapi/bnsapitest"
 	"github.com/iov-one/bns/cmd/bnsapi/client"
-	"github.com/iov-one/bns/cmd/bnsapi/handlers/account"
+	"github.com/iov-one/bns/cmd/bnsapi/handlers"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -21,7 +21,7 @@ func TestAccountAccountsIntegration(t *testing.T) {
 	}
 
 	bnscli := client.NewHTTPBnsClient(v)
-	h := account.AccountsHandler{Bns: bnscli}
+	h := handlers.AccountsHandler{Bns: bnscli}
 
 	r, _ := http.NewRequest("GET", "/account/accounts?offset=1000", nil)
 	rc := httptest.NewRecorder()

@@ -1,10 +1,9 @@
-package termdeposits
+package handlers
 
 import (
 	"encoding/base64"
 	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/client"
-	"github.com/iov-one/bns/cmd/bnsapi/handlers"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
 	"github.com/iov-one/weave"
 	"github.com/iov-one/weave/cmd/bnsd/x/termdeposit"
@@ -32,9 +31,9 @@ func (h *ContractsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var offset []byte
 	if q.Get("offset")!= "" {
 		var err error
-		offset, err = handlers.ExtractNumericID(q.Get("offset"))
+		offset, err = ExtractNumericID(q.Get("offset"))
 		if err != nil && !errors.ErrEmpty.Is(err) {
-			handlers.JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
+			JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
 			return
 		}
 	}
@@ -58,12 +57,12 @@ fetchContracts:
 			break fetchContracts
 		default:
 			log.Printf("termdeposit contract ABCI query: %s", err)
-			handlers.JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 	}
 
-	handlers.JSONResp(w, http.StatusOK, handlers.MultipleObjectsResponse{
+	JSONResp(w, http.StatusOK, MultipleObjectsResponse{
 		Objects: objects,
 	})
 }
@@ -90,17 +89,17 @@ type DepositsHandler struct {
 func (h *DepositsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
-	if !handlers.AtMostOne(q, "depositor", "contract_id", "contract") {
-		handlers.JSONErr(w, http.StatusBadRequest, "At most one filter can be used at a time.")
+	if !AtMostOne(q, "depositor", "contract_id", "contract") {
+		JSONErr(w, http.StatusBadRequest, "At most one filter can be used at a time.")
 		return
 	}
 
 	var offset []byte
 	if q.Get("offset")!= "" {
 		var err error
-		offset, err = handlers.ExtractNumericID(q.Get("offset"))
+		offset, err = ExtractNumericID(q.Get("offset"))
 		if err != nil && !errors.ErrEmpty.Is(err) {
-			handlers.JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
+			JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
 			return
 		}
 	}
@@ -109,27 +108,27 @@ func (h *DepositsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if d := q.Get("depositor"); len(d) > 0 {
 		rawAddr, err := weave.ParseAddress(d)
 		if err != nil {
-			handlers.JSONErr(w, http.StatusBadRequest, "Depositor address must be a valid address value..")
+			JSONErr(w, http.StatusBadRequest, "Depositor address must be a valid address value..")
 			return
 		}
-		end := handlers.NextKeyValue(rawAddr)
+		end := NextKeyValue(rawAddr)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/deposits/depositor", fmt.Sprintf("%s:%x:%x", d, offset, end))
 	} else if c := q.Get("contract_id"); len(c) > 0 {
 		n, err := strconv.ParseInt(c, 10, 64)
 		if err != nil {
-			handlers.JSONErr(w, http.StatusBadGateway, "contract_id must be an integer contract sequence number.")
+			JSONErr(w, http.StatusBadGateway, "contract_id must be an integer contract sequence number.")
 			return
 		}
-		cid := handlers.EncodeSequence(uint64(n))
-		end := handlers.NextKeyValue(cid)
+		cid := EncodeSequence(uint64(n))
+		end := NextKeyValue(cid)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/deposits/contract", fmt.Sprintf("%x:%x:%x", cid, offset, end))
 	} else if c := q.Get("contract"); len(c) > 0 {
 		cid, err := base64.StdEncoding.DecodeString(c)
 		if err != nil {
-			handlers.JSONErr(w, http.StatusBadGateway, "Contract must be a base64 encoded contract key.")
+			JSONErr(w, http.StatusBadGateway, "Contract must be a base64 encoded contract key.")
 			return
 		}
-		end := handlers.NextKeyValue(cid)
+		end := NextKeyValue(cid)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/deposits/contract", fmt.Sprintf("%x:%x:%x", cid, offset, end))
 	} else {
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/deposits", fmt.Sprintf("%x:", offset))
@@ -152,12 +151,12 @@ fetchDeposits:
 			break fetchDeposits
 		default:
 			log.Printf("termdeposit deposit ABCI query: %s", err)
-			handlers.JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 	}
 
-	handlers.JSONResp(w, http.StatusOK, handlers.MultipleObjectsResponse{
+	JSONResp(w, http.StatusOK, MultipleObjectsResponse{
 		Objects: objects,
 	})
 }

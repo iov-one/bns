@@ -2,13 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/iov-one/bns/cmd/bnsapi/handlers/termdeposit"
-
 	"github.com/iov-one/bns/cmd/bnsapi/client"
 	"github.com/iov-one/bns/cmd/bnsapi/docs"
 	"github.com/iov-one/bns/cmd/bnsapi/handlers"
-	accountHandlers "github.com/iov-one/bns/cmd/bnsapi/handlers/account"
-	usernameHandlers "github.com/iov-one/bns/cmd/bnsapi/handlers/username"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
 	httpSwagger "github.com/swaggo/http-swagger"
 
@@ -80,15 +76,15 @@ func run(conf Configuration) error {
 	rt := http.NewServeMux()
 	rt.Handle("/info", &handlers.InfoHandler{})
 	rt.Handle("/blocks/", &handlers.BlocksHandler{Bns: bnscli})
-	rt.Handle("/account/domains", &accountHandlers.DomainsHandler{Bns: bnscli})
-	rt.Handle("/account/accounts", &accountHandlers.AccountsHandler{Bns: bnscli})
-	rt.Handle("/account/resolve/", &accountHandlers.DetailHandler{Bns: bnscli})
+	rt.Handle("/account/domains", &handlers.DomainsHandler{Bns: bnscli})
+	rt.Handle("/account/accounts", &handlers.AccountsHandler{Bns: bnscli})
+	rt.Handle("/account/resolve/", &handlers.DetailHandler{Bns: bnscli})
 	rt.Handle("/account/nonce/address/", &handlers.NonceAddressHandler{Bns: bnscli})
 	rt.Handle("/account/nonce/pubkey/", &handlers.NoncePubKeyHandler{Bns: bnscli})
-	rt.Handle("/username/owner/", &usernameHandlers.OwnerHandler{Bns: bnscli})
+	rt.Handle("/username/owner/", &handlers.OwnerHandler{Bns: bnscli})
 	rt.Handle("/cash/balances", &handlers.CashBalanceHandler{Bns: bnscli})
-	rt.Handle("/termdeposit/contracts", &termdeposits.ContractsHandler{Bns: bnscli})
-	rt.Handle("/termdeposit/deposits", &termdeposits.DepositsHandler{Bns: bnscli})
+	rt.Handle("/termdeposit/contracts", &handlers.ContractsHandler{Bns: bnscli})
+	rt.Handle("/termdeposit/deposits", &handlers.DepositsHandler{Bns: bnscli})
 	rt.Handle("/multisig/contracts", &handlers.MultisigContractsHandler{Bns: bnscli})
 	rt.Handle("/escrow/escrows", &handlers.EscrowEscrowsHandler{Bns: bnscli})
 	rt.Handle("/gov/proposals", &handlers.GovProposalsHandler{Bns: bnscli})

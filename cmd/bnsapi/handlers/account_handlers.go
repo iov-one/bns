@@ -1,9 +1,8 @@
-package account
+package handlers
 
 import (
 	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/client"
-	"github.com/iov-one/bns/cmd/bnsapi/handlers"
 	"github.com/iov-one/bns/cmd/bnsapi/models"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
 	"github.com/iov-one/weave"
@@ -33,9 +32,9 @@ func (h *DomainsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var offset []byte
 	if q.Get("offset")!= "" {
 		var err error
-		offset, err = handlers.ExtractNumericID(q.Get("offset"))
+		offset, err = ExtractNumericID(q.Get("offset"))
 		if err != nil && !errors.ErrEmpty.Is(err) {
-			handlers.JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
+			JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
 			return
 		}
 	}
@@ -44,10 +43,10 @@ func (h *DomainsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if admin := q.Get("admin"); len(admin) > 0 {
 		rawAddr, err := weave.ParseAddress(admin)
 		if err != nil {
-			handlers.JSONErr(w, http.StatusBadRequest, "Admin address must be a valid address value..")
+			JSONErr(w, http.StatusBadRequest, "Admin address must be a valid address value..")
 			return
 		}
-		end := handlers.NextKeyValue(rawAddr)
+		end := NextKeyValue(rawAddr)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/domains/admin", fmt.Sprintf("%s:%x:%x", admin, offset, end))
 	} else {
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/domains", fmt.Sprintf("%x:", offset))
@@ -70,11 +69,11 @@ fetchDomains:
 			break fetchDomains
 		default:
 			log.Printf("account domain ABCI query: %s", err)
-			handlers.JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 	}
-	handlers.JSONResp(w, http.StatusOK, handlers.MultipleObjectsResponse{
+	JSONResp(w, http.StatusOK, MultipleObjectsResponse{
 		Objects: objects,
 	})
 }
@@ -94,19 +93,19 @@ type DetailHandler struct {
 // @Failure 500
 // @Router /account/resolve/{starname} [get]
 func (h *DetailHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	accountKey := handlers.LastChunk(r.URL.Path)
+	accountKey := LastChunk(r.URL.Path)
 	var acc account.Account
 	res := models.KeyModel{
 		Model: &acc,
 	}
 	switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/accounts", []byte(accountKey), &res); {
 	case err == nil:
-		handlers.JSONResp(w, http.StatusOK, acc)
+		JSONResp(w, http.StatusOK, acc)
 	case errors.ErrNotFound.Is(err):
-		handlers.JSONErr(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
+		JSONErr(w, http.StatusNotFound, http.StatusText(http.StatusNotFound))
 	default:
 		log.Printf("account ABCI query: %s", err)
-		handlers.JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 }
 
@@ -131,32 +130,32 @@ type AccountsHandler struct {
 func (h *AccountsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 
-	if !handlers.AtMostOne(q, "domain", "owner") {
-		handlers.JSONErr(w, http.StatusBadRequest, "At most one filter can be used at a time.")
+	if !AtMostOne(q, "domain", "owner") {
+		JSONErr(w, http.StatusBadRequest, "At most one filter can be used at a time.")
 		return
 	}
 
 	var offset []byte
 	if q.Get("offset")!= "" {
 		var err error
-		offset, err = handlers.ExtractNumericID(q.Get("offset"))
+		offset, err = ExtractNumericID(q.Get("offset"))
 		if err != nil && !errors.ErrEmpty.Is(err) {
-			handlers.JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
+			JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
 			return
 		}
 	}
 
 	var it client.ABCIIterator
 	if d := q.Get("domain"); len(d) > 0 {
-		end := handlers.NextKeyValue([]byte(d))
+		end := NextKeyValue([]byte(d))
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/accounts/domain", fmt.Sprintf("%x:%x:%x", d, offset, end))
 	} else if o := q.Get("owner"); len(o) > 0 {
-		rawAddr, err := handlers.WeaveAddressFromQuery(o)
+		rawAddr, err := WeaveAddressFromQuery(o)
 		if err != nil {
-			handlers.JSONErr(w, http.StatusBadRequest, "Owner address must be a valid address value..")
+			JSONErr(w, http.StatusBadRequest, "Owner address must be a valid address value..")
 			return
 		}
-		end := handlers.NextKeyValue(rawAddr)
+		end := NextKeyValue(rawAddr)
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/accounts/owner", fmt.Sprintf("%s:%x:%x", rawAddr, offset, end))
 	} else {
 		it = client.ABCIRangeQuery(r.Context(), h.Bns, "/accounts", fmt.Sprintf("%x:", offset))
@@ -179,12 +178,12 @@ fetchAccounts:
 			break fetchAccounts
 		default:
 			log.Printf("account account ABCI query: %s", err)
-			handlers.JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 	}
 
-	handlers.JSONResp(w, http.StatusOK, handlers.MultipleObjectsResponse{
+	JSONResp(w, http.StatusOK, MultipleObjectsResponse{
 		Objects: objects,
 	})
 }

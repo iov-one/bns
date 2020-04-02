@@ -1,8 +1,7 @@
-package username
+package handlers
 
 import (
 	"github.com/iov-one/bns/cmd/bnsapi/client"
-	"github.com/iov-one/bns/cmd/bnsapi/handlers"
 	"github.com/iov-one/bns/cmd/bnsapi/models"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
 	"github.com/iov-one/weave/cmd/bnsd/x/username"
@@ -24,13 +23,13 @@ type OwnerHandler struct {
 // @Failure 500
 // @Router /username/owner/{address} [get]
 func (h *OwnerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	rawKey := handlers.LastChunk(r.URL.Path)
+	rawKey := LastChunk(r.URL.Path)
 	log.Print(r.URL.Path)
 	log.Print(rawKey)
-	key, err := handlers.WeaveAddressFromQuery(rawKey)
+	key, err := WeaveAddressFromQuery(rawKey)
 	if err != nil {
 		log.Print(err)
-		handlers.JSONErr(w, http.StatusBadRequest, "wrong input, must be address")
+		JSONErr(w, http.StatusBadRequest, "wrong input, must be address")
 		return
 	}
 
@@ -52,12 +51,12 @@ iterate:
 			break iterate
 		default:
 			log.Printf("username owner ABCI query: %s", err)
-			handlers.JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 			return
 		}
 	}
 
-	handlers.JSONResp(w, http.StatusOK, handlers.MultipleObjectsResponse{
+	JSONResp(w, http.StatusOK, MultipleObjectsResponse{
 		Objects: objects,
 	})
 }
@@ -75,7 +74,7 @@ type ResolveHandler struct {
 // @Failure 500
 // @Router /username/resolve/{username} [get]
 func (h *ResolveHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	uname := handlers.LastChunk(r.URL.Path)
+	uname := LastChunk(r.URL.Path)
 	if uname != "" {
 		var token username.Token
 		res := models.KeyModel{
@@ -83,14 +82,14 @@ func (h *ResolveHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		switch err := client.ABCIKeyQuery(r.Context(), h.Bns, "/usernames", []byte(uname), &res); {
 		case err == nil:
-			handlers.JSONResp(w, http.StatusOK, res)
+			JSONResp(w, http.StatusOK, res)
 		case errors.ErrNotFound.Is(err):
-			handlers.JSONErr(w, http.StatusNotFound, "Username not found")
+			JSONErr(w, http.StatusNotFound, "Username not found")
 		default:
 			log.Printf("account ABCI query: %s", err)
-			handlers.JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		}
 	} else {
-		handlers.JSONErr(w, http.StatusBadRequest, "Bad username input")
+		JSONErr(w, http.StatusBadRequest, "Bad username input")
 	}
 }
