@@ -516,6 +516,24 @@ paths:
       summary: Returns a list of bnsd/x/termdeposit Deposit entities (individual deposits).
       tags:
       - IOV token
+  /tx/submit:
+    post:
+      consumes:
+      - text/plain
+      description: Submit transaction to the blockchain
+      parameters:
+      - description: base64 encoded transaction
+        in: body
+        name: tx
+        required: true
+        schema:
+          type: string
+      responses:
+        "200": {}
+        "404": {}
+      summary: Submit transaction
+      tags:
+      - Transaction
   /username/owner/{address}:
     get:
       parameters:

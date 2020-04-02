@@ -515,6 +515,33 @@
                 }
             }
         },
+        "/tx/submit": {
+            "post": {
+                "description": "Submit transaction to the blockchain",
+                "consumes": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Submit transaction",
+                "parameters": [
+                    {
+                        "description": "base64 encoded transaction",
+                        "name": "tx",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {},
+                    "404": {}
+                }
+            }
+        },
         "/username/owner/{address}": {
             "get": {
                 "tags": [
