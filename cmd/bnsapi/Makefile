@@ -1,8 +1,9 @@
-.PHONY: all dist clean build install image test run
+.PHONY: all dist clean build install image test run swagger-docs
 
 BUILD_VERSION ?= manual
 BUILD_FLAGS := -mod=readonly -ldflags "-X main.buildHash=`git log -1 --pretty=format:"%H"` -X util.BuildVersion=${BUILD_VERSION}"
 IMAGE_NAME = "iov1/bnsapi:${BUILD_VERSION}"
+SWAG_BASE := docker run --rm -v $(shell pwd):/work iov1/swag-docker:latest
 DOCKER_BUILD_FLAGS := -a -installsuffix cgo
 BUILDOUT ?= bnsapi
 
@@ -23,7 +24,15 @@ image:
 	docker build --pull -t $(IMAGE_NAME) .
 
 test:
-	go test -mod=readonly -race ./...
+	go test -mod=readonly -race -short ./...
+
+it-test:
+	go test -mod=readonly -run Integration ./...
 
 run:
 	go run .
+
+swagger-docs:
+	@cp -r ../../vendor .
+	$(SWAG_BASE) swag init --parseVendor
+	@rm -rf vendor

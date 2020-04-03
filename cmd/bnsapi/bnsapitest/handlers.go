@@ -3,34 +3,35 @@ package bnsapitest
 import (
 	"bytes"
 	"context"
-	"encoding/hex"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
-	"github.com/iov-one/bns/cmd/bnsapi/client"
-	"github.com/iov-one/bns/cmd/bnsapi/handlers"
+	md "github.com/iov-one/bns/cmd/bnsapi/models"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
 	"github.com/iov-one/weave"
+	"github.com/iov-one/weave/app"
+	rpctypes "github.com/tendermint/tendermint/rpc/lib/types"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"reflect"
-	"strings"
 	"testing"
 )
 
-func NewAbciQueryResponse(t testing.TB, keys [][]byte, models []weave.Persistent) client.AbciQueryResponse {
+func NewAbciQueryResponse(t testing.TB, keys [][]byte, m []weave.Persistent) md.AbciQueryResponse {
 	t.Helper()
-	k, v := util.SerializePairs(t, keys, models)
+	k, v := SerializePairs(t, keys, m)
 
-	return client.AbciQueryResponse{
-		Response: client.AbciQueryResponseResponse{
+	return md.AbciQueryResponse{
+		Response: md.AbciQueryResponseResponse{
 			Key:   k,
 			Value: v,
 		},
 	}
 }
 
-func AssertAPIResponse(t testing.TB, w *httptest.ResponseRecorder, want []handlers.KeyValue) {
+func AssertAPIResponse(t testing.TB, w *httptest.ResponseRecorder, want []util.KeyValue) {
 	t.Helper()
 
 	if w.Code != http.StatusOK {
@@ -73,16 +74,16 @@ func removeTabs(b []byte) []byte {
 func TestBnsClientMock(t *testing.T) {
 	// Just to be sure, test the mock.
 
-	result := client.AbciQueryResponse{
-		Response: client.AbciQueryResponseResponse{
+	result := md.AbciQueryResponse{
+		Response: md.AbciQueryResponseResponse{
 			Key:   []byte("foo"),
 			Value: []byte("bar"),
 		},
 	}
-	bns := BnsClientMock{GetResults: map[string]client.AbciQueryResponse{
+	bns := BnsClientMock{GetResults: map[string]md.AbciQueryResponse{
 		"/foo": result,
 	}}
-	var response client.AbciQueryResponse
+	var response md.AbciQueryResponse
 	if err := bns.Get(context.Background(), "/foo", &response); err != nil {
 		t.Fatal(err)
 	}
@@ -92,8 +93,8 @@ func TestBnsClientMock(t *testing.T) {
 }
 
 type BnsClientMock struct {
-	GetResults  map[string]client.AbciQueryResponse
-	PostResults map[string]map[string]client.AbciQueryResponse
+	GetResults  map[string]md.AbciQueryResponse
+	PostResults map[string]map[string]md.AbciQueryResponse
 	Err         error
 }
 
@@ -119,18 +120,31 @@ func (mock *BnsClientMock) Get(ctx context.Context, path string, dest interface{
 	return mock.Err
 }
 
-func (mock *BnsClientMock) Post(ctx context.Context, path string, data []byte, dest interface{}) error {
+func (mock *BnsClientMock) Post(ctx context.Context, data []byte, dest interface{}) error {
+	var req rpctypes.RPCRequest
+	err := json.Unmarshal(data, &req)
+	if err != nil {
+		return err
+	}
+
+	type params struct {
+		Path string `json:"path"`
+		Data string `json:"data"`
+	}
+
+	var p params
+	_ = json.Unmarshal(req.Params, &p)
+
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
 	default:
 	}
 
-	hexData := strings.ToUpper(hex.EncodeToString(data))
-	resp, ok := mock.PostResults[path][hexData]
+	resp, ok := mock.PostResults[p.Path][p.Data]
 	if !ok {
-		raw, _ := url.PathUnescape(path)
-		return fmt.Errorf("no result declared in mock for %q %q (%q)", path, hexData, raw)
+		raw, _ := url.PathUnescape(p.Path)
+		return fmt.Errorf("no result declared in mock for %q %q (%q)", p.Path, p.Data, raw)
 	}
 
 	v := reflect.ValueOf(dest)
@@ -140,4 +154,66 @@ func (mock *BnsClientMock) Post(ctx context.Context, path string, data []byte, d
 	v.Elem().Set(src)
 
 	return mock.Err
+}
+
+func AssertAPIResponseBasic(t testing.TB, want, got io.Reader) {
+	t.Helper()
+
+	var w json.RawMessage
+	if err := json.NewDecoder(want).Decode(&w); err != nil {
+		t.Fatalf("cannot decode JSON serialized body: %s", err)
+	}
+	var g json.RawMessage
+	if err := json.NewDecoder(got).Decode(&g); err != nil {
+		t.Fatalf("cannot decode JSON serialized body: %s", err)
+	}
+
+	w1, _ := json.MarshalIndent(w, "", "    ")
+	g1, _ := json.MarshalIndent(g, "", "    ")
+
+	if !bytes.Equal(w1, g1) {
+		t.Logf("want JSON response:\n%s", w1)
+		t.Logf("got JSON response:\n%s", g1)
+		t.Fatal("unexpected response")
+	}
+}
+
+func SerializePairs(t testing.TB, keys [][]byte, models []weave.Persistent) ([]byte, []byte) {
+	t.Helper()
+
+	if len(keys) != len(models) {
+		t.Fatalf("keys and models length must be the same: %d != %d", len(keys), len(models))
+	}
+
+	kset := app.ResultSet{
+		Results: keys,
+	}
+	kraw, err := kset.Marshal()
+	if err != nil {
+		t.Fatalf("cannot marshal keys: %s", err)
+	}
+
+	var values [][]byte
+	for i, m := range models {
+		raw, err := m.Marshal()
+		if err != nil {
+			t.Fatalf("cannot marshal %d model: %s", i, err)
+		}
+		values = append(values, raw)
+	}
+	vset := app.ResultSet{
+		Results: values,
+	}
+	vraw, err := vset.Marshal()
+	if err != nil {
+		t.Fatalf("cannot marshal values: %s", err)
+	}
+
+	return kraw, vraw
+}
+
+func SequenceID(n uint64) []byte {
+	b := make([]byte, 8)
+	binary.BigEndian.PutUint64(b, n)
+	return b
 }

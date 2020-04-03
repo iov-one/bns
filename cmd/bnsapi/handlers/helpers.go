@@ -1,20 +1,24 @@
 package handlers
 
 import (
+	"bytes"
 	"encoding/binary"
-	"encoding/hex"
 	"encoding/json"
+	"fmt"
+	"github.com/iov-one/bns/cmd/bnsapi/util"
 	"github.com/iov-one/weave"
+	"github.com/iov-one/weave/errors"
 	"github.com/iov-one/weave/orm"
 	"log"
 	"math"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
 type MultipleObjectsResponse struct {
-	Objects []KeyValue `json:"objects"`
+	Objects []util.KeyValue `json:"objects"`
 }
 
 // AtMostOne returns true if at most one non empty value from given list of
@@ -32,48 +36,97 @@ func AtMostOne(query url.Values, names ...string) bool {
 	return true
 }
 
-func ExtractIDFromKey(key string) []byte {
-	raw, err := WeaveAddressFromQuery(key)
-	if err != nil {
-		// Cannot decode, return everything.
-		return []byte(key)
-	}
-	for i, c := range raw {
-		if c == ':' {
-			return raw[i+1:]
+func ExtractRefID(s string) ([]byte, error) {
+	tokens := strings.Split(s, "/")
+
+	var version uint32
+	switch len(tokens) {
+	case 1:
+		// Allow providing just the ID value to enable prefix queries.
+		// This is a special case.
+	case 2:
+		if n, err := strconv.ParseUint(tokens[1], 10, 32); err != nil {
+			return nil, fmt.Errorf("cannot decode version: %s", err)
+		} else {
+			version = uint32(n)
 		}
+	default:
+		return nil, errors.ErrInput
 	}
-	return raw
-}
 
-// paginationMaxItems defines how many items should a single result return.
-// This values should not be greater than orm.queryRangeLimit so that each
-// query returns enough results.
-const PaginationMaxItems = 50
-
-type KeyValue struct {
-	Key   hexbytes  `json:"key"`
-	Value orm.Model `json:"value"`
-}
-
-// hexbytes is a byte type that JSON serialize to hex encoded string.
-type hexbytes []byte
-
-func (b hexbytes) MarshalJSON() ([]byte, error) {
-	return json.Marshal(hex.EncodeToString(b))
-}
-
-func (b *hexbytes) UnmarshalJSON(enc []byte) error {
-	var s string
-	if err := json.Unmarshal(enc, &s); err != nil {
-		return err
+	encID := make([]byte, 8)
+	if n, err := strconv.ParseUint(tokens[0], 10, 64); err != nil {
+		return nil, fmt.Errorf("cannot decode ID: %s", err)
+	} else {
+		binary.BigEndian.PutUint64(encID, n)
 	}
-	val, err := hex.DecodeString(s)
+
+	ref := orm.VersionedIDRef{ID: encID, Version: version}
+
+	if ref.Version == 0 {
+		return ref.ID, nil
+	}
+
+	return orm.MarshalVersionedID(ref), nil
+}
+
+func ExtractAddress(rawAddr string) ([]byte, error) {
+	if strings.HasPrefix(rawAddr, "iov") || strings.HasPrefix(rawAddr, "tiov") {
+		rawAddr = "bech32:" + rawAddr
+	}
+	addr, err := weave.ParseAddress(rawAddr)
+	return addr, err
+}
+
+func ExtractStrID(s string) ([]byte, error) {
+	return []byte(s), nil
+}
+
+func ExtractNumericID(s string) ([]byte, error) {
+	n, err := strconv.ParseUint(s, 10, 64)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("cannot parse number: %s", err)
 	}
-	*b = val
-	return nil
+	encID := make([]byte, 8)
+	binary.BigEndian.PutUint64(encID, n)
+	return encID, nil
+}
+
+func RefKey(raw []byte) (string, error) {
+	// Skip the prefix, being the characters before : (including separator)
+	val := raw[bytes.Index(raw, []byte(":"))+1:]
+
+	ref, err := orm.UnmarshalVersionedID(val)
+	if err != nil {
+		return "", fmt.Errorf("cannot unmarshal versioned key: %s", err)
+	}
+
+	id := binary.BigEndian.Uint64(ref.ID)
+	return fmt.Sprintf("%d/%d", id, ref.Version), nil
+}
+
+func SequenceKey(raw []byte) (string, error) {
+	// Skip the prefix, being the characters before : (including separator)
+	seq := raw[bytes.Index(raw, []byte(":"))+1:]
+	if len(seq) != 8 {
+		return "", fmt.Errorf("invalid sequence length: %d", len(seq))
+	}
+	n := binary.BigEndian.Uint64(seq)
+	return fmt.Sprint(int64(n)), nil
+}
+
+// Offset is sent as int and converted to binary
+func ExtractOffsetFromParam(param string) ([]byte, error) {
+	offset := make([]byte, 8)
+	if len(param) > 0 {
+		n, err := strconv.ParseUint(param, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		binary.BigEndian.PutUint64(offset, n)
+		return offset, nil
+	}
+	return nil, errors.Wrap(errors.ErrEmpty, "empty offset")
 }
 
 // JSONResp write content as JSON encoded response.

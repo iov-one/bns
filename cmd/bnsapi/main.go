@@ -6,7 +6,6 @@ import (
 	"github.com/iov-one/bns/cmd/bnsapi/client"
 	"github.com/iov-one/bns/cmd/bnsapi/docs"
 	"github.com/iov-one/bns/cmd/bnsapi/handlers"
-	usernameHandlers "github.com/iov-one/bns/cmd/bnsapi/handlers/username"
 	"github.com/iov-one/bns/cmd/bnsapi/util"
 	httpSwagger "github.com/swaggo/http-swagger"
 
@@ -18,7 +17,6 @@ import (
 	"github.com/iov-one/weave/gconf"
 	"github.com/iov-one/weave/migration"
 	"github.com/iov-one/weave/x/cash"
-	"github.com/iov-one/weave/x/msgfee"
 )
 
 type Configuration struct {
@@ -34,7 +32,7 @@ func main() {
 
 	conf := Configuration{
 		HTTP:       env("HTTP", ":8000"),
-		Tendermint: env("TENDERMINT", "http://167.172.104.185:31140")}
+		Tendermint: env("TENDERMINT", "http://localhost:26657")}
 
 	if err := run(conf); err != nil {
 		log.Fatal(err)
@@ -61,20 +59,24 @@ func run(conf Configuration) error {
 	gconfConfigurations := map[string]func() gconf.Configuration{
 		"cash":            func() gconf.Configuration { return &cash.Configuration{} },
 		"migration":       func() gconf.Configuration { return &migration.Configuration{} },
-		"msgfee":          func() gconf.Configuration { return &msgfee.Configuration{} },
 		"username":        func() gconf.Configuration { return &username.Configuration{} },
 	}
 
 	rt := http.NewServeMux()
 	rt.Handle("/info", &handlers.InfoHandler{})
 	rt.Handle("/blocks/", &handlers.BlocksHandler{Bns: bnscli})
-	rt.Handle("/username/owner/", &usernameHandlers.OwnerHandler{Bns: bnscli})
+	rt.Handle("/account/nonce/address/", &handlers.NonceAddressHandler{Bns: bnscli})
+	rt.Handle("/account/nonce/pubkey/", &handlers.NoncePubKeyHandler{Bns: bnscli})
+	rt.Handle("/username/owner/", &handlers.OwnerHandler{Bns: bnscli})
+	rt.Handle("/username/resolve/", &handlers.ResolveHandler{Bns: bnscli})
 	rt.Handle("/cash/balances", &handlers.CashBalanceHandler{Bns: bnscli})
 	rt.Handle("/multisig/contracts", &handlers.MultisigContractsHandler{Bns: bnscli})
 	rt.Handle("/escrow/escrows", &handlers.EscrowEscrowsHandler{Bns: bnscli})
 	rt.Handle("/gov/proposals", &handlers.GovProposalsHandler{Bns: bnscli})
 	rt.Handle("/gov/votes", &handlers.GovVotesHandler{Bns: bnscli})
 	rt.Handle("/gconf/", &handlers.GconfHandler{Bns: bnscli, Confs: gconfConfigurations})
+	rt.Handle("/msgfee/msgfees", &handlers.MsgFeeHandler{Bns: bnscli})
+	rt.Handle("/tx/submit", &handlers.TxSubmitHandler{Bns: bnscli})
 	rt.Handle("/", &handlers.DefaultHandler{})
 
 	docs.SwaggerInfo.Title = "IOV Name Service Rest API"

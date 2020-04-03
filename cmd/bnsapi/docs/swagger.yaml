@@ -1,80 +1,40 @@
 definitions:
-  account.Account:
+  coin.Coin:
     properties:
-      certificates:
-        items:
-          items:
-            type: integer
-          type: array
-        type: array
-      domain:
-        description: Domain references a domain that this account belongs to.
-        type: string
-      metadata:
-        $ref: '#/definitions/weave.Metadata'
-        type: object
-      name:
-        type: string
-      owner:
-        $ref: '#/definitions/weave.Address'
+      fractional:
         description: |-
-          Owner is a weave.Address that controls this account. Can be empty.
-
-          An account can be administrated by the domain admin. In addition,
-          ownership can be assigned to an address to allow another party to manage
-          selected account.
-        type: object
-      targets:
-        items:
-          $ref: '#/definitions/account.BlockchainAddress'
-        type: array
-      valid_until:
+          Billionth of coins. 0 <= abs(fractional) < 10^9
+          If fractional != 0, must have same sign as integer
+        type: integer
+      ticker:
         description: |-
-          Valid until defines the expiration date for the account. Expired account
-          cannot be used or modified. This date is always considered in context of
-          the domain that this account belongs. Expired domain expires all belonging
-          accounts as well, event if that account valid until date is not yet due.
+          Ticker is 3-4 upper-case letters and
+          all Coins of the same currency can be combined
+        type: string
+      whole:
+        description: Whole coins, -10^15 < integer < 10^15
         type: integer
     type: object
-  account.BlockchainAddress:
-    properties:
-      address:
-        description: |-
-          An address on the specified blockchain network. Address is not a
-          weave.Address as we cannot know what is the format of an address on the
-          chain that this token instance links to. Because we do not know the rules
-          to validate an address for any blockchain ID, this is an arbitrary bulk of
-          data.
-          It is more convenient to always use encoded representation of each address
-          and store it as a string. Using bytes while compact is not as comfortable
-          to use.
-        type: string
-      blockchain_id:
-        description: An arbitrary blockchain ID.
-        type: string
-    type: object
   gconf.Configuration:
-    type: object
-  handlers.KeyValue:
-    properties:
-      key:
-        $ref: '#/definitions/handlers.hexbytes'
-        type: object
-      value:
-        $ref: '#/definitions/orm.Model'
-        type: object
     type: object
   handlers.MultipleObjectsResponse:
     properties:
       objects:
         items:
-          $ref: '#/definitions/handlers.KeyValue'
+          $ref: '#/definitions/util.KeyValue'
         type: array
     type: object
-  handlers.hexbytes:
-    items:
-      type: integer
-    type: array
+  msgfee.MsgFee:
+    properties:
+      fee:
+        $ref: '#/definitions/coin.Coin'
+        type: object
+      metadata:
+        $ref: '#/definitions/weave.Metadata'
+        type: object
+      msg_path:
+        type: string
+    type: object
   orm.Model:
     type: object
   username.BlockchainAddress:
@@ -113,6 +73,19 @@ definitions:
           $ref: '#/definitions/username.BlockchainAddress'
         type: array
     type: object
+  util.KeyValue:
+    properties:
+      key:
+        $ref: '#/definitions/util.hexbytes'
+        type: object
+      value:
+        $ref: '#/definitions/orm.Model'
+        type: object
+    type: object
+  util.hexbytes:
+    items:
+      type: integer
+    type: array
   weave.Address:
     items:
       type: integer
@@ -127,85 +100,40 @@ info:
   license: {}
   title: BNSAPI documentation
 paths:
-  /account/accounts:
+  /account/nonce/address/{address}:
     get:
-      description: |
-        The list is either the list of all the starname (orkun*neuma) for a given premium starname (*neuma), or the list of all starnames for a given owner address.
-        You need to provide exactly one argument, either the premium starname (*neuma) or the owner address.
+      description: Returns nonce and public key registered for a given address if
+        it was ever used.
       parameters:
-      - description: 'Premium Starname ex: *neuma'
-        in: query
-        name: starname
-        type: string
-      - description: The owner address format is either in iov address (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr)
-          or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2)
-        in: query
-        name: owner
-        type: string
-      - description: Query by domain
-        in: query
-        name: domain
-        type: string
-      - description: Pagination offset
-        in: query
-        name: offset
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.MultipleObjectsResponse'
-        "404": {}
-        "500": {}
-      summary: Returns a list of `bnsd/x/account` entities (like orkun*neuma).
-      tags:
-      - Starname
-  /account/domains/:
-    get:
-      description: |-
-        The list of all premium starnames for a given admin.
-        If no admin address is provided, you get the list of all premium starnames.
-      parameters:
-      - description: The admin address may be in the bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr)
-          or hex (C1721181E83376EF978AA4A9A38A5E27C08C7BB2) format.
-        in: query
-        name: admin
-        type: string
-      - description: Pagination offset
-        in: query
-        name: offset
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.MultipleObjectsResponse'
-        "404": {}
-      summary: Returns a list of `bnsd/x/domain` entities (like *neuma).
-      tags:
-      - Starname
-  /account/resolve/{starname}:
-    get:
-      description: |-
-        Resolve a given starname (like orkun*neuma) and return all metadata related to this starname,
-        list of crypto-addresses (targets), expiration date and owner address of the starname.
-      parameters:
-      - description: 'starname ex: orkun*neuma'
+      - description: 'Address to query for nonce. ex: iov1qnpaklxv4n6cam7v99hl0tg0dkmu97sh6007un'
         in: path
-        name: starname
+        name: address
         required: true
         type: string
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/account.Account'
+        "200": {}
         "404": {}
         "500": {}
-      summary: Resolve a starname (orkun*neuma) and returns a `bnsd/x/account` entity
-        (the associated info).
+      summary: Returns nonce based on an address
       tags:
-      - Starname
+      - Nonce
+  /account/nonce/pubkey/{pubKey}:
+    get:
+      description: Returns nonce and public key registered for a given pubkey if it
+        was ever used.
+      parameters:
+      - description: 'Public key to query for nonce. ex: 12ee6f581fe55673a1e9e1382a0829e32075a0aa4763c968bc526e1852e78c95'
+        in: path
+        name: pubKey
+        required: true
+        type: string
+      responses:
+        "200": {}
+        "404": {}
+        "500": {}
+      summary: Returns nonce based on an address
+      tags:
+      - Nonce
   /blocks/{blockHeight}:
     get:
       description: get block detail by blockHeight
@@ -227,13 +155,13 @@ paths:
         format.
       parameters:
       - description: Bech32 or hex representation of an address
-        in: path
+        in: query
         name: address
         type: string
-      - description: Bech32 or hex representation of an address to be used as offset
+      - description: Pagination offset
         in: query
         name: offset
-        type: string
+        type: integer
       responses:
         "200": {}
         "404": {}
@@ -245,9 +173,9 @@ paths:
     get:
       description: At most one of the query parameters must exist(excluding offset)
       parameters:
-      - description: Iteration offset
+      - description: Query prefix encoded as hex
         in: query
-        name: offset
+        name: prefix
         type: string
       - description: Source address
         in: query
@@ -309,7 +237,7 @@ paths:
       - description: Pagination offset
         in: query
         name: offset
-        type: string
+        type: integer
       responses:
         "200":
           description: OK
@@ -344,7 +272,7 @@ paths:
       - description: Pagination offset
         in: query
         name: offset
-        type: string
+        type: integer
       responses:
         "200":
           description: OK
@@ -363,13 +291,33 @@ paths:
       summary: Returns information about this instance of `bnsapi`.
       tags:
       - Status
+  /msgfee/msgfees:
+    get:
+      description: |-
+        If msgfee parameter is provided return the queried mesgfee information
+        otherwise returns all available msgfees
+      parameters:
+      - description: 'ex: username/register_token'
+        in: query
+        name: msgfee
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/msgfee.MsgFee'
+        "404": {}
+        "500": {}
+      summary: 'Return message fee information based on message path: username/register_token'
+      tags:
+      - Message Fee
   /multisig/contracts:
     get:
       description: At most one of the query parameters must exist(excluding offset)
       parameters:
-      - description: Pagination offset
+      - description: Return objects with keys that start with given prefix
         in: query
-        name: offset
+        name: prefix
         type: string
       responses:
         "200":
@@ -381,60 +329,24 @@ paths:
       summary: Returns a list of all the multisig Contracts.
       tags:
       - IOV token
-  /termdeposit/contracts:
-    get:
-      description: The term deposit Contract are the contract defining the dates until
-        which one can deposit.
+  /tx/submit:
+    post:
+      consumes:
+      - text/plain
+      description: Submit transaction to the blockchain
       parameters:
-      - description: Pagination offset
-        in: query
-        name: offset
-        type: string
+      - description: base64 encoded transaction
+        in: body
+        name: tx
+        required: true
+        schema:
+          type: string
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.MultipleObjectsResponse'
+        "200": {}
         "404": {}
-        "500": {}
-      summary: Returns a list of bnsd/x/termdeposit entities.
+      summary: Submit transaction
       tags:
-      - IOV token
-  /termdeposit/deposits:
-    get:
-      description: |-
-        At most one of the query parameters must exist (excluding offset).
-        The query may be filtered by Depositor, in which case it returns all the deposits from the Depositor.
-        The query may be filtered by Deposit Contract, in which case it returns all the deposits from this Contract.
-        The query may be filtered by Contract ID, in which case it returns the deposits from the Deposit Contract with this ID.
-      parameters:
-      - description: Depositor address in bech32 (iov1c9eprq0gxdmwl9u25j568zj7ylqgc7ajyu8wxr)
-          or hex(C1721181E83376EF978AA4A9A38A5E27C08C7BB2)
-        in: query
-        name: depositor
-        type: string
-      - description: Base64 encoded ID
-        in: query
-        name: contract
-        type: string
-      - description: Integer encoded Contract ID
-        in: query
-        name: contract_id
-        type: integer
-      - description: Pagination offset
-        in: query
-        name: offset
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/handlers.MultipleObjectsResponse'
-        "404": {}
-        "500": {}
-      summary: Returns a list of bnsd/x/termdeposit Deposit entities (individual deposits).
-      tags:
-      - IOV token
+      - Transaction
   /username/owner/{address}:
     get:
       parameters:

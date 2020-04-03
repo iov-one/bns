@@ -31,7 +31,7 @@ test:
 	# go install -mod=readonly ./cmd/bnscli # TODO uncomment when bnsd/bnscli is imported
 
 	go vet -mod=readonly  ./...
-	go test -mod=readonly -race ./...
+	go test -mod=readonly -race -short ./...
 
 lint:
 	@go mod vendor
@@ -79,3 +79,6 @@ protogen:
 protodocs:
 	./scripts/clean_protos.sh
 	./scripts/build_protodocs_docker.sh
+
+swaggerdocs:
+	cd cmd/bnsapi && make docs && cd -;

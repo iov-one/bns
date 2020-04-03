@@ -1,0 +1,101 @@
+{
+  "objects": [
+    {
+      "key": "6d73676665653a6163636f756e742f6164645f6163636f756e745f6365727469666963617465",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "msg_path": "account/add_account_certificate",
+        "fee": {
+          "whole": 69,
+          "ticker": "IOV"
+        }
+      }
+    },
+    {
+      "key": "6d73676665653a6163636f756e742f64656c6574655f6163636f756e74",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "msg_path": "account/delete_account",
+        "fee": {
+          "whole": 1,
+          "fractional": 100000000,
+          "ticker": "IOV"
+        }
+      }
+    },
+    {
+      "key": "6d73676665653a6163636f756e742f64656c6574655f646f6d61696e",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "msg_path": "account/delete_domain",
+        "fee": {
+          "whole": 1,
+          "fractional": 150000000,
+          "ticker": "IOV"
+        }
+      }
+    },
+    {
+      "key": "6d73676665653a6163636f756e742f72656769737465725f6163636f756e74",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "msg_path": "account/register_account",
+        "fee": {
+          "whole": 26,
+          "fractional": 600000000,
+          "ticker": "IOV"
+        }
+      }
+    },
+    {
+      "key": "6d73676665653a757365726e616d652f6368616e67655f746f6b656e5f74617267657473",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "msg_path": "username/change_token_targets",
+        "fee": {
+          "whole": 999999999,
+          "fractional": 900000000,
+          "ticker": "IOV"
+        }
+      }
+    },
+    {
+      "key": "6d73676665653a757365726e616d652f72656769737465725f746f6b656e",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "msg_path": "username/register_token",
+        "fee": {
+          "whole": 999999999,
+          "fractional": 900000000,
+          "ticker": "IOV"
+        }
+      }
+    },
+    {
+      "key": "6d73676665653a757365726e616d652f7472616e736665725f746f6b656e",
+      "value": {
+        "metadata": {
+          "schema": 1
+        },
+        "msg_path": "username/transfer_token",
+        "fee": {
+          "whole": 999999999,
+          "fractional": 900000000,
+          "ticker": "IOV"
+        }
+      }
+    }
+  ]
+}

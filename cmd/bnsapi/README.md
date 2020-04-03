@@ -6,15 +6,13 @@ serialization and REST for API.
 This service is intended to provide very little logic and should be save to be
 exposed to the public.
 
-
 This application follows [12 factor app](https://12factor.net/) principles as
 close as possible.
 
 - Logs are written to stdout.
 - Configuration is done via environment variables.
 
-
-# Configuration
+## Configuration
 
 To configure `bnsapi` instance use environment variables.
 
@@ -32,8 +30,24 @@ result can be paginated using `offset=<key>`. Offset is inclusive.
 Each listing result can be filtered using at most one filter at a time.
 `offset` is not a filter.
 
-## Docs
+## Swagger Docs
 
 To see documentation:
-- Run the project `make run`
+
+- Run the project `make run`.
 - Go to `localhost:$PORT/docs`
+
+### Generating docs
+
+- Install [go swag]($ go get -u github.com/swaggo/swag/cmd/swag) globally.
+- `go mod vendor`
+- `swag init -parseVendor`
+
+## Integration tests
+
+- Set environment value `IT_TENDERMINT` to the address of the network to test against
+- run `make it-test`
+
+## Development
+
+Make sure to enable `export GO111MODULE=on`

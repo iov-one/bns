@@ -10,19 +10,17 @@ import (
 	weaveapp "github.com/iov-one/weave/app"
 	"github.com/iov-one/weave/errors"
 	"github.com/iov-one/weave/orm"
+	"github.com/tendermint/tendermint/rpc/lib/types"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"net/url"
 	"strings"
-	"text/template"
 )
 
 // BnsClient is implemented by any service that provides access to BNS API.
 type BnsClient interface {
 	Get(ctx context.Context, path string, dest interface{}) error
-	Post(ctx context.Context, path string, data []byte, dest interface{}) error
+	Post(ctx context.Context, data []byte, dest interface{}) error
 }
 
 // HTTPBnsClient implements BnsClient interface and it is using HTTP transport
@@ -68,29 +66,8 @@ func (c *HTTPBnsClient) Get(ctx context.Context, path string, dest interface{}) 
 	return nil
 }
 
-type postBodyParams struct {
-	Path string `json:"path"`
-	Data string `json:"data"`
-}
-
-var postBodyTemplate = template.Must(template.New("").Parse(`
-{ "json-rpc": 2.0, "method": "abci_query", "params": { "path": "{{ .Path}}", "data": "{{ .Data}}"}}
-`))
-
-func (c *HTTPBnsClient) Post(ctx context.Context, path string, data []byte, dest interface{}) error {
-	params := postBodyParams{
-		Path: path,
-		Data: strings.ToUpper(hex.EncodeToString(data)),
-	}
-
-	log.Print(params)
-	var buf bytes.Buffer
-	if err := postBodyTemplate.Execute(&buf, params); err != nil {
-		log.Print(err)
-		return errors.Wrap(err, "wrong Path or Data")
-	}
-
-	req, err := http.NewRequest("POST", c.apiURL, bytes.NewReader(buf.Bytes()))
+func (c *HTTPBnsClient) Post(ctx context.Context, data []byte, dest interface{}) error {
+	req, err := http.NewRequest("POST", c.apiURL, bytes.NewReader(data))
 	if err != nil {
 		return errors.Wrap(err, "create http request")
 	}
@@ -128,6 +105,11 @@ type jsonResponseError struct {
 	Data    string
 }
 
+type abciQueryParams struct {
+	Path string `json:"path"`
+	Data string `json:"data"`
+}
+
 func (e *jsonResponseError) Error() string {
 	if len(e.Data) != 0 {
 		return fmt.Sprintf("code %d, %s", e.Code, e.Data)
@@ -136,9 +118,24 @@ func (e *jsonResponseError) Error() string {
 }
 
 func ABCIKeyQuery(ctx context.Context, c BnsClient, path string, data []byte, destination *models.KeyModel) error {
-	var abciResponse AbciQueryResponse
+	params := abciQueryParams{
+		Path: path,
+		Data: strings.ToUpper(hex.EncodeToString(data)),
+	}
 
-	if err := c.Post(ctx, path, data, &abciResponse); err != nil {
+	p, err := json.Marshal(params)
+	if err != nil {
+		return errors.Wrap(err, "param")
+	}
+
+	request := rpctypes.NewRPCRequest(rpctypes.JSONRPCIntID(1), "abci_query", p)
+	r, err := json.Marshal(request)
+	if err != nil {
+		return errors.Wrap(err, "response")
+	}
+
+	var abciResponse models.AbciQueryResponse
+	if err := c.Post(ctx, r, &abciResponse); err != nil {
 		return errors.Wrap(err, "response")
 	}
 
@@ -166,13 +163,24 @@ func ABCIKeyQuery(ctx context.Context, c BnsClient, path string, data []byte, de
 }
 
 func ABCIRangeQuery(ctx context.Context, c BnsClient, path string, data string) ABCIIterator {
-	v := make(url.Values)
-	v.Add("path", `"`+path+`?range"`)
-	v.Add("data", `"`+data+`"`)
-	apiPath := "/abci_query?" + v.Encode()
+	params := abciQueryParams{
+		Path: path + "?range",
+		Data: strings.ToUpper(hex.EncodeToString([]byte(data))),
+	}
 
-	var abciResponse AbciQueryResponse
-	if err := c.Get(ctx, apiPath, &abciResponse); err != nil {
+	p, err := json.Marshal(params)
+	if err != nil {
+		return &resultIterator{err: errors.Wrap(err, "param")}
+	}
+
+	request := rpctypes.NewRPCRequest(rpctypes.JSONRPCIntID(1), "abci_query", p)
+	r, err := json.Marshal(request)
+	if err != nil {
+		return &resultIterator{err: errors.Wrap(err, "response")}
+	}
+
+	var abciResponse models.AbciQueryResponse
+	if err := c.Post(ctx, r, &abciResponse); err != nil {
 		return &resultIterator{err: errors.Wrap(err, "bns client")}
 	}
 
@@ -191,15 +199,84 @@ func ABCIRangeQuery(ctx context.Context, c BnsClient, path string, data string) 
 	}
 }
 
-type AbciQueryResponse struct {
-	Response AbciQueryResponseResponse
+func ABCIPrefixQuery(ctx context.Context, c BnsClient, path string, prefix []byte) ABCIIterator {
+	params := abciQueryParams{
+		Path: path + "?prefix",
+		Data: strings.ToUpper(hex.EncodeToString(prefix)),
+	}
+
+	p, err := json.Marshal(params)
+	if err != nil {
+		return &resultIterator{err: errors.Wrap(err, "param")}
+	}
+
+	request := rpctypes.NewRPCRequest(rpctypes.JSONRPCIntID(1), "abci_query", p)
+	r, err := json.Marshal(request)
+	if err != nil {
+		return &resultIterator{err: errors.Wrap(err, "response")}
+	}
+
+	var abciResponse models.AbciQueryResponse
+	if err := c.Post(ctx, r, &abciResponse); err != nil {
+		return &resultIterator{err: errors.Wrap(err, "response")}
+	}
+
+	var values weaveapp.ResultSet
+	if err := values.Unmarshal(abciResponse.Response.Value); err != nil {
+		return &resultIterator{err: errors.Wrap(err, "unmarshal values response")}
+	}
+	var keys weaveapp.ResultSet
+	if err := keys.Unmarshal(abciResponse.Response.Key); err != nil {
+		return &resultIterator{err: errors.Wrap(err, "unmarshal keys response")}
+	}
+
+	return &resultIterator{
+		keys:   keys.Results,
+		values: values.Results,
+	}
 }
 
-type AbciQueryResponseResponse struct {
-	Key   []byte
-	Value []byte
-}
+func ABCIKeyQueryIter(ctx context.Context, c BnsClient, path string, data []byte) ABCIIterator {
+	params := abciQueryParams{
+		Path: path,
+		Data: strings.ToUpper(hex.EncodeToString(data)),
+	}
 
+	p, err := json.Marshal(params)
+	if err != nil {
+		return &resultIterator{err: errors.Wrap(err, "param")}
+	}
+
+	request := rpctypes.NewRPCRequest(rpctypes.JSONRPCIntID(1), "abci_query", p)
+	r, err := json.Marshal(request)
+	if err != nil {
+		return &resultIterator{err: errors.Wrap(err, "response")}
+	}
+
+	var abciResponse models.AbciQueryResponse
+	if err := c.Post(ctx, r, &abciResponse); err != nil {
+		return &resultIterator{err: errors.Wrap(err, "response")}
+	}
+
+	if len(abciResponse.Response.Key) == 0 && len(abciResponse.Response.Value) == 0 {
+		return &resultIterator{err: errors.Wrap(errors.ErrNotFound, "empty response")}
+	}
+
+	var keys weaveapp.ResultSet
+	if err := keys.Unmarshal(abciResponse.Response.Key); err != nil {
+		return &resultIterator{err: errors.Wrap(errors.ErrNotFound, "cannot unmarshal values")}
+	}
+
+	var values weaveapp.ResultSet
+	if err := values.Unmarshal(abciResponse.Response.Value); err != nil {
+		return &resultIterator{err: errors.Wrap(errors.ErrNotFound, "cannot unmarshal values")}
+	}
+
+	return &resultIterator{
+		keys:   keys.Results,
+		values: values.Results,
+	}
+}
 
 type ABCIIterator interface {
 	Next(orm.Model) ([]byte, error)
