@@ -72,10 +72,6 @@ script:
         make dist;
       fi;
 
-      if [[ -z "$IT_TENDERMINT" ]]; then
-        (cd cmd/bnsapi; make it-test);
-      fi;
-
       if [[ $release_latest == "yes" ]]; then
         echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
         docker tag  "iov1/bnsapi:${BUILD_VERSION}" "iov1/bnsapi:latest" ;
