@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/iov-one/bns/cmd/bnsapi/models"
@@ -670,7 +671,12 @@ type NoncePubKeyHandler struct {
 // @Router /account/nonce/pubkey/{pubKey} [get]
 func (h *NoncePubKeyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	pubKeyStr := LastChunk(r.URL.Path)
-	pubKey := weavecrypto.PublicKey_Ed25519{Ed25519: []byte(pubKeyStr)}
+	hexKey, err := hex.DecodeString(pubKeyStr)
+	if err != nil {
+		JSONErr(w, http.StatusBadRequest, "please provide a hex public key")
+		return
+	}
+	pubKey := weavecrypto.PublicKey_Ed25519{Ed25519: hexKey}
 	addr := pubKey.Condition().Address()
 
 	var userData sigs.UserData
