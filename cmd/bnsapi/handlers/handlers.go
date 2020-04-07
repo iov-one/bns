@@ -472,8 +472,8 @@ var wEndpoint = []string{
 	"/account/domains?admin=_&offset=_",
 	"/account/resolve/{starname}",
 	"/account/accounts/{accountKey}",
-	"/account/nonce/address/{address}",
-	"/account/nonce/pubkey/{pubKey}",
+	"/nonce/address/{address}",
+	"/nonce/pubkey/{pubKey}",
 	"/cash/balances?address=_[OR]offset=_",
 	"/msgfee/msgfee?msgfee=_",
 	"/username/resolve/{username}",
@@ -632,7 +632,7 @@ type NonceAddressHandler struct {
 // @Success 200
 // @Failure 404
 // @Failure 500
-// @Router /account/nonce/address/{address} [get]
+// @Router /nonce/address/{address} [get]
 func (h *NonceAddressHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	addressStr := LastChunk(r.URL.Path)
 	addr, err := WeaveAddressFromQuery(addressStr)
@@ -668,7 +668,7 @@ type NoncePubKeyHandler struct {
 // @Success 200
 // @Failure 404
 // @Failure 500
-// @Router /account/nonce/pubkey/{pubKey} [get]
+// @Router /nonce/pubkey/{pubKey} [get]
 func (h *NoncePubKeyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	pubKeyStr := LastChunk(r.URL.Path)
 	hexKey, err := hex.DecodeString(pubKeyStr)
