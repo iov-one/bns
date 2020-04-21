@@ -100,40 +100,6 @@ info:
   license: {}
   title: BNSAPI documentation
 paths:
-  /account/nonce/address/{address}:
-    get:
-      description: Returns nonce and public key registered for a given address if
-        it was ever used.
-      parameters:
-      - description: 'Address to query for nonce. ex: iov1qnpaklxv4n6cam7v99hl0tg0dkmu97sh6007un'
-        in: path
-        name: address
-        required: true
-        type: string
-      responses:
-        "200": {}
-        "404": {}
-        "500": {}
-      summary: Returns nonce based on an address
-      tags:
-      - Nonce
-  /account/nonce/pubkey/{pubKey}:
-    get:
-      description: Returns nonce and public key registered for a given pubkey if it
-        was ever used.
-      parameters:
-      - description: 'Public key to query for nonce. ex: 12ee6f581fe55673a1e9e1382a0829e32075a0aa4763c968bc526e1852e78c95'
-        in: path
-        name: pubKey
-        required: true
-        type: string
-      responses:
-        "200": {}
-        "404": {}
-        "500": {}
-      summary: Returns nonce based on an address
-      tags:
-      - Nonce
   /blocks/{blockHeight}:
     get:
       description: get block detail by blockHeight
@@ -329,6 +295,40 @@ paths:
       summary: Returns a list of all the multisig Contracts.
       tags:
       - IOV token
+  /nonce/address/{address}:
+    get:
+      description: Returns nonce and public key registered for a given address if
+        it was ever used.
+      parameters:
+      - description: 'Address to query for nonce. ex: iov1qnpaklxv4n6cam7v99hl0tg0dkmu97sh6007un'
+        in: path
+        name: address
+        required: true
+        type: string
+      responses:
+        "200": {}
+        "404": {}
+        "500": {}
+      summary: Returns nonce based on an address
+      tags:
+      - Nonce
+  /nonce/pubkey/{pubKey}:
+    get:
+      description: Returns nonce and public key registered for a given pubkey if it
+        was ever used.
+      parameters:
+      - description: 'Public key to query for nonce. ex: 12ee6f581fe55673a1e9e1382a0829e32075a0aa4763c968bc526e1852e78c95'
+        in: path
+        name: pubKey
+        required: true
+        type: string
+      responses:
+        "200": {}
+        "404": {}
+        "500": {}
+      summary: Returns nonce based on an address
+      tags:
+      - Nonce
   /tx/submit:
     post:
       consumes:
