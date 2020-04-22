@@ -139,18 +139,12 @@
                 "tags": [
                     "IOV token"
                 ],
-                "summary": "returns balance in IOV Token of the given iov address",
+                "summary": "returns balance in IOV Token of the given iov address. If not address is not provided returns all wallets",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "Bech32 or hex representation of an address",
                         "name": "address",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Pagination offset",
-                        "name": "offset",
                         "in": "query"
                     }
                 ],

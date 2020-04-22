@@ -37,7 +37,7 @@ func (b *hexbytes) UnmarshalJSON(enc []byte) error {
 // paginationMaxItems defines how many items should a single result return.
 // This values should not be greater than orm.queryRangeLimit so that each
 // query returns enough results.
-const PaginationMaxItems = 50
+const PaginationMaxItems = 1000
 
 func NumericID(s string) ([]byte, error) {
 	n, err := strconv.ParseUint(s, 10, 64)

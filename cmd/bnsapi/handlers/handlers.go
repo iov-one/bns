@@ -538,11 +538,10 @@ type CashBalanceHandler struct {
 }
 
 // CashBalanceHandler godoc
-// @Summary returns balance in IOV Token of the given iov address
+// @Summary returns balance in IOV Token of the given iov address. If not address is not provided returns all wallets
 // @Description The iov address may be in the bech32 (iov....) or hex (ON3LK...) format.
 // @Tags IOV token
 // @Param address query string false "Bech32 or hex representation of an address"
-// @Param offset query int false "Pagination offset"
 // @Success 200
 // @Failure 404
 // @Failure 500
@@ -578,19 +577,7 @@ func (h *CashBalanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			JSONErr(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		}
 	} else {
-		// query all wallets
-
-		var offset []byte
-		if q.Get("offset")!= "" {
-			var err error
-			offset, err = ExtractAddress(q.Get("offset"))
-			if err != nil && !errors.ErrEmpty.Is(err) {
-				JSONErr(w, http.StatusBadRequest, "offset is in wrong format. send integer")
-				return
-			}
-		}
-
-		it := client.ABCIRangeQuery(r.Context(), h.Bns, "/wallets", fmt.Sprintf("%s:", offset))
+		it := client.ABCIPrefixQuery(r.Context(), h.Bns, "/wallets", []byte{})
 
 		objects := make([]util.KeyValue, 0, util.PaginationMaxItems)
 	fetchBalances:

@@ -257,15 +257,12 @@ paths:
         in: query
         name: address
         type: string
-      - description: Pagination offset
-        in: query
-        name: offset
-        type: integer
       responses:
         "200": {}
         "404": {}
         "500": {}
-      summary: returns balance in IOV Token of the given iov address
+      summary: returns balance in IOV Token of the given iov address. If not address
+        is not provided returns all wallets
       tags:
       - IOV token
   /escrow/escrows:
